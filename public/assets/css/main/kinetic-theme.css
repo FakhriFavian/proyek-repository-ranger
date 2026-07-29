@@ -1,0 +1,373 @@
+/*
+ * Kinetic Admin theme overrides.
+ * Loaded AFTER assets/css/main/app.css so these rules win.
+ * Token values below are copied verbatim from template/kinetic_admin/DESIGN.md.
+ * This file only overrides variables/selectors already defined by Bootstrap/app.css;
+ * it does not add a new CSS framework.
+ */
+
+:root {
+    --bs-primary: #004ac6;
+    --bs-primary-rgb: 0, 74, 198;
+    --bs-body-bg: #faf8ff;
+    --bs-body-bg-rgb: 250, 248, 255;
+    --bs-body-color: #434655;
+    --bs-body-font-family: 'Inter', 'Nunito', sans-serif;
+    --bs-border-radius: 0.75rem;
+    --bs-border-radius-lg: 1rem;
+    --bs-border-radius-sm: 0.5rem;
+    --bs-border-radius-pill: 9999px;
+
+    --kt-surface: #faf8ff;
+    --kt-surface-container-lowest: #ffffff;
+    --kt-surface-container-low: #f3f3fe;
+    --kt-surface-container: #ededf9;
+    --kt-surface-container-high: #e7e7f3;
+    --kt-on-surface: #191b23;
+    --kt-on-surface-variant: #434655;
+    --kt-outline: #737686;
+    --kt-outline-variant: #c3c6d7;
+    --kt-primary: #004ac6;
+    --kt-primary-accent: #2563eb;
+    --kt-on-primary: #ffffff;
+    --kt-secondary: #505f76;
+    --kt-error: #ba1a1a;
+    --kt-error-container: #ffdad6;
+    --kt-radius: 0.75rem;
+    --kt-radius-sm: 0.5rem;
+    --kt-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+    --kt-shadow-md: 0 10px 15px -3px rgba(0, 0, 0, .08);
+}
+
+body {
+    background-color: var(--kt-surface);
+    color: var(--kt-on-surface-variant);
+    font-family: 'Inter', 'Nunito', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--kt-on-surface);
+    font-family: 'Inter', 'Nunito', sans-serif;
+}
+
+/* ---------- Cards ---------- */
+.card {
+    background-color: var(--kt-surface-container-lowest);
+    border: 1px solid var(--kt-surface-container-high);
+    border-radius: var(--kt-radius);
+    box-shadow: var(--kt-shadow);
+}
+
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--kt-surface-container-high);
+    color: var(--kt-on-surface);
+    font-weight: 600;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+    border-radius: 9999px;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: var(--kt-primary);
+    border-color: var(--kt-primary);
+    color: #fff;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #003ea8;
+    border-color: #003ea8;
+}
+
+.btn-outline-primary {
+    border-color: var(--kt-primary);
+    color: var(--kt-primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--kt-primary);
+    border-color: var(--kt-primary);
+}
+
+.btn-secondary {
+    background-color: var(--kt-surface-container);
+    border-color: var(--kt-surface-container);
+    color: var(--kt-on-surface-variant);
+}
+
+.btn.icon.icon-left i {
+    margin-right: .4rem;
+}
+
+/* ---------- Forms ---------- */
+.form-control,
+.form-select {
+    background-color: var(--kt-surface-container-lowest);
+    border: 1px solid var(--kt-outline-variant);
+    border-radius: var(--kt-radius-sm);
+    color: var(--kt-on-surface);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--kt-primary-accent);
+    box-shadow: 0 0 0 .2rem rgba(37, 99, 235, .15);
+}
+
+.form-label,
+label {
+    color: var(--kt-on-surface-variant);
+    font-weight: 500;
+}
+
+/* ---------- Tables ---------- */
+.table {
+    color: var(--kt-on-surface-variant);
+}
+
+.table > :not(caption) > * > * {
+    border-bottom-width: 1px;
+    border-bottom-color: var(--kt-surface-container-high);
+    box-shadow: none;
+}
+
+.table thead th,
+.table thead td {
+    background-color: var(--kt-surface-container-low);
+    border-bottom: none;
+    color: var(--kt-on-surface-variant);
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+}
+
+.table-hover > tbody > tr:hover > * {
+    background-color: var(--kt-surface-container-low);
+}
+
+/* ---------- Badges / status chips ---------- */
+.badge {
+    border-radius: .375rem;
+    font-weight: 600;
+}
+
+/* ---------- Pagination ---------- */
+.page-link {
+    border-color: var(--kt-outline-variant);
+    color: var(--kt-primary);
+}
+
+.page-item.active .page-link {
+    background-color: var(--kt-primary);
+    border-color: var(--kt-primary);
+}
+
+/* ---------- CRUD stub pages (list / form / detail) ---------- */
+.kt-eyebrow {
+    color: var(--kt-primary);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.kt-search-input {
+    max-width: 320px;
+}
+
+.kt-form-card .card-header,
+.kt-detail-card .card-header {
+    font-weight: 600;
+}
+
+.kt-detail-grid .col-lg-2 p {
+    color: var(--kt-outline);
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .03em;
+    margin-bottom: .25rem;
+    text-transform: uppercase;
+}
+
+.kt-detail-grid .col-lg-10 {
+    border-bottom: 1px solid var(--kt-surface-container-high);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.kt-detail-grid .col-lg-10 p.fw-bold {
+    color: var(--kt-on-surface);
+    font-size: 1rem;
+}
+
+/* ---------- Breadcrumb / page heading ---------- */
+.page-heading .page-title h3 {
+    font-weight: 700;
+    letter-spacing: -.01em;
+}
+
+.breadcrumb-header .breadcrumb-item a {
+    color: var(--kt-on-surface-variant);
+}
+
+.breadcrumb-header .breadcrumb-item.active {
+    color: var(--kt-outline);
+}
+
+/* ---------- Dashboard stat cards ---------- */
+.kt-stat-icon {
+    align-items: center;
+    border-radius: var(--kt-radius-sm);
+    display: inline-flex;
+    height: 3rem;
+    justify-content: center;
+    width: 3rem;
+}
+
+.kt-stat-icon i {
+    font-size: 1.4rem;
+}
+
+.kt-stat-icon-purple { background-color: #ede9fe; color: #7c3aed; }
+.kt-stat-icon-blue { background-color: #dbeafe; color: #2563eb; }
+.kt-stat-icon-green { background-color: #dcfce7; color: #16a34a; }
+.kt-stat-icon-light { background-color: rgba(255, 255, 255, .18); color: #fff; }
+
+.kt-stat-label {
+    color: var(--kt-outline);
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.kt-stat-value {
+    color: var(--kt-on-surface);
+    font-weight: 700;
+}
+
+.kt-stat-card-highlight {
+    background-color: var(--kt-primary);
+    border-color: var(--kt-primary);
+}
+
+.kt-stat-card-highlight .kt-stat-label {
+    color: rgba(255, 255, 255, .75);
+}
+
+.kt-stat-card-highlight .kt-stat-value {
+    color: #fff;
+}
+
+/* ---------- Sidebar ---------- */
+#sidebar .sidebar-wrapper {
+    background-color: var(--kt-surface-container-lowest);
+}
+
+.sidebar-header {
+    padding: 1.5rem 1.25rem;
+}
+
+.kt-logo-mark {
+    background-color: var(--kt-primary);
+    border-radius: var(--kt-radius-sm);
+    color: #fff;
+    font-size: 1.1rem;
+    height: 2.25rem;
+    width: 2.25rem;
+}
+
+.dropdown-menu {
+    border: 1px solid var(--kt-surface-container-high);
+    border-radius: var(--kt-radius-sm);
+    box-shadow: var(--kt-shadow-md);
+}
+
+.sidebar-link {
+    border-radius: 9999px;
+    color: var(--kt-on-surface-variant);
+    font-weight: 500;
+    margin: 0 .75rem;
+    padding: .65rem 1rem;
+}
+
+.sidebar-link:hover {
+    background-color: var(--kt-surface-container-low);
+}
+
+.sidebar-item.active > .sidebar-link {
+    background-color: var(--kt-primary) !important;
+}
+
+.sidebar-item.active > .sidebar-link i,
+.sidebar-item.active > .sidebar-link span {
+    color: #fff !important;
+}
+
+.sidebar-title h6 {
+    color: var(--kt-outline);
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+    background-color: var(--kt-surface-container-lowest);
+}
+
+/* ---------- Selectize (foreign-key/select fields on generated forms) ---------- */
+.selectize-input {
+    border: 1px solid var(--kt-outline-variant);
+    border-radius: var(--kt-radius-sm);
+}
+
+.selectize-input.focus {
+    border-color: var(--kt-primary-accent);
+    box-shadow: 0 0 0 .2rem rgba(37, 99, 235, .15);
+}
+
+/* ---------- Alerts ---------- */
+.alert {
+    border: none;
+    border-radius: var(--kt-radius-sm);
+}
+
+/* ---------- Auth pages (login/register/etc.) ---------- */
+.kt-auth-body {
+    background-color: var(--kt-surface);
+}
+
+.kt-auth-card {
+    background-color: var(--kt-surface-container-lowest);
+    border: none;
+    border-radius: var(--kt-radius-lg, 1rem);
+    box-shadow: var(--kt-shadow-md);
+    max-width: 960px;
+    width: 100%;
+}
+
+.kt-auth-panel {
+    background-color: var(--kt-primary);
+    background-image: linear-gradient(160deg, var(--kt-primary) 0%, #003ea8 100%);
+}
+
+/* ---------- Dark mode: keep the toggle legible without a full redesign ---------- */
+body.theme-dark {
+    --kt-surface: #191b23;
+    --kt-surface-container-lowest: #23252f;
+    --kt-surface-container-low: #2a2c37;
+    --kt-surface-container: #2e3039;
+    --kt-surface-container-high: #383a45;
+    --kt-on-surface: #f0f0fb;
+    --kt-on-surface-variant: #c3c6d7;
+    --kt-outline-variant: #434655;
+    --kt-primary: #4c7dff;
+    --kt-primary-accent: #6c93ff;
+}
