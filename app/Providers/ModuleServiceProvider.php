@@ -37,7 +37,7 @@ class ModuleServiceProvider extends ServiceProvider
             // load views
             $viewdir = $module.'/Views';
             if(is_dir($viewdir)){
-                $modulename = @end(explode("/", $module));
+                $modulename = basename($module);
                 $this->loadViewsFrom($viewdir, $modulename);
             }
         }
