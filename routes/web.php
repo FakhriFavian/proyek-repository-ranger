@@ -6,23 +6,24 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('frontend.index');
 
-Route::middleware(['auth'])->group(function(){
+Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/role/set/{id_role}', [DashboardController::class,'changeRole'])->name('dashboard.change.role');
-    Route::get('/forcelogout', [DashboardController::class,'forceLogout'])->name('dashboard.force.logout');
+    Route::get('/role/set/{id_role}', [DashboardController::class, 'changeRole'])->name('dashboard.change.role');
+    Route::get('/forcelogout', [DashboardController::class, 'forceLogout'])->name('dashboard.force.logout');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Route User (Ubah name jadi 'home')
     Route::get('/home', function () {
-    return view('user.home');
-})->name('user.home');
+        return view('user.home');
+    })->name('home');
 
-Route::get('/riwayat', function () {
-    return view('user.riwayat');
-})->name('riwayat');
+    Route::get('/riwayat', function () {
+        return view('user.riwayat');
+    })->name('riwayat');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
