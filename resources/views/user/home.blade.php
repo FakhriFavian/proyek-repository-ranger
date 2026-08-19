@@ -1,6 +1,6 @@
 {{--
     resources/views/user/home.blade.php
-    "Take and Go" — Halaman Utama dengan Tampilan Peminjaman Full Screen
+    "Take and Go" — Halaman Utama dengan Tampilan Pop-up Modal Peminjaman
 --}}
 <!DOCTYPE html>
 <html lang="id">
@@ -139,7 +139,7 @@
                             <div class="flex items-center justify-between mt-2">
                                 <span class="text-[11px] text-neutral-400">{{ $product['stock'] }}</span>
                                 
-                                {{-- Tombol Membuka Tampilan Full Screen --}}
+                                {{-- Tombol Membuka POP UP --}}
                                 <button
                                     type="button"
                                     onclick="openModalPinjam('{{ addslashes($product['name']) }}', '{{ $product['img'] }}')"
@@ -156,98 +156,100 @@
 
     </main>
 
-    {{-- ================= TAMPILAN JADWAL FULL SCREEN ================= --}}
-    <div id="modalPinjam" class="fixed inset-0 bg-white hidden z-50 overflow-y-auto">
-        <div class="w-full min-h-screen bg-white p-6 lg:p-12 flex flex-col justify-between max-w-6xl mx-auto">
+    {{-- ================= POP-UP MODAL JADWAL ================= --}}
+    <div id="modalPinjam" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-6">
+        <!-- Backdrop Overlay Gelap Transparan -->
+        <div onclick="closeModalPinjam()" class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+
+        <!-- Box Container Modal -->
+        <div class="relative bg-[#FAF9F5] w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto scrollbar-none">
             
-            <div>
-                {{-- Header --}}
-                <div class="flex items-center justify-between mb-8 pb-4 border-b border-neutral-100">
-                    <button onclick="closeModalPinjam()" type="button" class="text-neutral-400 hover:text-neutral-800 transition p-2 rounded-full hover:bg-neutral-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </button>
+            {{-- Header Pop-up --}}
+            <div class="flex items-center justify-between mb-6">
+                <button onclick="closeModalPinjam()" type="button" class="w-9 h-9 flex items-center justify-center bg-neutral-200/60 hover:bg-neutral-300 text-neutral-600 rounded-full transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
 
-                    <h2 class="maroon-text font-black text-2xl lg:text-3xl uppercase tracking-wide text-center">
-                        PILIH JADWAL PEMINJAMAN
-                    </h2>
+                <h2 class="maroon-text font-extrabold text-lg sm:text-xl uppercase tracking-wide text-center">
+                    PILIH JADWAL PEMINJAMAN
+                </h2>
 
-                    <div class="w-9"></div>
+                <div class="w-9"></div>
+            </div>
+
+            {{-- Slider Tanggal --}}
+            <div class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-none mb-6 pb-2 justify-start sm:justify-center">
+                <button type="button" class="bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 shadow-sm">
+                    <div class="text-[10px] font-medium uppercase opacity-90">Jum</div>
+                    <div class="text-xs font-bold">31 JULI</div>
+                </button>
+                <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                    <div class="text-[10px] text-neutral-500 font-medium uppercase">Sen</div>
+                    <div class="text-xs font-bold">3 AGS</div>
+                </button>
+                <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                    <div class="text-[10px] text-neutral-500 font-medium uppercase">Sel</div>
+                    <div class="text-xs font-bold">4 AGS</div>
+                </button>
+                <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                    <div class="text-[10px] text-neutral-500 font-medium uppercase">Rab</div>
+                    <div class="text-xs font-bold">5 AGS</div>
+                </button>
+                <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                    <div class="text-[10px] text-neutral-500 font-medium uppercase">Kam</div>
+                    <div class="text-xs font-bold">6 AGS</div>
+                </button>
+                <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                    <div class="text-[10px] text-neutral-500 font-medium uppercase">Jum</div>
+                    <div class="text-xs font-bold">7 AGS</div>
+                </button>
+            </div>
+
+            {{-- Body Content --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 items-center">
+                <div class="bg-white rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center w-full shadow-inner border border-neutral-200/60">
+                    <img id="modalGambarBarang" src="" alt="Produk" class="w-full h-full object-cover">
                 </div>
 
-                {{-- Slider Tanggal --}}
-                <div class="flex items-center gap-3 overflow-x-auto scrollbar-none mb-10 pb-2 justify-start md:justify-center">
-                    <button type="button" class="bg-red-600 text-white px-6 py-3 rounded-2xl text-center shrink-0 shadow-md">
-                        <div class="text-xs font-medium uppercase opacity-90">Jum</div>
-                        <div class="text-sm font-bold">31 JULI</div>
-                    </button>
-                    <button type="button" class="bg-neutral-100 text-neutral-700 hover:bg-neutral-200 px-6 py-3 rounded-2xl text-center shrink-0 transition">
-                        <div class="text-xs text-neutral-400 font-medium uppercase">Sen</div>
-                        <div class="text-sm font-bold">3 AGS</div>
-                    </button>
-                    <button type="button" class="bg-neutral-100 text-neutral-700 hover:bg-neutral-200 px-6 py-3 rounded-2xl text-center shrink-0 transition">
-                        <div class="text-xs text-neutral-400 font-medium uppercase">Sel</div>
-                        <div class="text-sm font-bold">4 AGS</div>
-                    </button>
-                    <button type="button" class="bg-neutral-100 text-neutral-700 hover:bg-neutral-200 px-6 py-3 rounded-2xl text-center shrink-0 transition">
-                        <div class="text-xs text-neutral-400 font-medium uppercase">Rab</div>
-                        <div class="text-sm font-bold">5 AGS</div>
-                    </button>
-                    <button type="button" class="bg-neutral-100 text-neutral-700 hover:bg-neutral-200 px-6 py-3 rounded-2xl text-center shrink-0 transition">
-                        <div class="text-xs text-neutral-400 font-medium uppercase">Kam</div>
-                        <div class="text-sm font-bold">6 AGS</div>
-                    </button>
-                    <button type="button" class="bg-neutral-100 text-neutral-700 hover:bg-neutral-200 px-6 py-3 rounded-2xl text-center shrink-0 transition">
-                        <div class="text-xs text-neutral-400 font-medium uppercase">Jum</div>
-                        <div class="text-sm font-bold">7 AGS</div>
-                    </button>
-                </div>
-
-                {{-- Body Content --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
-                    <div class="bg-neutral-100 rounded-3xl overflow-hidden aspect-[4/3] flex items-center justify-center max-h-[400px] w-full shadow-inner">
-                        <img id="modalGambarBarang" src="" alt="Produk" class="w-full h-full object-cover">
+                <div>
+                    <div class="bg-[#D97706] text-white font-bold text-center py-2.5 rounded-xl text-xs uppercase mb-4 tracking-wide shadow-sm">
+                        JADWAL YANG TERSEDIA
                     </div>
 
-                    <div>
-                        <div class="accent text-neutral-900 font-bold text-center py-3.5 rounded-2xl text-sm uppercase mb-6 tracking-wide shadow-sm">
-                            JADWAL YANG TERSEDIA
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4 text-center">
-                            <button type="button" class="border-2 border-neutral-200 hover:border-amber-500 rounded-2xl p-4 transition group">
-                                <span class="block text-xs text-neutral-400 font-medium mb-1">60 Menit</span>
-                                <span class="block text-base font-bold text-neutral-800 group-hover:text-amber-600">08.00 - 09.00</span>
-                            </button>
-                            <button type="button" class="border-2 border-neutral-200 hover:border-amber-500 rounded-2xl p-4 transition group">
-                                <span class="block text-xs text-neutral-400 font-medium mb-1">60 Menit</span>
-                                <span class="block text-base font-bold text-neutral-800 group-hover:text-amber-600">09.00 - 10.00</span>
-                            </button>
-                            <button type="button" class="border-2 border-neutral-200 hover:border-amber-500 rounded-2xl p-4 transition group">
-                                <span class="block text-xs text-neutral-400 font-medium mb-1">60 Menit</span>
-                                <span class="block text-base font-bold text-neutral-800 group-hover:text-amber-600">10.00 - 11.00</span>
-                            </button>
-                            <button type="button" class="border-2 border-neutral-200 hover:border-amber-500 rounded-2xl p-4 transition group">
-                                <span class="block text-xs text-neutral-400 font-medium mb-1">60 Menit</span>
-                                <span class="block text-base font-bold text-neutral-800 group-hover:text-amber-600">11.00 - 12.00</span>
-                            </button>
-                            <button type="button" class="border-2 border-neutral-200 hover:border-amber-500 rounded-2xl p-4 transition group">
-                                <span class="block text-xs text-neutral-400 font-medium mb-1">60 Menit</span>
-                                <span class="block text-base font-bold text-neutral-800 group-hover:text-amber-600">12.00 - 13.00</span>
-                            </button>
-                            <button type="button" class="border-2 border-neutral-200 hover:border-amber-500 rounded-2xl p-4 transition group">
-                                <span class="block text-xs text-neutral-400 font-medium mb-1">60 Menit</span>
-                                <span class="block text-base font-bold text-neutral-800 group-hover:text-amber-600">13.00 - 14.00</span>
-                            </button>
-                        </div>
+                    <div class="grid grid-cols-2 gap-2.5 text-center">
+                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">08.00 - 09.00</span>
+                        </button>
+                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">09.00 - 10.00</span>
+                        </button>
+                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">10.00 - 11.00</span>
+                        </button>
+                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">11.00 - 12.00</span>
+                        </button>
+                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">12.00 - 13.00</span>
+                        </button>
+                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">13.00 - 14.00</span>
+                        </button>
                     </div>
                 </div>
             </div>
 
             {{-- Tombol Booking --}}
-            <div class="mt-10">
-                <button type="button" class="accent text-neutral-900 font-extrabold w-full py-4 rounded-2xl text-center uppercase tracking-wider text-base hover:brightness-95 transition shadow-lg">
+            <div class="mt-6">
+                <button type="button" class="accent text-neutral-900 font-bold w-full py-3.5 rounded-xl text-center uppercase tracking-wider text-xs sm:text-sm hover:brightness-95 transition shadow-md">
                     BOOKING SEKARANG
                 </button>
             </div>
