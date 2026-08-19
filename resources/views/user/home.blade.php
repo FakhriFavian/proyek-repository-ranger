@@ -30,17 +30,23 @@
             </a>
 
             <div class="flex-1 flex items-center gap-3">
-                <div class="flex-1 flex items-center gap-2 bg-neutral-100 rounded-full px-5 py-2.5">
+                {{-- Form Search --}}
+                <form action="{{ route('home') }}" method="GET" class="flex-1 flex items-center gap-2 bg-neutral-100 rounded-full px-5 py-2.5">
+                    @if(request('category'))
+                        <input type="hidden" name="category" value="{{ request('category') }}">
+                    @endif
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-neutral-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="7"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                     <input
                         type="text"
+                        name="search"
+                        value="{{ request('search') }}"
                         placeholder="pinjem apa yaa"
                         class="bg-transparent outline-none text-sm text-neutral-600 placeholder-neutral-400 w-full"
                     >
-                </div>
+                </form>
 
                 <a href="{{ route('riwayat') }}"
                    aria-label="Riwayat pencarian"
@@ -90,7 +96,7 @@
             <div class="flex justify-center items-center gap-3 overflow-x-auto scrollbar-none pb-1">
                 @foreach ($categories as $category)
                     <a
-                        href="/home?category={{ urlencode($category) }}"
+                        href="/home?category={{ urlencode($category) }}{{ request('search') ? '&search='.urlencode(request('search')) : '' }}"
                         class="shrink-0 px-6 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition shadow-sm
                         {{ $category === request('category', 'All item')
                             ? 'accent text-neutral-900 font-semibold'
@@ -104,54 +110,70 @@
 
         {{-- ================= GRID PRODUK ================= --}}
         <section class="mt-6 pb-14">
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-5">
-                @php
-                    $products = [
-                        ['category' => 'Electronics', 'name' => 'JBL speaker blends', 'stock' => '67 tersedia', 'img' => asset('images/jblspeaker.jpg')],
-                        ['category' => 'Electronics', 'name' => 'Sony headphones', 'stock' => '21 tersedia', 'img' => asset('images/headphone.jpg')],
-                        ['category' => 'Electronics', 'name' => 'iPhone 17 Pro Max', 'stock' => '32 tersedia', 'img' => asset('images/iphone.jpg')],
-                        ['category' => 'Electronics', 'name' => 'Samsung galaxy S25 Ultra', 'stock' => '7 tersedia', 'img' => asset('images/samsung.jpg')],
-                        ['category' => 'Cleaning', 'name' => 'Cordless Vacuum Cleaner', 'stock' => '9 tersedia', 'img' => asset('images/vacuum.jpg')],
-                        ['category' => 'Sports', 'name' => 'Real Madrid Home Jersey', 'stock' => '20 tersedia', 'img' => asset('images/jersey.jpg')],
-                        ['category' => 'Sports', 'name' => 'Adidas Tiro Pro', 'stock' => '147 tersedia', 'img' => asset('images/adidas.jpg')],
-                        ['category' => 'Laboratorium', 'name' => 'Mikroskop Bk', 'stock' => '6 tersedia', 'img' => asset('images/mikroskop.jpg')],
-                    ];
+            @php
+                $products = [
+                    ['category' => 'Electronics', 'name' => 'JBL speaker blends', 'stock' => '67 tersedia', 'img' => asset('images/jblspeaker.jpg')],
+                    ['category' => 'Electronics', 'name' => 'Sony headphones', 'stock' => '21 tersedia', 'img' => asset('images/headphone.jpg')],
+                    ['category' => 'Electronics', 'name' => 'iPhone 17 Pro Max', 'stock' => '32 tersedia', 'img' => asset('images/iphone.jpg')],
+                    ['category' => 'Electronics', 'name' => 'Samsung galaxy S25 Ultra', 'stock' => '7 tersedia', 'img' => asset('images/samsung.jpg')],
+                    ['category' => 'Cleaning', 'name' => 'Cordless Vacuum Cleaner', 'stock' => '9 tersedia', 'img' => asset('images/vacuum.jpg')],
+                    ['category' => 'Sports', 'name' => 'Real Madrid Home Jersey', 'stock' => '20 tersedia', 'img' => asset('images/jersey.jpg')],
+                    ['category' => 'Sports', 'name' => 'Adidas Tiro Pro', 'stock' => '147 tersedia', 'img' => asset('images/adidas.jpg')],
+                    ['category' => 'Laboratorium', 'name' => 'Mikroskop Bk', 'stock' => '6 tersedia', 'img' => asset('images/mikroskop.jpg')],
+                ];
 
-                    $active = request('category', 'All item');
+                $activeCategory = request('category', 'All item');
+                $searchKeyword = strtolower(trim(request('search', '')));
 
-                    if ($active !== 'All item') {
-                        $products = array_filter($products, function ($product) use ($active) {
-                            return $product['category'] === $active;
-                        });
-                    }
-                @endphp
+                // Filter berdasarkan Kategori
+                if ($activeCategory !== 'All item') {
+                    $products = array_filter($products, function ($product) use ($activeCategory) {
+                        return $product['category'] === $activeCategory;
+                    });
+                }
 
-                @foreach ($products as $product)
-                    <div class="group bg-white rounded-2xl border border-neutral-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col">
-                        <div class="aspect-[4/3] bg-neutral-100 overflow-hidden">
-                            <img src="{{ $product['img'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                        </div>
-                        <div class="p-3 flex flex-col gap-0.5">
-                            <span class="text-[11px] text-neutral-400">{{ $product['category'] }}</span>
-                            <h3 class="maroon-text font-semibold text-sm leading-snug line-clamp-2">
-                                {{ $product['name'] }}
-                            </h3>
-                            <div class="flex items-center justify-between mt-2">
-                                <span class="text-[11px] text-neutral-400">{{ $product['stock'] }}</span>
-                                
-                                {{-- Tombol Membuka POP UP --}}
-                                <button
-                                    type="button"
-                                    onclick="openModalPinjam('{{ addslashes($product['name']) }}', '{{ $product['img'] }}')"
-                                    class="accent text-xs font-semibold text-neutral-900 px-4 py-1.5 rounded-full hover:brightness-95 transition"
-                                >
-                                    Pinjam
-                                </button>
+                // Filter berdasarkan Keyword Search
+                if (!empty($searchKeyword)) {
+                    $products = array_filter($products, function ($product) use ($searchKeyword) {
+                        return str_contains(strtolower($product['name']), $searchKeyword) ||
+                               str_contains(strtolower($product['category']), $searchKeyword);
+                    });
+                }
+            @endphp
+
+            @if(count($products) > 0)
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-5">
+                    @foreach ($products as $product)
+                        <div class="group bg-white rounded-2xl border border-neutral-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col">
+                            <div class="aspect-[4/3] bg-neutral-100 overflow-hidden">
+                                <img src="{{ $product['img'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            </div>
+                            <div class="p-3 flex flex-col gap-0.5">
+                                <span class="text-[11px] text-neutral-400">{{ $product['category'] }}</span>
+                                <h3 class="maroon-text font-semibold text-sm leading-snug line-clamp-2">
+                                    {{ $product['name'] }}
+                                </h3>
+                                <div class="flex items-center justify-between mt-2">
+                                    <span class="text-[11px] text-neutral-400">{{ $product['stock'] }}</span>
+                                    
+                                    {{-- Tombol Membuka POP UP --}}
+                                    <button
+                                        type="button"
+                                        onclick="openModalPinjam('{{ addslashes($product['name']) }}', '{{ $product['img'] }}')"
+                                        class="accent text-xs font-semibold text-neutral-900 px-4 py-1.5 rounded-full hover:brightness-95 transition"
+                                    >
+                                        Pinjam
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
-            </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-12">
+                    <p class="text-neutral-500 font-medium text-base">Barang yang kamu cari tidak ditemukan.</p>
+                </div>
+            @endif
         </section>
 
     </main>
