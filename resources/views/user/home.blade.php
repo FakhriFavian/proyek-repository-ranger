@@ -112,27 +112,25 @@
         <section class="mt-6 pb-14">
             @php
                 $products = [
-                    ['category' => 'Electronics', 'name' => 'JBL speaker blends', 'stock' => '67 tersedia', 'img' => asset('images/jblspeaker.jpg')],
-                    ['category' => 'Electronics', 'name' => 'Sony headphones', 'stock' => '21 tersedia', 'img' => asset('images/headphone.jpg')],
-                    ['category' => 'Electronics', 'name' => 'iPhone 17 Pro Max', 'stock' => '32 tersedia', 'img' => asset('images/iphone.jpg')],
-                    ['category' => 'Electronics', 'name' => 'Samsung galaxy S25 Ultra', 'stock' => '7 tersedia', 'img' => asset('images/samsung.jpg')],
-                    ['category' => 'Cleaning', 'name' => 'Cordless Vacuum Cleaner', 'stock' => '9 tersedia', 'img' => asset('images/vacuum.jpg')],
-                    ['category' => 'Sports', 'name' => 'Real Madrid Home Jersey', 'stock' => '20 tersedia', 'img' => asset('images/jersey.jpg')],
-                    ['category' => 'Sports', 'name' => 'Adidas Tiro Pro', 'stock' => '147 tersedia', 'img' => asset('images/adidas.jpg')],
-                    ['category' => 'Laboratorium', 'name' => 'Mikroskop Bk', 'stock' => '6 tersedia', 'img' => asset('images/mikroskop.jpg')],
+                    ['id' => 1, 'category' => 'Electronics', 'name' => 'JBL speaker blends', 'stock' => '67 tersedia', 'img' => asset('images/jblspeaker.jpg')],
+                    ['id' => 2, 'category' => 'Electronics', 'name' => 'Sony headphones', 'stock' => '21 tersedia', 'img' => asset('images/headphone.jpg')],
+                    ['id' => 3, 'category' => 'Electronics', 'name' => 'iPhone 17 Pro Max', 'stock' => '32 tersedia', 'img' => asset('images/iphone.jpg')],
+                    ['id' => 4, 'category' => 'Electronics', 'name' => 'Samsung galaxy S25 Ultra', 'stock' => '7 tersedia', 'img' => asset('images/samsung.jpg')],
+                    ['id' => 5, 'category' => 'Cleaning', 'name' => 'Cordless Vacuum Cleaner', 'stock' => '9 tersedia', 'img' => asset('images/vacuum.jpg')],
+                    ['id' => 6, 'category' => 'Sports', 'name' => 'Real Madrid Home Jersey', 'stock' => '20 tersedia', 'img' => asset('images/jersey.jpg')],
+                    ['id' => 7, 'category' => 'Sports', 'name' => 'Adidas Tiro Pro', 'stock' => '147 tersedia', 'img' => asset('images/adidas.jpg')],
+                    ['id' => 8, 'category' => 'Laboratorium', 'name' => 'Mikroskop Bk', 'stock' => '6 tersedia', 'img' => asset('images/mikroskop.jpg')],
                 ];
 
                 $activeCategory = request('category', 'All item');
                 $searchKeyword = strtolower(trim(request('search', '')));
 
-                // Filter berdasarkan Kategori
                 if ($activeCategory !== 'All item') {
                     $products = array_filter($products, function ($product) use ($activeCategory) {
                         return $product['category'] === $activeCategory;
                     });
                 }
 
-                // Filter berdasarkan Keyword Search
                 if (!empty($searchKeyword)) {
                     $products = array_filter($products, function ($product) use ($searchKeyword) {
                         return str_contains(strtolower($product['name']), $searchKeyword) ||
@@ -159,7 +157,7 @@
                                     {{-- Tombol Membuka POP UP --}}
                                     <button
                                         type="button"
-                                        onclick="openModalPinjam('{{ addslashes($product['name']) }}', '{{ $product['img'] }}')"
+                                        onclick="openModalPinjam({{ $product['id'] }}, '{{ addslashes($product['name']) }}', '{{ $product['category'] }}', '{{ $product['stock'] }}', '{{ $product['img'] }}')"
                                         class="accent text-xs font-semibold text-neutral-900 px-4 py-1.5 rounded-full hover:brightness-95 transition"
                                     >
                                         Pinjam
@@ -183,19 +181,24 @@
         <!-- Backdrop Overlay Gelap Transparan -->
         <div onclick="closeModalPinjam()" class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
 
-        <!-- Box Container Modal -->
-        <div class="relative bg-[#FAF9F5] w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto scrollbar-none">
+        <!-- Box Container Modal dibungkus FORM -->
+        <form id="formBooking" action="{{ route('peminjaman.confirm') }}" method="GET" class="relative bg-[#FAF9F5] w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto scrollbar-none">
             
+            {{-- Input Hidden Data Peminjaman --}}
+            <input type="hidden" name="item_id" id="modalItemId">
+            <input type="hidden" name="item_name" id="modalItemName">
+            <input type="hidden" name="item_category" id="modalItemCategory">
+            <input type="hidden" name="item_stock" id="modalItemStock">
+            <input type="hidden" name="item_img" id="modalItemImgInput">
+            <input type="hidden" name="tanggal" id="selectedTanggal" value="03 Agustus 2026">
+            <input type="hidden" name="jam" id="selectedJam" value="11.00 - 12.00">
+
             {{-- Header Pop-up --}}
             <div class="flex items-center justify-between mb-6">
-                {{-- Penyeimbang Kiri --}}
                 <div class="w-9"></div>
-
                 <h2 class="maroon-text font-extrabold text-lg sm:text-xl uppercase tracking-wide text-center">
                     PILIH JADWAL PEMINJAMAN
                 </h2>
-
-                {{-- Tombol Silang (Close) di Kanan --}}
                 <button onclick="closeModalPinjam()" type="button" class="w-9 h-9 flex items-center justify-center bg-neutral-200/60 hover:bg-neutral-300 text-neutral-600 rounded-full transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -203,52 +206,45 @@
                 </button>
             </div>
 
-            {{-- Slider Tanggal Dengan Panah Kiri & Kanan --}}
+            {{-- Slider Tanggal --}}
             <div class="relative flex items-center gap-2 mb-6">
-                <!-- Tombol Panah Kiri -->
                 <button type="button" onclick="scrollDate('left')" class="shrink-0 p-2 bg-neutral-200/70 hover:bg-neutral-300 text-neutral-700 rounded-full transition shadow-sm z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
 
-                <!-- Container List Tanggal -->
                 <div id="dateContainer" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-none pb-1 scroll-smooth w-full">
-                    <button type="button" class="bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 shadow-sm">
-                        <div class="text-[10px] font-medium uppercase opacity-90">Jum</div>
+                    <button type="button" onclick="selectTanggal(this, '31 Juli 2026')" class="date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Jum</div>
                         <div class="text-xs font-bold">31 JULI</div>
                     </button>
-                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Sen</div>
+                    <button type="button" onclick="selectTanggal(this, '03 Agustus 2026')" class="date-btn bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 shadow-sm">
+                        <div class="text-[10px] font-medium uppercase opacity-90">Sen</div>
                         <div class="text-xs font-bold">3 AGS</div>
                     </button>
-                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                    <button type="button" onclick="selectTanggal(this, '04 Agustus 2026')" class="date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
                         <div class="text-[10px] text-neutral-500 font-medium uppercase">Sel</div>
                         <div class="text-xs font-bold">4 AGS</div>
                     </button>
-                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                    <button type="button" onclick="selectTanggal(this, '05 Agustus 2026')" class="date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
                         <div class="text-[10px] text-neutral-500 font-medium uppercase">Rab</div>
                         <div class="text-xs font-bold">5 AGS</div>
                     </button>
-                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                    <button type="button" onclick="selectTanggal(this, '06 Agustus 2026')" class="date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
                         <div class="text-[10px] text-neutral-500 font-medium uppercase">Kam</div>
                         <div class="text-xs font-bold">6 AGS</div>
                     </button>
-                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                    <button type="button" onclick="selectTanggal(this, '07 Agustus 2026')" class="date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
                         <div class="text-[10px] text-neutral-500 font-medium uppercase">Jum</div>
                         <div class="text-xs font-bold">7 AGS</div>
                     </button>
-                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                    <button type="button" onclick="selectTanggal(this, '08 Agustus 2026')" class="date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
                         <div class="text-[10px] text-neutral-500 font-medium uppercase">Sab</div>
                         <div class="text-xs font-bold">8 AGS</div>
                     </button>
-                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Min</div>
-                        <div class="text-xs font-bold">9 AGS</div>
-                    </button>
                 </div>
 
-                <!-- Tombol Panah Kanan -->
                 <button type="button" onclick="scrollDate('right')" class="shrink-0 p-2 bg-neutral-200/70 hover:bg-neutral-300 text-neutral-700 rounded-full transition shadow-sm z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
@@ -268,27 +264,27 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-2.5 text-center">
-                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                        <button type="button" onclick="selectJam(this, '08.00 - 09.00')" class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
                             <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
                             <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">08.00 - 09.00</span>
                         </button>
-                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                        <button type="button" onclick="selectJam(this, '09.00 - 10.00')" class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
                             <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
                             <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">09.00 - 10.00</span>
                         </button>
-                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                        <button type="button" onclick="selectJam(this, '10.00 - 11.00')" class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
                             <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
                             <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">10.00 - 11.00</span>
                         </button>
-                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                        <button type="button" onclick="selectJam(this, '11.00 - 12.00')" class="jam-btn bg-white border-2 border-amber-500 text-amber-600 rounded-xl p-2.5 transition group shadow-sm">
                             <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
-                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">11.00 - 12.00</span>
+                            <span class="block text-xs font-bold text-amber-600">11.00 - 12.00</span>
                         </button>
-                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                        <button type="button" onclick="selectJam(this, '12.00 - 13.00')" class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
                             <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
                             <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">12.00 - 13.00</span>
                         </button>
-                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                        <button type="button" onclick="selectJam(this, '13.00 - 14.00')" class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
                             <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
                             <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">13.00 - 14.00</span>
                         </button>
@@ -298,11 +294,11 @@
 
             {{-- Tombol Booking --}}
             <div class="mt-6">
-                <button type="button" class="accent text-neutral-900 font-bold w-full py-3.5 rounded-xl text-center uppercase tracking-wider text-xs sm:text-sm hover:brightness-95 transition shadow-md">
+                <button type="submit" class="accent text-neutral-900 font-bold w-full py-3.5 rounded-xl text-center uppercase tracking-wider text-xs sm:text-sm hover:brightness-95 transition shadow-md">
                     BOOKING SEKARANG
                 </button>
             </div>
-        </div>
+        </form>
     </div>
 
     {{-- ================= FOOTER BANNER ================= --}}
@@ -314,10 +310,16 @@
 
     {{-- ================= JAVASCRIPT ================= --}}
     <script>
-        function openModalPinjam(nama, gambar) {
+        function openModalPinjam(id, nama, kategori, stok, gambar) {
             const modal = document.getElementById('modalPinjam');
             const imgElement = document.getElementById('modalGambarBarang');
             
+            document.getElementById('modalItemId').value = id;
+            document.getElementById('modalItemName').value = nama;
+            document.getElementById('modalItemCategory').value = kategori;
+            document.getElementById('modalItemStock').value = stok;
+            document.getElementById('modalItemImgInput').value = gambar;
+
             imgElement.src = gambar;
             imgElement.alt = nama;
 
@@ -327,16 +329,29 @@
 
         function closeModalPinjam() {
             const modal = document.getElementById('modalPinjam');
-            
             modal.classList.add('hidden');
             document.body.classList.remove('overflow-hidden');
         }
 
-        // Fungsi menggeser tanggal
+        function selectTanggal(btn, val) {
+            document.getElementById('selectedTanggal').value = val;
+            document.querySelectorAll('.date-btn').forEach(b => {
+                b.className = "date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition";
+            });
+            btn.className = "date-btn bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 shadow-sm";
+        }
+
+        function selectJam(btn, val) {
+            document.getElementById('selectedJam').value = val;
+            document.querySelectorAll('.jam-btn').forEach(b => {
+                b.className = "jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm";
+            });
+            btn.className = "jam-btn bg-white border-2 border-amber-500 text-amber-600 rounded-xl p-2.5 transition group shadow-sm";
+        }
+
         function scrollDate(direction) {
             const container = document.getElementById('dateContainer');
-            const scrollAmount = 150; // Jarak per geseran (piksel)
-
+            const scrollAmount = 150;
             if (direction === 'left') {
                 container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
             } else {
