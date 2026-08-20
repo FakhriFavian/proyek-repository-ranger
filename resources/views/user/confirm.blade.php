@@ -142,7 +142,6 @@
                             </div>
                         </div>
                     </div>
-
                     {{-- Informasi Box --}}
                     <div class="bg-[#FFF3E0] rounded-2xl p-3.5 flex items-start gap-2.5 border border-amber-100/80 mt-6">
                         <div class="w-4 h-4 rounded-full bg-[#FF9F0A] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">i</div>
