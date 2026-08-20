@@ -53,7 +53,7 @@
                    class="shrink-0 p-2.5 text-neutral-500 hover:text-neutral-800 bg-neutral-100 hover:bg-neutral-200 rounded-full transition inline-flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="9"></circle>
-                        <polyline points="12 7 12 12 15 14"></polyline>
+                        <polyline points="12 7 12 15 14"></polyline>
                     </svg>
                 </a>
             </div>
@@ -190,7 +190,7 @@
             <input type="hidden" name="item_category" id="modalItemCategory">
             <input type="hidden" name="item_stock" id="modalItemStock">
             <input type="hidden" name="item_img" id="modalItemImgInput">
-            <input type="hidden" name="tanggal" id="selectedTanggal" value="03 Agustus 2026">
+            <input type="hidden" name="tanggal" id="selectedTanggal" value="{{ \Carbon\Carbon::today()->translatedFormat('d F Y') }}">
             <input type="hidden" name="jam" id="selectedJam" value="11.00 - 12.00">
 
             {{-- Header Pop-up --}}
@@ -206,7 +206,7 @@
                 </button>
             </div>
 
-            {{-- Slider Tanggal --}}
+            {{-- Slider Tanggal (30 Hari Ke Depan) --}}
             <div class="relative flex items-center gap-2 mb-6">
                 <button type="button" onclick="scrollDate('left')" class="shrink-0 p-2 bg-neutral-200/70 hover:bg-neutral-300 text-neutral-700 rounded-full transition shadow-sm z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -215,34 +215,32 @@
                 </button>
 
                 <div id="dateContainer" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-none pb-1 scroll-smooth w-full">
-                    <button type="button" onclick="selectTanggal(this, '31 Juli 2026')" class="date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Jum</div>
-                        <div class="text-xs font-bold">31 JULI</div>
-                    </button>
-                    <button type="button" onclick="selectTanggal(this, '03 Agustus 2026')" class="date-btn bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 shadow-sm">
-                        <div class="text-[10px] font-medium uppercase opacity-90">Sen</div>
-                        <div class="text-xs font-bold">3 AGS</div>
-                    </button>
-                    <button type="button" onclick="selectTanggal(this, '04 Agustus 2026')" class="date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Sel</div>
-                        <div class="text-xs font-bold">4 AGS</div>
-                    </button>
-                    <button type="button" onclick="selectTanggal(this, '05 Agustus 2026')" class="date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Rab</div>
-                        <div class="text-xs font-bold">5 AGS</div>
-                    </button>
-                    <button type="button" onclick="selectTanggal(this, '06 Agustus 2026')" class="date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Kam</div>
-                        <div class="text-xs font-bold">6 AGS</div>
-                    </button>
-                    <button type="button" onclick="selectTanggal(this, '07 Agustus 2026')" class="date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Jum</div>
-                        <div class="text-xs font-bold">7 AGS</div>
-                    </button>
-                    <button type="button" onclick="selectTanggal(this, '08 Agustus 2026')" class="date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Sab</div>
-                        <div class="text-xs font-bold">8 AGS</div>
-                    </button>
+                    @php
+                        use Carbon\Carbon;
+                        Carbon::setLocale('id');
+                        $today = Carbon::today();
+                    @endphp
+
+                    @for ($i = 0; $i < 30; $i++)
+                        @php
+                            $currentDate = $today->copy()->addDays($i);
+                            $formattedValue = $currentDate->translatedFormat('d F Y');
+                            $isFirst = $i === 0;
+                        @endphp
+
+                        <button 
+                            type="button" 
+                            onclick="selectTanggal(this, '{{ $formattedValue }}')" 
+                            class="date-btn {{ $isFirst ? 'bg-[#8C1F2F] text-white' : 'bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300' }} px-4 py-2.5 rounded-xl text-center shrink-0 transition shadow-sm"
+                        >
+                            <div class="text-[10px] uppercase font-medium {{ $isFirst ? 'opacity-90' : 'text-neutral-500' }}">
+                                {{ $currentDate->translatedFormat('D') }}
+                            </div>
+                            <div class="text-xs font-bold whitespace-nowrap">
+                                {{ $currentDate->format('j') }} {{ strtoupper($currentDate->translatedFormat('M')) }}
+                            </div>
+                        </button>
+                    @endfor
                 </div>
 
                 <button type="button" onclick="scrollDate('right')" class="shrink-0 p-2 bg-neutral-200/70 hover:bg-neutral-300 text-neutral-700 rounded-full transition shadow-sm z-10">
@@ -336,9 +334,15 @@
         function selectTanggal(btn, val) {
             document.getElementById('selectedTanggal').value = val;
             document.querySelectorAll('.date-btn').forEach(b => {
-                b.className = "date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition";
+                b.className = "date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition shadow-sm";
+                if(b.querySelector('div')) {
+                    b.querySelector('div').className = "text-[10px] uppercase font-medium text-neutral-500";
+                }
             });
-            btn.className = "date-btn bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 shadow-sm";
+            btn.className = "date-btn bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 transition shadow-sm";
+            if(btn.querySelector('div')) {
+                btn.querySelector('div').className = "text-[10px] uppercase font-medium opacity-90";
+            }
         }
 
         function selectJam(btn, val) {
@@ -351,7 +355,7 @@
 
         function scrollDate(direction) {
             const container = document.getElementById('dateContainer');
-            const scrollAmount = 150;
+            const scrollAmount = 280;
             if (direction === 'left') {
                 container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
             } else {
