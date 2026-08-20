@@ -155,7 +155,7 @@
                                 </h3>
                                 <div class="flex items-center justify-between mt-2">
                                     <span class="text-[11px] text-neutral-400">{{ $product['stock'] }}</span>
-                                    
+
                                     {{-- Tombol Membuka POP UP --}}
                                     <button
                                         type="button"
@@ -184,8 +184,8 @@
         <div onclick="closeModalPinjam()" class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
 
         <!-- Box Container Modal -->
-        <div class="relative bg-[#FAF9F5] w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto scrollbar-none">
-            
+        <div class="relative bg-[#FAFAFA] w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto scrollbar-none border border-neutral-100">
+
             {{-- Header Pop-up --}}
             <div class="flex items-center justify-between mb-6">
                 {{-- Penyeimbang Kiri --}}
@@ -231,42 +231,43 @@
                 </div>
 
                 <div>
-                    <div class="bg-[#D97706] text-white font-bold text-center py-2.5 rounded-xl text-xs uppercase mb-4 tracking-wide shadow-sm">
+                    {{-- Diubah menjadi warna Dark Navy / Slate --}}
+                    <div class="bg-[#2B4251] text-white font-bold text-center py-3 rounded-xl text-xs uppercase mb-4 tracking-wide shadow-sm">
                         JADWAL YANG TERSEDIA
                     </div>
 
                     <div class="grid grid-cols-2 gap-2.5 text-center">
-                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
-                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
-                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">08.00 - 09.00</span>
+                        <button type="button" class="bg-white border border-neutral-200 hover:border-neutral-400 rounded-2xl p-3 transition group shadow-sm">
+                            <span class="block text-[11px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-extrabold text-neutral-800">08.00 - 09.00</span>
                         </button>
-                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
-                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
-                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">09.00 - 10.00</span>
+                        <button type="button" class="bg-white border border-neutral-200 hover:border-neutral-400 rounded-2xl p-3 transition group shadow-sm">
+                            <span class="block text-[11px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-extrabold text-neutral-800">09.00 - 10.00</span>
                         </button>
-                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
-                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
-                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">10.00 - 11.00</span>
+                        <button type="button" class="bg-white border border-neutral-200 hover:border-neutral-400 rounded-2xl p-3 transition group shadow-sm">
+                            <span class="block text-[11px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-extrabold text-neutral-800">10.00 - 11.00</span>
                         </button>
-                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
-                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
-                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">11.00 - 12.00</span>
+                        <button type="button" class="bg-white border border-neutral-200 hover:border-neutral-400 rounded-2xl p-3 transition group shadow-sm">
+                            <span class="block text-[11px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-extrabold text-neutral-800">11.00 - 12.00</span>
                         </button>
-                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
-                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
-                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">12.00 - 13.00</span>
+                        <button type="button" class="bg-white border border-neutral-200 hover:border-neutral-400 rounded-2xl p-3 transition group shadow-sm">
+                            <span class="block text-[11px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-extrabold text-neutral-800">12.00 - 13.00</span>
                         </button>
-                        <button type="button" class="bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
-                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
-                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">13.00 - 14.00</span>
+                        <button type="button" class="bg-white border border-neutral-200 hover:border-neutral-400 rounded-2xl p-3 transition group shadow-sm">
+                            <span class="block text-[11px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-extrabold text-neutral-800">13.00 - 14.00</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            {{-- Tombol Booking --}}
+            {{-- Tombol Booking (Warna Oranye Kecokelatan Warm Ochre) --}}
             <div class="mt-6">
-                <button type="button" class="accent text-neutral-900 font-bold w-full py-3.5 rounded-xl text-center uppercase tracking-wider text-xs sm:text-sm hover:brightness-95 transition shadow-md">
+                <button type="button" class="bg-[#D98E28] hover:bg-[#C27D20] text-neutral-900 font-extrabold w-full py-4 rounded-2xl text-center uppercase tracking-wider text-xs sm:text-sm transition shadow-md">
                     BOOKING SEKARANG
                 </button>
             </div>
@@ -310,16 +311,16 @@
                 };
 
                 if (isToday) {
-                    button.className = 'bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 shadow-sm date-btn';
+                    button.className = 'bg-[#8C1F2F] text-white px-4 py-2.5 rounded-2xl text-center shrink-0 shadow-sm date-btn';
                     button.innerHTML = `
                         <div class="text-[10px] font-medium uppercase opacity-90">${dayName}</div>
-                        <div class="text-xs font-bold">${dayNum} ${monthName}</div>
+                        <div class="text-xs font-extrabold">${dayNum} ${monthName}</div>
                     `;
                 } else {
-                    button.className = 'bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition date-btn';
+                    button.className = 'bg-neutral-200/60 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-2xl text-center shrink-0 transition date-btn';
                     button.innerHTML = `
                         <div class="text-[10px] text-neutral-500 font-medium uppercase">${dayName}</div>
-                        <div class="text-xs font-bold">${dayNum} ${monthName}</div>
+                        <div class="text-xs font-extrabold">${dayNum} ${monthName}</div>
                     `;
                 }
 
@@ -330,19 +331,19 @@
         // Fungsi berpindah tanggal aktif
         function selectDate(element) {
             document.querySelectorAll('.date-btn').forEach(btn => {
-                btn.className = 'bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition date-btn';
+                btn.className = 'bg-neutral-200/60 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-2xl text-center shrink-0 transition date-btn';
                 const dayText = btn.children[0];
                 dayText.className = 'text-[10px] text-neutral-500 font-medium uppercase';
             });
 
-            element.className = 'bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 shadow-sm date-btn';
+            element.className = 'bg-[#8C1F2F] text-white px-4 py-2.5 rounded-2xl text-center shrink-0 shadow-sm date-btn';
             element.children[0].className = 'text-[10px] font-medium uppercase opacity-90';
         }
 
         function openModalPinjam(nama, gambar) {
             const modal = document.getElementById('modalPinjam');
             const imgElement = document.getElementById('modalGambarBarang');
-            
+
             imgElement.src = gambar;
             imgElement.alt = nama;
 
@@ -355,7 +356,7 @@
 
         function closeModalPinjam() {
             const modal = document.getElementById('modalPinjam');
-            
+
             modal.classList.add('hidden');
             document.body.classList.remove('overflow-hidden');
         }
