@@ -53,7 +53,7 @@
                    class="shrink-0 p-2.5 text-neutral-500 hover:text-neutral-800 bg-neutral-100 hover:bg-neutral-200 rounded-full transition inline-flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="9"></circle>
-                        <polyline points="12 7 12 12 15 14"></polyline>
+                        <polyline points="12 7 12 15 14"></polyline>
                     </svg>
                 </a>
             </div>
@@ -212,40 +212,8 @@
                     </svg>
                 </button>
 
-                <!-- Container List Tanggal -->
+                <!-- Container List Tanggal Otomatis (Digenereate lewat JS) -->
                 <div id="dateContainer" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-none pb-1 scroll-smooth w-full">
-                    <button type="button" class="bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 shadow-sm">
-                        <div class="text-[10px] font-medium uppercase opacity-90">Jum</div>
-                        <div class="text-xs font-bold">31 JULI</div>
-                    </button>
-                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Sen</div>
-                        <div class="text-xs font-bold">3 AGS</div>
-                    </button>
-                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Sel</div>
-                        <div class="text-xs font-bold">4 AGS</div>
-                    </button>
-                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Rab</div>
-                        <div class="text-xs font-bold">5 AGS</div>
-                    </button>
-                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Kam</div>
-                        <div class="text-xs font-bold">6 AGS</div>
-                    </button>
-                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Jum</div>
-                        <div class="text-xs font-bold">7 AGS</div>
-                    </button>
-                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Sab</div>
-                        <div class="text-xs font-bold">8 AGS</div>
-                    </button>
-                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Min</div>
-                        <div class="text-xs font-bold">9 AGS</div>
-                    </button>
                 </div>
 
                 <!-- Tombol Panah Kanan -->
@@ -314,12 +282,72 @@
 
     {{-- ================= JAVASCRIPT ================= --}}
     <script>
+        // Fungsi generate daftar tanggal otomatis (30 Hari ke Depan)
+        function generateDates() {
+            const dateContainer = document.getElementById('dateContainer');
+            dateContainer.innerHTML = ''; // Kosongkan container
+
+            const daysIndo = ['Ming', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+            const monthsIndo = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGS', 'SEP', 'OKT', 'NOV', 'DES'];
+
+            const today = new Date();
+
+            // Loop 30 hari ke depan
+            for (let i = 0; i < 30; i++) {
+                const currentDate = new Date();
+                currentDate.setDate(today.getDate() + i);
+
+                const dayName = daysIndo[currentDate.getDay()];
+                const dayNum = currentDate.getDate();
+                const monthName = monthsIndo[currentDate.getMonth()];
+
+                const isToday = i === 0;
+
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.onclick = function() {
+                    selectDate(this);
+                };
+
+                if (isToday) {
+                    button.className = 'bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 shadow-sm date-btn';
+                    button.innerHTML = `
+                        <div class="text-[10px] font-medium uppercase opacity-90">${dayName}</div>
+                        <div class="text-xs font-bold">${dayNum} ${monthName}</div>
+                    `;
+                } else {
+                    button.className = 'bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition date-btn';
+                    button.innerHTML = `
+                        <div class="text-[10px] text-neutral-500 font-medium uppercase">${dayName}</div>
+                        <div class="text-xs font-bold">${dayNum} ${monthName}</div>
+                    `;
+                }
+
+                dateContainer.appendChild(button);
+            }
+        }
+
+        // Fungsi berpindah tanggal aktif
+        function selectDate(element) {
+            document.querySelectorAll('.date-btn').forEach(btn => {
+                btn.className = 'bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition date-btn';
+                const dayText = btn.children[0];
+                dayText.className = 'text-[10px] text-neutral-500 font-medium uppercase';
+            });
+
+            element.className = 'bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 shadow-sm date-btn';
+            element.children[0].className = 'text-[10px] font-medium uppercase opacity-90';
+        }
+
         function openModalPinjam(nama, gambar) {
             const modal = document.getElementById('modalPinjam');
             const imgElement = document.getElementById('modalGambarBarang');
             
             imgElement.src = gambar;
             imgElement.alt = nama;
+
+            // Generate tanggal otomatis tiap modal dibuka
+            generateDates();
 
             modal.classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
@@ -335,7 +363,7 @@
         // Fungsi menggeser tanggal
         function scrollDate(direction) {
             const container = document.getElementById('dateContainer');
-            const scrollAmount = 150; // Jarak per geseran (piksel)
+            const scrollAmount = 200; // Jarak per geseran (piksel)
 
             if (direction === 'left') {
                 container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
