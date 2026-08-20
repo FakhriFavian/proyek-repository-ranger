@@ -188,44 +188,71 @@
             
             {{-- Header Pop-up --}}
             <div class="flex items-center justify-between mb-6">
-                <button onclick="closeModalPinjam()" type="button" class="w-9 h-9 flex items-center justify-center bg-neutral-200/60 hover:bg-neutral-300 text-neutral-600 rounded-full transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
+                {{-- Penyeimbang Kiri --}}
+                <div class="w-9"></div>
 
                 <h2 class="maroon-text font-extrabold text-lg sm:text-xl uppercase tracking-wide text-center">
                     PILIH JADWAL PEMINJAMAN
                 </h2>
 
-                <div class="w-9"></div>
+                {{-- Tombol Silang (Close) di Kanan --}}
+                <button onclick="closeModalPinjam()" type="button" class="w-9 h-9 flex items-center justify-center bg-neutral-200/60 hover:bg-neutral-300 text-neutral-600 rounded-full transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
 
-            {{-- Slider Tanggal --}}
-            <div class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-none mb-6 pb-2 justify-start sm:justify-center">
-                <button type="button" class="bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 shadow-sm">
-                    <div class="text-[10px] font-medium uppercase opacity-90">Jum</div>
-                    <div class="text-xs font-bold">31 JULI</div>
+            {{-- Slider Tanggal Dengan Panah Kiri & Kanan --}}
+            <div class="relative flex items-center gap-2 mb-6">
+                <!-- Tombol Panah Kiri -->
+                <button type="button" onclick="scrollDate('left')" class="shrink-0 p-2 bg-neutral-200/70 hover:bg-neutral-300 text-neutral-700 rounded-full transition shadow-sm z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
                 </button>
-                <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                    <div class="text-[10px] text-neutral-500 font-medium uppercase">Sen</div>
-                    <div class="text-xs font-bold">3 AGS</div>
-                </button>
-                <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                    <div class="text-[10px] text-neutral-500 font-medium uppercase">Sel</div>
-                    <div class="text-xs font-bold">4 AGS</div>
-                </button>
-                <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                    <div class="text-[10px] text-neutral-500 font-medium uppercase">Rab</div>
-                    <div class="text-xs font-bold">5 AGS</div>
-                </button>
-                <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                    <div class="text-[10px] text-neutral-500 font-medium uppercase">Kam</div>
-                    <div class="text-xs font-bold">6 AGS</div>
-                </button>
-                <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
-                    <div class="text-[10px] text-neutral-500 font-medium uppercase">Jum</div>
-                    <div class="text-xs font-bold">7 AGS</div>
+
+                <!-- Container List Tanggal -->
+                <div id="dateContainer" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-none pb-1 scroll-smooth w-full">
+                    <button type="button" class="bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 shadow-sm">
+                        <div class="text-[10px] font-medium uppercase opacity-90">Jum</div>
+                        <div class="text-xs font-bold">31 JULI</div>
+                    </button>
+                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Sen</div>
+                        <div class="text-xs font-bold">3 AGS</div>
+                    </button>
+                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Sel</div>
+                        <div class="text-xs font-bold">4 AGS</div>
+                    </button>
+                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Rab</div>
+                        <div class="text-xs font-bold">5 AGS</div>
+                    </button>
+                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Kam</div>
+                        <div class="text-xs font-bold">6 AGS</div>
+                    </button>
+                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Jum</div>
+                        <div class="text-xs font-bold">7 AGS</div>
+                    </button>
+                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Sab</div>
+                        <div class="text-xs font-bold">8 AGS</div>
+                    </button>
+                    <button type="button" class="bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition">
+                        <div class="text-[10px] text-neutral-500 font-medium uppercase">Min</div>
+                        <div class="text-xs font-bold">9 AGS</div>
+                    </button>
+                </div>
+
+                <!-- Tombol Panah Kanan -->
+                <button type="button" onclick="scrollDate('right')" class="shrink-0 p-2 bg-neutral-200/70 hover:bg-neutral-300 text-neutral-700 rounded-full transition shadow-sm z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
                 </button>
             </div>
 
@@ -303,6 +330,18 @@
             
             modal.classList.add('hidden');
             document.body.classList.remove('overflow-hidden');
+        }
+
+        // Fungsi menggeser tanggal
+        function scrollDate(direction) {
+            const container = document.getElementById('dateContainer');
+            const scrollAmount = 150; // Jarak per geseran (piksel)
+
+            if (direction === 'left') {
+                container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            } else {
+                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
         }
 
         document.addEventListener('keydown', function(e) {
