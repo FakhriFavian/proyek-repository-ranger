@@ -1,6 +1,6 @@
 {{--
     resources/views/user/home.blade.php
-    "Take and Go" — Halaman Utama dengan Tampilan Peminjaman Full Screen
+    "Take and Go" — Halaman Utama dengan Tampilan Pop-up Modal Peminjaman
 --}}
 <!DOCTYPE html>
 <html lang="id">
@@ -30,24 +30,30 @@
             </a>
 
             <div class="flex-1 flex items-center gap-3">
-                <div class="flex-1 flex items-center gap-2 bg-neutral-100 rounded-full px-5 py-2.5">
+                {{-- Form Search --}}
+                <form action="{{ route('home') }}" method="GET" class="flex-1 flex items-center gap-2 bg-neutral-100 rounded-full px-5 py-2.5">
+                    @if(request('category'))
+                        <input type="hidden" name="category" value="{{ request('category') }}">
+                    @endif
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-neutral-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="7"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                     <input
                         type="text"
+                        name="search"
+                        value="{{ request('search') }}"
                         placeholder="pinjem apa yaa"
                         class="bg-transparent outline-none text-sm text-neutral-600 placeholder-neutral-400 w-full"
                     >
-                </div>
+                </form>
 
                 <a href="{{ route('riwayat') }}"
                    aria-label="Riwayat pencarian"
                    class="shrink-0 p-2.5 text-neutral-500 hover:text-neutral-800 bg-neutral-100 hover:bg-neutral-200 rounded-full transition inline-flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="9"></circle>
-                        <polyline points="12 7 12 12 15 14"></polyline>
+                        <polyline points="12 7 12 15 14"></polyline>
                     </svg>
                 </a>
             </div>
@@ -93,7 +99,11 @@
                 </a>
                 @foreach ($categories as $category)
                     <a
+<<<<<<< HEAD
                         href="{{ route('home', ['category' => $category->nama_kategori]) }}"
+=======
+                        href="/home?category={{ urlencode($category) }}{{ request('search') ? '&search='.urlencode(request('search')) : '' }}"
+>>>>>>> f79f9517dd590f6843b4562d54481f2d94b937c3
                         class="shrink-0 px-6 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition shadow-sm
                         {{ $category->nama_kategori === $activeCategory
                             ? 'accent text-neutral-900 font-semibold'
@@ -107,6 +117,7 @@
 
         {{-- ================= GRID PRODUK ================= --}}
         <section class="mt-6 pb-14">
+<<<<<<< HEAD
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-5">
                 @forelse ($items as $item)
                     @php
@@ -142,10 +153,75 @@
                     <p class="col-span-full text-center text-sm text-neutral-400 py-10">Belum ada item tersedia.</p>
                 @endforelse
             </div>
+=======
+            @php
+                $products = [
+                    ['id' => 1, 'category' => 'Electronics', 'name' => 'JBL speaker blends', 'stock' => '67 tersedia', 'img' => asset('images/jblspeaker.jpg')],
+                    ['id' => 2, 'category' => 'Electronics', 'name' => 'Sony headphones', 'stock' => '21 tersedia', 'img' => asset('images/headphone.jpg')],
+                    ['id' => 3, 'category' => 'Electronics', 'name' => 'iPhone 17 Pro Max', 'stock' => '32 tersedia', 'img' => asset('images/iphone.jpg')],
+                    ['id' => 4, 'category' => 'Electronics', 'name' => 'Samsung galaxy S25 Ultra', 'stock' => '7 tersedia', 'img' => asset('images/samsung.jpg')],
+                    ['id' => 5, 'category' => 'Cleaning', 'name' => 'Cordless Vacuum Cleaner', 'stock' => '9 tersedia', 'img' => asset('images/vacuum.jpg')],
+                    ['id' => 6, 'category' => 'Sports', 'name' => 'Real Madrid Home Jersey', 'stock' => '20 tersedia', 'img' => asset('images/jersey.jpg')],
+                    ['id' => 7, 'category' => 'Sports', 'name' => 'Adidas Tiro Pro', 'stock' => '147 tersedia', 'img' => asset('images/adidas.jpg')],
+                    ['id' => 8, 'category' => 'Laboratorium', 'name' => 'Mikroskop Bk', 'stock' => '6 tersedia', 'img' => asset('images/mikroskop.jpg')],
+                ];
+
+                $activeCategory = request('category', 'All item');
+                $searchKeyword = strtolower(trim(request('search', '')));
+
+                if ($activeCategory !== 'All item') {
+                    $products = array_filter($products, function ($product) use ($activeCategory) {
+                        return $product['category'] === $activeCategory;
+                    });
+                }
+
+                if (!empty($searchKeyword)) {
+                    $products = array_filter($products, function ($product) use ($searchKeyword) {
+                        return str_contains(strtolower($product['name']), $searchKeyword) ||
+                               str_contains(strtolower($product['category']), $searchKeyword);
+                    });
+                }
+            @endphp
+
+            @if(count($products) > 0)
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-5">
+                    @foreach ($products as $product)
+                        <div class="group bg-white rounded-2xl border border-neutral-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col">
+                            <div class="aspect-[4/3] bg-neutral-100 overflow-hidden">
+                                <img src="{{ $product['img'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            </div>
+                            <div class="p-3 flex flex-col gap-0.5">
+                                <span class="text-[11px] text-neutral-400">{{ $product['category'] }}</span>
+                                <h3 class="maroon-text font-semibold text-sm leading-snug line-clamp-2">
+                                    {{ $product['name'] }}
+                                </h3>
+                                <div class="flex items-center justify-between mt-2">
+                                    <span class="text-[11px] text-neutral-400">{{ $product['stock'] }}</span>
+                                    
+                                    {{-- Tombol Membuka POP UP --}}
+                                    <button
+                                        type="button"
+                                        onclick="openModalPinjam({{ $product['id'] }}, '{{ addslashes($product['name']) }}', '{{ $product['category'] }}', '{{ $product['stock'] }}', '{{ $product['img'] }}')"
+                                        class="accent text-xs font-semibold text-neutral-900 px-4 py-1.5 rounded-full hover:brightness-95 transition"
+                                    >
+                                        Pinjam
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-12">
+                    <p class="text-neutral-500 font-medium text-base">Barang yang kamu cari tidak ditemukan.</p>
+                </div>
+            @endif
+>>>>>>> f79f9517dd590f6843b4562d54481f2d94b937c3
         </section>
 
     </main>
 
+<<<<<<< HEAD
     {{-- ================= TAMPILAN JADWAL FULL SCREEN ================= --}}
     <div id="modalPinjam" class="fixed inset-0 bg-white hidden z-50 overflow-y-auto">
         <div class="w-full min-h-screen bg-white p-6 lg:p-12 flex flex-col justify-between max-w-6xl mx-auto">
@@ -158,90 +234,129 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
+=======
+    {{-- ================= POP-UP MODAL JADWAL ================= --}}
+    <div id="modalPinjam" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-6">
+        <!-- Backdrop Overlay Gelap Transparan -->
+        <div onclick="closeModalPinjam()" class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
 
-                    <h2 class="maroon-text font-black text-2xl lg:text-3xl uppercase tracking-wide text-center">
-                        PILIH JADWAL PEMINJAMAN
-                    </h2>
+        <!-- Box Container Modal dibungkus FORM -->
+        <form id="formBooking" action="{{ route('peminjaman.confirm') }}" method="GET" class="relative bg-[#FAF9F5] w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto scrollbar-none">
+            
+            {{-- Input Hidden Data Peminjaman --}}
+            <input type="hidden" name="item_id" id="modalItemId">
+            <input type="hidden" name="item_name" id="modalItemName">
+            <input type="hidden" name="item_category" id="modalItemCategory">
+            <input type="hidden" name="item_stock" id="modalItemStock">
+            <input type="hidden" name="item_img" id="modalItemImgInput">
+            <input type="hidden" name="tanggal" id="selectedTanggal" value="{{ \Carbon\Carbon::today()->translatedFormat('d F Y') }}">
+            <input type="hidden" name="jam" id="selectedJam" value="11.00 - 12.00">
+>>>>>>> f79f9517dd590f6843b4562d54481f2d94b937c3
 
-                    <div class="w-9"></div>
+            {{-- Header Pop-up --}}
+            <div class="flex items-center justify-between mb-6">
+                <div class="w-9"></div>
+                <h2 class="maroon-text font-extrabold text-lg sm:text-xl uppercase tracking-wide text-center">
+                    PILIH JADWAL PEMINJAMAN
+                </h2>
+                <button onclick="closeModalPinjam()" type="button" class="w-9 h-9 flex items-center justify-center bg-neutral-200/60 hover:bg-neutral-300 text-neutral-600 rounded-full transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Slider Tanggal (30 Hari Ke Depan) --}}
+            <div class="relative flex items-center gap-2 mb-6">
+                <button type="button" onclick="scrollDate('left')" class="shrink-0 p-2 bg-neutral-200/70 hover:bg-neutral-300 text-neutral-700 rounded-full transition shadow-sm z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+
+                <div id="dateContainer" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-none pb-1 scroll-smooth w-full">
+                    @php
+                        use Carbon\Carbon;
+                        Carbon::setLocale('id');
+                        $today = Carbon::today();
+                    @endphp
+
+                    @for ($i = 0; $i < 30; $i++)
+                        @php
+                            $currentDate = $today->copy()->addDays($i);
+                            $formattedValue = $currentDate->translatedFormat('d F Y');
+                            $isFirst = $i === 0;
+                        @endphp
+
+                        <button 
+                            type="button" 
+                            onclick="selectTanggal(this, '{{ $formattedValue }}')" 
+                            class="date-btn {{ $isFirst ? 'bg-[#8C1F2F] text-white' : 'bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300' }} px-4 py-2.5 rounded-xl text-center shrink-0 transition shadow-sm"
+                        >
+                            <div class="text-[10px] uppercase font-medium {{ $isFirst ? 'opacity-90' : 'text-neutral-500' }}">
+                                {{ $currentDate->translatedFormat('D') }}
+                            </div>
+                            <div class="text-xs font-bold whitespace-nowrap">
+                                {{ $currentDate->format('j') }} {{ strtoupper($currentDate->translatedFormat('M')) }}
+                            </div>
+                        </button>
+                    @endfor
                 </div>
 
-                {{-- Slider Tanggal --}}
-                <div class="flex items-center gap-3 overflow-x-auto scrollbar-none mb-10 pb-2 justify-start md:justify-center">
-                    <button type="button" class="bg-red-600 text-white px-6 py-3 rounded-2xl text-center shrink-0 shadow-md">
-                        <div class="text-xs font-medium uppercase opacity-90">Jum</div>
-                        <div class="text-sm font-bold">31 JULI</div>
-                    </button>
-                    <button type="button" class="bg-neutral-100 text-neutral-700 hover:bg-neutral-200 px-6 py-3 rounded-2xl text-center shrink-0 transition">
-                        <div class="text-xs text-neutral-400 font-medium uppercase">Sen</div>
-                        <div class="text-sm font-bold">3 AGS</div>
-                    </button>
-                    <button type="button" class="bg-neutral-100 text-neutral-700 hover:bg-neutral-200 px-6 py-3 rounded-2xl text-center shrink-0 transition">
-                        <div class="text-xs text-neutral-400 font-medium uppercase">Sel</div>
-                        <div class="text-sm font-bold">4 AGS</div>
-                    </button>
-                    <button type="button" class="bg-neutral-100 text-neutral-700 hover:bg-neutral-200 px-6 py-3 rounded-2xl text-center shrink-0 transition">
-                        <div class="text-xs text-neutral-400 font-medium uppercase">Rab</div>
-                        <div class="text-sm font-bold">5 AGS</div>
-                    </button>
-                    <button type="button" class="bg-neutral-100 text-neutral-700 hover:bg-neutral-200 px-6 py-3 rounded-2xl text-center shrink-0 transition">
-                        <div class="text-xs text-neutral-400 font-medium uppercase">Kam</div>
-                        <div class="text-sm font-bold">6 AGS</div>
-                    </button>
-                    <button type="button" class="bg-neutral-100 text-neutral-700 hover:bg-neutral-200 px-6 py-3 rounded-2xl text-center shrink-0 transition">
-                        <div class="text-xs text-neutral-400 font-medium uppercase">Jum</div>
-                        <div class="text-sm font-bold">7 AGS</div>
-                    </button>
+                <button type="button" onclick="scrollDate('right')" class="shrink-0 p-2 bg-neutral-200/70 hover:bg-neutral-300 text-neutral-700 rounded-full transition shadow-sm z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Body Content --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 items-center">
+                <div class="bg-white rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center w-full shadow-inner border border-neutral-200/60">
+                    <img id="modalGambarBarang" src="" alt="Produk" class="w-full h-full object-cover">
                 </div>
 
-                {{-- Body Content --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
-                    <div class="bg-neutral-100 rounded-3xl overflow-hidden aspect-[4/3] flex items-center justify-center max-h-[400px] w-full shadow-inner">
-                        <img id="modalGambarBarang" src="" alt="Produk" class="w-full h-full object-cover">
+                <div>
+                    <div class="bg-[#D97706] text-white font-bold text-center py-2.5 rounded-xl text-xs uppercase mb-4 tracking-wide shadow-sm">
+                        JADWAL YANG TERSEDIA
                     </div>
 
-                    <div>
-                        <div class="accent text-neutral-900 font-bold text-center py-3.5 rounded-2xl text-sm uppercase mb-6 tracking-wide shadow-sm">
-                            JADWAL YANG TERSEDIA
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4 text-center">
-                            <button type="button" class="border-2 border-neutral-200 hover:border-amber-500 rounded-2xl p-4 transition group">
-                                <span class="block text-xs text-neutral-400 font-medium mb-1">60 Menit</span>
-                                <span class="block text-base font-bold text-neutral-800 group-hover:text-amber-600">08.00 - 09.00</span>
-                            </button>
-                            <button type="button" class="border-2 border-neutral-200 hover:border-amber-500 rounded-2xl p-4 transition group">
-                                <span class="block text-xs text-neutral-400 font-medium mb-1">60 Menit</span>
-                                <span class="block text-base font-bold text-neutral-800 group-hover:text-amber-600">09.00 - 10.00</span>
-                            </button>
-                            <button type="button" class="border-2 border-neutral-200 hover:border-amber-500 rounded-2xl p-4 transition group">
-                                <span class="block text-xs text-neutral-400 font-medium mb-1">60 Menit</span>
-                                <span class="block text-base font-bold text-neutral-800 group-hover:text-amber-600">10.00 - 11.00</span>
-                            </button>
-                            <button type="button" class="border-2 border-neutral-200 hover:border-amber-500 rounded-2xl p-4 transition group">
-                                <span class="block text-xs text-neutral-400 font-medium mb-1">60 Menit</span>
-                                <span class="block text-base font-bold text-neutral-800 group-hover:text-amber-600">11.00 - 12.00</span>
-                            </button>
-                            <button type="button" class="border-2 border-neutral-200 hover:border-amber-500 rounded-2xl p-4 transition group">
-                                <span class="block text-xs text-neutral-400 font-medium mb-1">60 Menit</span>
-                                <span class="block text-base font-bold text-neutral-800 group-hover:text-amber-600">12.00 - 13.00</span>
-                            </button>
-                            <button type="button" class="border-2 border-neutral-200 hover:border-amber-500 rounded-2xl p-4 transition group">
-                                <span class="block text-xs text-neutral-400 font-medium mb-1">60 Menit</span>
-                                <span class="block text-base font-bold text-neutral-800 group-hover:text-amber-600">13.00 - 14.00</span>
-                            </button>
-                        </div>
+                    <div class="grid grid-cols-2 gap-2.5 text-center">
+                        <button type="button" onclick="selectJam(this, '08.00 - 09.00')" class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">08.00 - 09.00</span>
+                        </button>
+                        <button type="button" onclick="selectJam(this, '09.00 - 10.00')" class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">09.00 - 10.00</span>
+                        </button>
+                        <button type="button" onclick="selectJam(this, '10.00 - 11.00')" class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">10.00 - 11.00</span>
+                        </button>
+                        <button type="button" onclick="selectJam(this, '11.00 - 12.00')" class="jam-btn bg-white border-2 border-amber-500 text-amber-600 rounded-xl p-2.5 transition group shadow-sm">
+                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-bold text-amber-600">11.00 - 12.00</span>
+                        </button>
+                        <button type="button" onclick="selectJam(this, '12.00 - 13.00')" class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">12.00 - 13.00</span>
+                        </button>
+                        <button type="button" onclick="selectJam(this, '13.00 - 14.00')" class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm">
+                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="block text-xs font-bold text-neutral-800 group-hover:text-amber-600">13.00 - 14.00</span>
+                        </button>
                     </div>
                 </div>
             </div>
 
             {{-- Tombol Booking --}}
-            <div class="mt-10">
-                <button type="button" class="accent text-neutral-900 font-extrabold w-full py-4 rounded-2xl text-center uppercase tracking-wider text-base hover:brightness-95 transition shadow-lg">
+            <div class="mt-6">
+                <button type="submit" class="accent text-neutral-900 font-bold w-full py-3.5 rounded-xl text-center uppercase tracking-wider text-xs sm:text-sm hover:brightness-95 transition shadow-md">
                     BOOKING SEKARANG
                 </button>
             </div>
-        </div>
+        </form>
     </div>
 
     {{-- ================= FOOTER BANNER ================= --}}
@@ -253,9 +368,18 @@
 
     {{-- ================= JAVASCRIPT ================= --}}
     <script>
-        function openModalPinjam(nama, gambar) {
+        function openModalPinjam(id, nama, kategori, stok, gambar) {
             const modal = document.getElementById('modalPinjam');
             const imgElement = document.getElementById('modalGambarBarang');
+<<<<<<< HEAD
+=======
+            
+            document.getElementById('modalItemId').value = id;
+            document.getElementById('modalItemName').value = nama;
+            document.getElementById('modalItemCategory').value = kategori;
+            document.getElementById('modalItemStock').value = stok;
+            document.getElementById('modalItemImgInput').value = gambar;
+>>>>>>> f79f9517dd590f6843b4562d54481f2d94b937c3
 
             imgElement.src = gambar;
             imgElement.alt = nama;
@@ -266,9 +390,44 @@
 
         function closeModalPinjam() {
             const modal = document.getElementById('modalPinjam');
+<<<<<<< HEAD
 
+=======
+>>>>>>> f79f9517dd590f6843b4562d54481f2d94b937c3
             modal.classList.add('hidden');
             document.body.classList.remove('overflow-hidden');
+        }
+
+        function selectTanggal(btn, val) {
+            document.getElementById('selectedTanggal').value = val;
+            document.querySelectorAll('.date-btn').forEach(b => {
+                b.className = "date-btn bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300 px-4 py-2.5 rounded-xl text-center shrink-0 transition shadow-sm";
+                if(b.querySelector('div')) {
+                    b.querySelector('div').className = "text-[10px] uppercase font-medium text-neutral-500";
+                }
+            });
+            btn.className = "date-btn bg-[#8C1F2F] text-white px-4 py-2.5 rounded-xl text-center shrink-0 transition shadow-sm";
+            if(btn.querySelector('div')) {
+                btn.querySelector('div').className = "text-[10px] uppercase font-medium opacity-90";
+            }
+        }
+
+        function selectJam(btn, val) {
+            document.getElementById('selectedJam').value = val;
+            document.querySelectorAll('.jam-btn').forEach(b => {
+                b.className = "jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm";
+            });
+            btn.className = "jam-btn bg-white border-2 border-amber-500 text-amber-600 rounded-xl p-2.5 transition group shadow-sm";
+        }
+
+        function scrollDate(direction) {
+            const container = document.getElementById('dateContainer');
+            const scrollAmount = 280;
+            if (direction === 'left') {
+                container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            } else {
+                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
         }
 
         document.addEventListener('keydown', function(e) {
