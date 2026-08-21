@@ -99,11 +99,7 @@
                 </a>
                 @foreach ($categories as $category)
                     <a
-<<<<<<< HEAD
                         href="{{ route('home', ['category' => $category->nama_kategori]) }}"
-=======
-                        href="/home?category={{ urlencode($category) }}{{ request('search') ? '&search='.urlencode(request('search')) : '' }}"
->>>>>>> f79f9517dd590f6843b4562d54481f2d94b937c3
                         class="shrink-0 px-6 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition shadow-sm
                         {{ $category->nama_kategori === $activeCategory
                             ? 'accent text-neutral-900 font-semibold'
@@ -117,7 +113,6 @@
 
         {{-- ================= GRID PRODUK ================= --}}
         <section class="mt-6 pb-14">
-<<<<<<< HEAD
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-5">
                 @forelse ($items as $item)
                     @php
@@ -140,7 +135,7 @@
                                 {{-- Tombol Membuka Tampilan Full Screen --}}
                                 <button
                                     type="button"
-                                    onclick='openModalPinjam(@json($item->nama_item), @json($image))'
+                                    onclick='openModalPinjam(@json($item->id), @json($item->nama_item), @json($item->category?->nama_kategori ?? "Tanpa kategori"), @json($item->stok_tersedia), @json($image))'
                                     @if ($item->stok_tersedia < 1) disabled @endif
                                     class="accent text-xs font-semibold text-neutral-900 px-4 py-1.5 rounded-full hover:brightness-95 transition"
                                 >
@@ -153,88 +148,10 @@
                     <p class="col-span-full text-center text-sm text-neutral-400 py-10">Belum ada item tersedia.</p>
                 @endforelse
             </div>
-=======
-            @php
-                $products = [
-                    ['id' => 1, 'category' => 'Electronics', 'name' => 'JBL speaker blends', 'stock' => '67 tersedia', 'img' => asset('images/jblspeaker.jpg')],
-                    ['id' => 2, 'category' => 'Electronics', 'name' => 'Sony headphones', 'stock' => '21 tersedia', 'img' => asset('images/headphone.jpg')],
-                    ['id' => 3, 'category' => 'Electronics', 'name' => 'iPhone 17 Pro Max', 'stock' => '32 tersedia', 'img' => asset('images/iphone.jpg')],
-                    ['id' => 4, 'category' => 'Electronics', 'name' => 'Samsung galaxy S25 Ultra', 'stock' => '7 tersedia', 'img' => asset('images/samsung.jpg')],
-                    ['id' => 5, 'category' => 'Cleaning', 'name' => 'Cordless Vacuum Cleaner', 'stock' => '9 tersedia', 'img' => asset('images/vacuum.jpg')],
-                    ['id' => 6, 'category' => 'Sports', 'name' => 'Real Madrid Home Jersey', 'stock' => '20 tersedia', 'img' => asset('images/jersey.jpg')],
-                    ['id' => 7, 'category' => 'Sports', 'name' => 'Adidas Tiro Pro', 'stock' => '147 tersedia', 'img' => asset('images/adidas.jpg')],
-                    ['id' => 8, 'category' => 'Laboratorium', 'name' => 'Mikroskop Bk', 'stock' => '6 tersedia', 'img' => asset('images/mikroskop.jpg')],
-                ];
-
-                $activeCategory = request('category', 'All item');
-                $searchKeyword = strtolower(trim(request('search', '')));
-
-                if ($activeCategory !== 'All item') {
-                    $products = array_filter($products, function ($product) use ($activeCategory) {
-                        return $product['category'] === $activeCategory;
-                    });
-                }
-
-                if (!empty($searchKeyword)) {
-                    $products = array_filter($products, function ($product) use ($searchKeyword) {
-                        return str_contains(strtolower($product['name']), $searchKeyword) ||
-                               str_contains(strtolower($product['category']), $searchKeyword);
-                    });
-                }
-            @endphp
-
-            @if(count($products) > 0)
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-5">
-                    @foreach ($products as $product)
-                        <div class="group bg-white rounded-2xl border border-neutral-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col">
-                            <div class="aspect-[4/3] bg-neutral-100 overflow-hidden">
-                                <img src="{{ $product['img'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                            </div>
-                            <div class="p-3 flex flex-col gap-0.5">
-                                <span class="text-[11px] text-neutral-400">{{ $product['category'] }}</span>
-                                <h3 class="maroon-text font-semibold text-sm leading-snug line-clamp-2">
-                                    {{ $product['name'] }}
-                                </h3>
-                                <div class="flex items-center justify-between mt-2">
-                                    <span class="text-[11px] text-neutral-400">{{ $product['stock'] }}</span>
-                                    
-                                    {{-- Tombol Membuka POP UP --}}
-                                    <button
-                                        type="button"
-                                        onclick="openModalPinjam({{ $product['id'] }}, '{{ addslashes($product['name']) }}', '{{ $product['category'] }}', '{{ $product['stock'] }}', '{{ $product['img'] }}')"
-                                        class="accent text-xs font-semibold text-neutral-900 px-4 py-1.5 rounded-full hover:brightness-95 transition"
-                                    >
-                                        Pinjam
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="text-center py-12">
-                    <p class="text-neutral-500 font-medium text-base">Barang yang kamu cari tidak ditemukan.</p>
-                </div>
-            @endif
->>>>>>> f79f9517dd590f6843b4562d54481f2d94b937c3
         </section>
 
     </main>
 
-<<<<<<< HEAD
-    {{-- ================= TAMPILAN JADWAL FULL SCREEN ================= --}}
-    <div id="modalPinjam" class="fixed inset-0 bg-white hidden z-50 overflow-y-auto">
-        <div class="w-full min-h-screen bg-white p-6 lg:p-12 flex flex-col justify-between max-w-6xl mx-auto">
-
-            <div>
-                {{-- Header --}}
-                <div class="flex items-center justify-between mb-8 pb-4 border-b border-neutral-100">
-                    <button onclick="closeModalPinjam()" type="button" class="text-neutral-400 hover:text-neutral-800 transition p-2 rounded-full hover:bg-neutral-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </button>
-=======
     {{-- ================= POP-UP MODAL JADWAL ================= --}}
     <div id="modalPinjam" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-6">
         <!-- Backdrop Overlay Gelap Transparan -->
@@ -242,7 +159,7 @@
 
         <!-- Box Container Modal dibungkus FORM -->
         <form id="formBooking" action="{{ route('peminjaman.confirm') }}" method="GET" class="relative bg-[#FAF9F5] w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto scrollbar-none">
-            
+
             {{-- Input Hidden Data Peminjaman --}}
             <input type="hidden" name="item_id" id="modalItemId">
             <input type="hidden" name="item_name" id="modalItemName">
@@ -251,7 +168,6 @@
             <input type="hidden" name="item_img" id="modalItemImgInput">
             <input type="hidden" name="tanggal" id="selectedTanggal" value="{{ \Carbon\Carbon::today()->translatedFormat('d F Y') }}">
             <input type="hidden" name="jam" id="selectedJam" value="11.00 - 12.00">
->>>>>>> f79f9517dd590f6843b4562d54481f2d94b937c3
 
             {{-- Header Pop-up --}}
             <div class="flex items-center justify-between mb-6">
@@ -288,9 +204,9 @@
                             $isFirst = $i === 0;
                         @endphp
 
-                        <button 
-                            type="button" 
-                            onclick="selectTanggal(this, '{{ $formattedValue }}')" 
+                        <button
+                            type="button"
+                            onclick="selectTanggal(this, '{{ $formattedValue }}')"
                             class="date-btn {{ $isFirst ? 'bg-[#8C1F2F] text-white' : 'bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300' }} px-4 py-2.5 rounded-xl text-center shrink-0 transition shadow-sm"
                         >
                             <div class="text-[10px] uppercase font-medium {{ $isFirst ? 'opacity-90' : 'text-neutral-500' }}">
@@ -371,15 +287,12 @@
         function openModalPinjam(id, nama, kategori, stok, gambar) {
             const modal = document.getElementById('modalPinjam');
             const imgElement = document.getElementById('modalGambarBarang');
-<<<<<<< HEAD
-=======
-            
+
             document.getElementById('modalItemId').value = id;
             document.getElementById('modalItemName').value = nama;
             document.getElementById('modalItemCategory').value = kategori;
             document.getElementById('modalItemStock').value = stok;
             document.getElementById('modalItemImgInput').value = gambar;
->>>>>>> f79f9517dd590f6843b4562d54481f2d94b937c3
 
             imgElement.src = gambar;
             imgElement.alt = nama;
@@ -390,10 +303,6 @@
 
         function closeModalPinjam() {
             const modal = document.getElementById('modalPinjam');
-<<<<<<< HEAD
-
-=======
->>>>>>> f79f9517dd590f6843b4562d54481f2d94b937c3
             modal.classList.add('hidden');
             document.body.classList.remove('overflow-hidden');
         }
