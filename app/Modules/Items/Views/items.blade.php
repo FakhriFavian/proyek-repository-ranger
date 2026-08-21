@@ -44,8 +44,10 @@
                         <thead>
                             <tr>
                                 <th width="15">No</th>
+                                <th>Foto</th>
                                 <th>Nama Item</th>
                                 <th>Deskripsi</th>
+                                <th>Stok</th>
                                 <th width="20%">Aksi</th>
                             </tr>
                         </thead>
@@ -54,8 +56,19 @@
                             @forelse ($data as $item)
                                 <tr>
                                     <td>{{ $no++ }}</td>
+                                    <td>
+                                        @if ($item->foto)
+                                            <img src="{{ asset('storage/'.$item->foto) }}" alt="{{ $item->nama_item }}" style="width: 56px; height: 56px; object-fit: cover;">
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $item->nama_item }}</td>
                                     <td>{{ $item->deskripsi }}</td>
+                                    <td>
+                                        <span>Stok</span><br>
+                                        <strong>{{ $item->stok_tersedia }} / {{ $item->stok_total }}</strong>
+                                    </td>
                                     <td>
 										{!! button('items.show','', $item->id) !!}
 										{!! button('items.edit', $title, $item->id) !!}
@@ -64,7 +77,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="2" class="text-center"><i>No data.</i></td>
+                                    <td colspan="6" class="text-center"><i>No data.</i></td>
                                 </tr>
                             @endforelse
                         </tbody>

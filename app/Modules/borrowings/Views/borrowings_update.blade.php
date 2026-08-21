@@ -46,6 +46,18 @@
                                 </div>
                             </div>
                         @endforeach
+                        <div class="row mb-3">
+                            <div class="col-md-3 text-sm-start text-md-end pt-2">
+                                <label>Item</label>
+                            </div>
+                            <div class="col-md-9 form-group">
+                                @forelse ($borrowings->details as $detail)
+                                    <div>{{ $detail->item?->nama_item ?? '-' }} — {{ $detail->jumlah }}</div>
+                                @empty
+                                    <div class="text-muted">Belum ada item.</div>
+                                @endforelse
+                            </div>
+                        </div>
                         <div class="offset-md-3 ps-2 pt-2 d-flex gap-2">
                             <button class="btn btn-primary icon icon-left" type="submit"><i class="fa fa-arrow-right"></i> Simpan</button>
                             <a href="{{ route('borrowings.index') }}" class="btn btn-outline-secondary">Batal</a>

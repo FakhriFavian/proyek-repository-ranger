@@ -8,6 +8,7 @@
     $required = $field['required'] ?? false;
     $disabled = $field['disabled'] ?? false;
     $multiple = $field['multiple'] ?? false;
+    $accept = $field['accept'] ?? null;
     $class = trim('form-control '.($field['class'] ?? ''));
     $fieldName = $multiple ? $name.'[]' : $name;
 @endphp
@@ -50,6 +51,19 @@
 
     @case('number')
         <input type="number" name="{{ $fieldName }}" id="{{ $id }}" class="{{ $class }}" value="{{ $value }}" placeholder="{{ $placeholder }}"
+            @if($required) required @endif
+            @if($disabled) disabled @endif>
+        @break
+
+    @case('file')
+        <input type="file" name="{{ $fieldName }}" id="{{ $id }}" class="{{ $class }}"
+            @if($accept) accept="{{ $accept }}" @endif
+            @if($required) required @endif
+            @if($disabled) disabled @endif>
+        @break
+
+    @case('datetime-local')
+        <input type="datetime-local" name="{{ $fieldName }}" id="{{ $id }}" class="{{ $class }}" value="{{ $value }}" placeholder="{{ $placeholder }}"
             @if($required) required @endif
             @if($disabled) disabled @endif>
         @break

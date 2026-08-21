@@ -44,8 +44,8 @@
                         <thead>
                             <tr>
                                 <th width="15">No</th>
-                                <td>Borrowing Id</td>
-								<td>Item Id</td>
+                                <td>Peminjam</td>
+                                <td>Barang</td>
 								<td>Kondisi Barang</td>
 								<td>Denda</td>
 								<td>Jumlah</td>
@@ -59,8 +59,8 @@
                             @forelse ($data as $item)
                                 <tr>
                                     <td>{{ $no++ }}</td>
-                                    <td>{{ $item->borrowing_id }}</td>
-									<td>{{ $item->item_id }}</td>
+                                    <td>{{ $item->borrowing?->user?->name ?? '-' }}</td>
+                                    <td>{{ $item->item?->nama_item ?? '-' }}</td>
 									<td>{{ $item->kondisi_barang }}</td>
 									<td>{{ $item->denda }}</td>
 									<td>{{ $item->jumlah }}</td>

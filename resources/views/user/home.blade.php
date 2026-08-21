@@ -83,20 +83,23 @@
 
         {{-- ================= FILTER KATEGORI ================= --}}
         <section class="mt-8">
-            @php
-                $categories = ['All item', 'Sports', 'Laboratorium', 'Electronics', 'Cleaning'];
-            @endphp
-
             <div class="flex justify-center items-center gap-3 overflow-x-auto scrollbar-none pb-1">
+                <a
+                    href="{{ route('home') }}"
+                    class="shrink-0 px-6 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition shadow-sm
+                    {{ $activeCategory === 'All item' ? 'accent text-neutral-900 font-semibold' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200' }}"
+                >
+                    All item
+                </a>
                 @foreach ($categories as $category)
                     <a
-                        href="/home?category={{ urlencode($category) }}"
+                        href="{{ route('home', ['category' => $category->nama_kategori]) }}"
                         class="shrink-0 px-6 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition shadow-sm
-                        {{ $category === request('category', 'All item')
+                        {{ $category->nama_kategori === $activeCategory
                             ? 'accent text-neutral-900 font-semibold'
                             : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200' }}"
                     >
-                        {{ $category }}
+                        {{ $category->nama_kategori }}
                     </a>
                 @endforeach
             </div>
@@ -105,44 +108,29 @@
         {{-- ================= GRID PRODUK ================= --}}
         <section class="mt-6 pb-14">
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-5">
-                @php
-                    $products = [
-                        ['category' => 'Electronics', 'name' => 'JBL speaker blends', 'stock' => '67 tersedia', 'img' => asset('images/jblspeaker.jpg')],
-                        ['category' => 'Electronics', 'name' => 'Sony headphones', 'stock' => '21 tersedia', 'img' => asset('images/headphone.jpg')],
-                        ['category' => 'Electronics', 'name' => 'iPhone 17 Pro Max', 'stock' => '32 tersedia', 'img' => asset('images/iphone.jpg')],
-                        ['category' => 'Electronics', 'name' => 'Samsung galaxy S25 Ultra', 'stock' => '7 tersedia', 'img' => asset('images/samsung.jpg')],
-                        ['category' => 'Cleaning', 'name' => 'Cordless Vacuum Cleaner', 'stock' => '9 tersedia', 'img' => asset('images/vacuum.jpg')],
-                        ['category' => 'Sports', 'name' => 'Real Madrid Home Jersey', 'stock' => '20 tersedia', 'img' => asset('images/jersey.jpg')],
-                        ['category' => 'Sports', 'name' => 'Adidas Tiro Pro', 'stock' => '147 tersedia', 'img' => asset('images/adidas.jpg')],
-                        ['category' => 'Laboratorium', 'name' => 'Mikroskop Bk', 'stock' => '6 tersedia', 'img' => asset('images/mikroskop.jpg')],
-                    ];
-
-                    $active = request('category', 'All item');
-
-                    if ($active !== 'All item') {
-                        $products = array_filter($products, function ($product) use ($active) {
-                            return $product['category'] === $active;
-                        });
-                    }
-                @endphp
-
-                @foreach ($products as $product)
+                @forelse ($items as $item)
+                    @php
+                        $image = $item->foto
+                            ? asset('storage/'.$item->foto)
+                            : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect width=%22400%22 height=%22300%22 fill=%22%23f5f5f5%22/%3E%3Ctext x=%22200%22 y=%22155%22 text-anchor=%22middle%22 fill=%22%23999999%22 font-family=%22Arial%22 font-size=%2220%22%3ENo%20photo%3C/text%3E%3C/svg%3E';
+                    @endphp
                     <div class="group bg-white rounded-2xl border border-neutral-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col">
                         <div class="aspect-[4/3] bg-neutral-100 overflow-hidden">
-                            <img src="{{ $product['img'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <img src="{{ $image }}" alt="{{ $item->nama_item }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                         </div>
                         <div class="p-3 flex flex-col gap-0.5">
-                            <span class="text-[11px] text-neutral-400">{{ $product['category'] }}</span>
+                            <span class="text-[11px] text-neutral-400">{{ $item->category?->nama_kategori ?? 'Tanpa kategori' }}</span>
                             <h3 class="maroon-text font-semibold text-sm leading-snug line-clamp-2">
-                                {{ $product['name'] }}
+                                {{ $item->nama_item }}
                             </h3>
                             <div class="flex items-center justify-between mt-2">
-                                <span class="text-[11px] text-neutral-400">{{ $product['stock'] }}</span>
+                                <span class="text-[11px] text-neutral-400">{{ $item->stok_tersedia }} tersedia</span>
                                 
                                 {{-- Tombol Membuka Tampilan Full Screen --}}
                                 <button
                                     type="button"
-                                    onclick="openModalPinjam('{{ addslashes($product['name']) }}', '{{ $product['img'] }}')"
+                                    onclick='openModalPinjam(@json($item->nama_item), @json($image))'
+                                    @if ($item->stok_tersedia < 1) disabled @endif
                                     class="accent text-xs font-semibold text-neutral-900 px-4 py-1.5 rounded-full hover:brightness-95 transition"
                                 >
                                     Pinjam
@@ -150,7 +138,9 @@
                             </div>
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <p class="col-span-full text-center text-sm text-neutral-400 py-10">Belum ada item tersedia.</p>
+                @endforelse
             </div>
         </section>
 

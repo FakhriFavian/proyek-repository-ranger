@@ -31,8 +31,8 @@
                 <div class="row">
                     <div class="col-lg-10 offset-lg-2">
                         <div class="row kt-detail-grid">
-                            <div class='col-lg-2'><p>Borrowing Id</p></div><div class='col-lg-10'><p class='fw-bold'>{{ $borrowing_details->borrowing_id }}</p></div>
-									<div class='col-lg-2'><p>Item Id</p></div><div class='col-lg-10'><p class='fw-bold'>{{ $borrowing_details->item_id }}</p></div>
+                                    <div class='col-lg-2'><p>Peminjam</p></div><div class='col-lg-10'><p class='fw-bold'>{{ $borrowing_details->borrowing?->user?->name ?? '-' }}</p></div>
+                                    <div class='col-lg-2'><p>Barang</p></div><div class='col-lg-10'><p class='fw-bold'>{{ $borrowing_details->item?->nama_item ?? '-' }}</p></div>
 									<div class='col-lg-2'><p>Kondisi Barang</p></div><div class='col-lg-10'><p class='fw-bold'>{{ $borrowing_details->kondisi_barang }}</p></div>
 									<div class='col-lg-2'><p>Denda</p></div><div class='col-lg-10'><p class='fw-bold'>{{ $borrowing_details->denda }}</p></div>
 									<div class='col-lg-2'><p>Jumlah</p></div><div class='col-lg-10'><p class='fw-bold'>{{ $borrowing_details->jumlah }}</p></div>

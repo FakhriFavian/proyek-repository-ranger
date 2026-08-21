@@ -3,8 +3,10 @@
 namespace App\Modules\categories\Models;
 
 use App\Helpers\UsesUuid;
+use App\Modules\Items\Models\Items;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
@@ -17,5 +19,8 @@ class categories extends Model
 	protected $table      = 'categories';
 	protected $fillable   = ['*'];
 
-	
+	public function items(): HasMany
+	{
+		return $this->hasMany(Items::class, 'category_id');
+	}
 }

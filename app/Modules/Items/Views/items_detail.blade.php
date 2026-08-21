@@ -31,7 +31,12 @@
                 <div class="row">
                     <div class="col-lg-10 offset-lg-2">
                         <div class="row kt-detail-grid">
-                            
+                            @if ($items->foto)
+                                <div class="col-lg-2"><p>Foto</p></div>
+                                <div class="col-lg-10"><img src="{{ asset('storage/'.$items->foto) }}" alt="{{ $items->nama_item }}" style="max-width: 320px; max-height: 220px; object-fit: cover;"></div>
+                            @endif
+                            <div class="col-lg-2"><p>Nama Item</p></div>
+                            <div class="col-lg-10"><p class="fw-bold">{{ $items->nama_item }}</p></div>
                         </div>
                     </div>
                 </div>

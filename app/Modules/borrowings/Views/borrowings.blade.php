@@ -44,7 +44,10 @@
                         <thead>
                             <tr>
                                 <th width="15">No</th>
-                                
+                                <th>Peminjam</th>
+                                <th>Jam Mulai</th>
+                                <th>Jam Selesai</th>
+                                <th>Status</th>
                                 <th width="20%">Aksi</th>
                             </tr>
                         </thead>
@@ -53,7 +56,10 @@
                             @forelse ($data as $item)
                                 <tr>
                                     <td>{{ $no++ }}</td>
-                                    
+                                    <td>{{ $item->user?->name ?? '-' }}</td>
+                                    <td>{{ $item->jam_mulai }}</td>
+                                    <td>{{ $item->jam_selesai }}</td>
+                                    <td>{{ ucfirst($item->status) }}</td>
                                     <td>
 										{!! button('borrowings.show','', $item->id) !!}
 										{!! button('borrowings.edit', $title, $item->id) !!}
@@ -62,7 +68,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="2" class="text-center"><i>No data.</i></td>
+                                    <td colspan="6" class="text-center"><i>No data.</i></td>
                                 </tr>
                             @endforelse
                         </tbody>

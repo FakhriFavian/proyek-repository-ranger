@@ -31,7 +31,16 @@
                 <div class="row">
                     <div class="col-lg-10 offset-lg-2">
                         <div class="row kt-detail-grid">
-                            
+                            <div class="col-lg-2"><p>Peminjam</p></div>
+                            <div class="col-lg-10"><p class="fw-bold">{{ $borrowings->user?->name ?? '-' }}</p></div>
+                            <div class="col-lg-2"><p>Jam Mulai</p></div>
+                            <div class="col-lg-10"><p class="fw-bold">{{ $borrowings->jam_mulai }}</p></div>
+                            <div class="col-lg-2"><p>Jam Selesai</p></div>
+                            <div class="col-lg-10"><p class="fw-bold">{{ $borrowings->jam_selesai }}</p></div>
+                            <div class="col-lg-2"><p>Status</p></div>
+                            <div class="col-lg-10"><p class="fw-bold">{{ ucfirst($borrowings->status) }}</p></div>
+                            <div class="col-lg-2"><p>Catatan</p></div>
+                            <div class="col-lg-10"><p class="fw-bold">{{ $borrowings->catatan_admin ?: '-' }}</p></div>
                         </div>
                     </div>
                 </div>

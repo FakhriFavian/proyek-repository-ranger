@@ -28,7 +28,7 @@
             </div>
             <div class="card-body">
                 @include('include.flash')
-                <form class="form form-horizontal" action="{{ route('items.store') }}" method="POST">
+                <form class="form form-horizontal" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
                     <div class="form-body">
                         @csrf 
                         @foreach ($forms as $key => $field)

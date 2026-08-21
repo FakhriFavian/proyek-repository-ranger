@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Modules\Items\Models\Items;
+use App\Modules\borrowings\Models\borrowings;
+use App\Modules\categories\Models\categories;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('frontend.index');
@@ -18,7 +22,23 @@ Route::middleware(['auth'])->group(function () {
 
     // Route User (Ubah name jadi 'home')
     Route::get('/home', function () {
-        return view('user.home');
+        $activeCategory = request('category', 'All item');
+        $categories = categories::where('is_active', 1)->orderBy('nama_kategori')->get();
+        $items = Items::with('category')
+            ->where('is_active', 1)
+            ->when($activeCategory !== 'All item', function ($query) use ($activeCategory) {
+                $query->whereHas('category', function ($categoryQuery) use ($activeCategory) {
+                    $categoryQuery->where('nama_kategori', $activeCategory);
+                });
+            })
+            ->orderBy('nama_item')
+            ->get();
+        $borrowings = borrowings::with('details.item')
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
+        return view('user.home', compact('categories', 'items', 'borrowings', 'activeCategory'));
     })->name('home');
 
     Route::get('/riwayat', function () {
