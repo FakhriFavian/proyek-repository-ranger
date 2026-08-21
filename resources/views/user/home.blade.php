@@ -125,7 +125,7 @@
                             </h3>
                             <div class="flex items-center justify-between mt-2">
                                 <span class="text-[11px] text-neutral-400">{{ $item->stok_tersedia }} tersedia</span>
-                                
+
                                 {{-- Tombol Membuka Tampilan Full Screen --}}
                                 <button
                                     type="button"
@@ -149,7 +149,7 @@
     {{-- ================= TAMPILAN JADWAL FULL SCREEN ================= --}}
     <div id="modalPinjam" class="fixed inset-0 bg-white hidden z-50 overflow-y-auto">
         <div class="w-full min-h-screen bg-white p-6 lg:p-12 flex flex-col justify-between max-w-6xl mx-auto">
-            
+
             <div>
                 {{-- Header --}}
                 <div class="flex items-center justify-between mb-8 pb-4 border-b border-neutral-100">
@@ -256,7 +256,7 @@
         function openModalPinjam(nama, gambar) {
             const modal = document.getElementById('modalPinjam');
             const imgElement = document.getElementById('modalGambarBarang');
-            
+
             imgElement.src = gambar;
             imgElement.alt = nama;
 
@@ -266,7 +266,7 @@
 
         function closeModalPinjam() {
             const modal = document.getElementById('modalPinjam');
-            
+
             modal.classList.add('hidden');
             document.body.classList.remove('overflow-hidden');
         }

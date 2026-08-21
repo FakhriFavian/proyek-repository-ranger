@@ -45,7 +45,7 @@ class borrowing_detailsController extends Controller
 			return [$borrowing->id => $borrowing->id.' - '.$userName.' - '.$borrowing->jam_mulai];
 		});
 		$ref_items = Items::where('is_active', 1)->orderBy('nama_item')->pluck('nama_item', 'id');
-		
+
 		$data['forms'] = array(
 			'borrowing_id' => ['label' => 'Peminjaman', 'type' => 'select', 'value' => old("borrowing_id"), 'required' => true, 'options' => $ref_borrowings->all(), 'class' => 'select2'],
 			'item_id' => ['label' => 'Barang', 'type' => 'select', 'value' => old("item_id"), 'required' => true, 'options' => $ref_items->all(), 'class' => 'select2'],
@@ -53,7 +53,7 @@ class borrowing_detailsController extends Controller
 			'denda' => ['label' => 'Denda', 'type' => 'number', 'value' => old("denda"), 'required' => true],
 			'jumlah' => ['label' => 'Jumlah', 'type' => 'number', 'value' => old("jumlah"), 'required' => true, 'min' => 1],
 			'catatan' => ['label' => 'Catatan', 'type' => 'textarea', 'value' => old("catatan"), 'required' => false],
-			
+
 		);
 
 		$this->log($request, 'membuka form tambah '.$this->title);
@@ -69,7 +69,7 @@ class borrowing_detailsController extends Controller
 			'denda' => 'required|integer|min:0',
 			'jumlah' => 'required|integer|min:1',
 			'catatan' => 'nullable|string',
-			
+
 		]);
 
 		$borrowing = Borrowing::findOrFail($request->input('borrowing_id'));
@@ -84,7 +84,7 @@ class borrowing_detailsController extends Controller
 		$borrowing_details->denda = $request->input("denda");
 		$borrowing_details->jumlah = $request->input("jumlah");
 		$borrowing_details->catatan = $request->input("catatan");
-		
+
 		$borrowing_details->created_by = Auth::id();
 		$borrowing_details->save();
 
@@ -114,7 +114,7 @@ class borrowing_detailsController extends Controller
 			->orWhere('id', $borrowing_details->item_id)
 			->orderBy('nama_item')
 			->pluck('nama_item', 'id');
-		
+
 		$data['forms'] = array(
 			'borrowing_id' => ['label' => 'Peminjaman', 'type' => 'select', 'value' => $borrowing_details->borrowing_id, 'required' => true, 'options' => $ref_borrowings->all(), 'class' => 'select2', 'id' => 'borrowing_id'],
 			'item_id' => ['label' => 'Barang', 'type' => 'select', 'value' => $borrowing_details->item_id, 'required' => true, 'options' => $ref_items->all(), 'class' => 'select2', 'id' => 'item_id'],
@@ -122,7 +122,7 @@ class borrowing_detailsController extends Controller
 			'denda' => ['label' => 'Denda', 'type' => 'number', 'value' => $borrowing_details->denda, 'required' => true, 'id' => 'denda'],
 			'jumlah' => ['label' => 'Jumlah', 'type' => 'number', 'value' => $borrowing_details->jumlah, 'required' => true, 'min' => 1, 'id' => 'jumlah'],
 			'catatan' => ['label' => 'Catatan', 'type' => 'textarea', 'value' => $borrowing_details->catatan, 'required' => false, 'id' => 'catatan'],
-			
+
 		);
 
 		$text = 'membuka form edit '.$this->title;//.' '.$borrowing_details->what;
@@ -139,7 +139,7 @@ class borrowing_detailsController extends Controller
 			'denda' => 'required|integer|min:0',
 			'jumlah' => 'required|integer|min:1',
 			'catatan' => 'nullable|string',
-			
+
 		]);
 
 		$borrowing_details = borrowing_details::findOrFail($id);

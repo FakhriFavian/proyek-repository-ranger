@@ -37,7 +37,7 @@
 									<div class='col-lg-2'><p>Denda</p></div><div class='col-lg-10'><p class='fw-bold'>{{ $borrowing_details->denda }}</p></div>
 									<div class='col-lg-2'><p>Jumlah</p></div><div class='col-lg-10'><p class='fw-bold'>{{ $borrowing_details->jumlah }}</p></div>
 									<div class='col-lg-2'><p>Catatan</p></div><div class='col-lg-10'><p class='fw-bold'>{{ $borrowing_details->catatan }}</p></div>
-									
+
                         </div>
                     </div>
                 </div>

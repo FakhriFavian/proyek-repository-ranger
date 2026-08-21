@@ -50,7 +50,7 @@
 								<td>Denda</td>
 								<td>Jumlah</td>
 								<td>Catatan</td>
-								
+
                                 <th width="20%">Aksi</th>
                             </tr>
                         </thead>
@@ -65,7 +65,7 @@
 									<td>{{ $item->denda }}</td>
 									<td>{{ $item->jumlah }}</td>
 									<td>{{ $item->catatan }}</td>
-									
+
                                     <td>
 										{!! button('borrowing_details.show','', $item->id) !!}
 										{!! button('borrowing_details.edit', $title, $item->id) !!}

@@ -30,7 +30,7 @@
                 @include('include.flash')
                 <form class="form form-horizontal" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
                     <div class="form-body">
-                        @csrf 
+                        @csrf
                         @foreach ($forms as $key => $field)
                             <div class="row mb-3">
                                 <div class="col-md-3 text-sm-start text-md-end pt-2">
