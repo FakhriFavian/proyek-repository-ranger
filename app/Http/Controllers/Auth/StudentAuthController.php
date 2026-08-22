@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\StudentLoginRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,19 +13,15 @@ use Illuminate\View\View;
 
 class StudentAuthController extends Controller
 {
-    public function create(StudentLoginRequest $request): View
+    public function create(): View
     {
-        return view('user.login', [
-            'itemId' => $request->query('item_id'),
-            'tanggal' => $request->query('tanggal'),
-            'jam' => $request->query('jam'),
-            'jumlah' => $request->query('jumlah', 1),
-        ]);
+        return view('user.login');
     }
 
     public function store(StudentLoginRequest $request): RedirectResponse
     {
-        $user = \App\Models\User::where('identitas', $request->input('nis'))
+        $user = User::query()
+            ->where('identitas', $request->input('nis'))
             ->whereHas('roleuser', function ($query) {
                 $query->whereRaw('LOWER(role.role) = ?', ['siswa']);
             })
@@ -39,11 +36,6 @@ class StudentAuthController extends Controller
         Auth::guard('student')->login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('peminjaman.confirm', array_filter([
-            'item_id' => $request->input('item_id'),
-            'tanggal' => $request->input('tanggal'),
-            'jam' => $request->input('jam'),
-            'jumlah' => $request->input('jumlah'),
-        ]));
+        return redirect()->intended(route('peminjaman.confirm'));
     }
 }

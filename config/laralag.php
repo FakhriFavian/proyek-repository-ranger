@@ -1,7 +1,7 @@
 <?php
 
 return [
-	'module_exception' => ['login', 'user', 'register', 'password', 'verification', 'logout', // auth
+	'module_exception' => ['login', 'register', 'password', 'verification', 'logout', // auth
 							'dashboard', 'frontend', 'profile'],
 
 	'translate_action' => [

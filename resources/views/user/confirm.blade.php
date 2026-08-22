@@ -71,6 +71,7 @@
 
                                 <div class="pt-3 text-sm">
                                     <div><span class="font-semibold text-slate-400">Peminjam</span><span class="font-bold text-neutral-800 block">{{ $user->name }}</span></div>
+                                    <div class="mt-2"><span class="font-semibold text-slate-400">NIS</span><span class="font-bold text-neutral-800 block">{{ $user->identitas }}</span></div>
                                     <div class="mt-2"><span class="font-semibold text-slate-400">Kelas</span><span class="font-bold text-neutral-800 block">{{ $user->kelas ?? '-' }}</span></div>
                                 </div>
                             </div>

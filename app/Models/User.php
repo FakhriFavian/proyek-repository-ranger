@@ -6,7 +6,6 @@ use App\Helpers\Format;
 use App\Helpers\UsesUuid;
 use App\Modules\Role\Models\Role;
 use App\Modules\UserRole\Models\UserRole;
-use App\Modules\borrowings\Models\borrowings;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -16,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'username', 'email', 'password', 'identitas'])]
+#[Fillable(['name', 'username', 'email', 'password', 'identitas', 'kelas'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -54,8 +53,4 @@ class User extends Authenticatable
         return $this->hasManyThrough(Role::class, UserRole::class, 'id_user', 'id', 'id', 'id_role');
     }
 
-    public function borrowings()
-    {
-        return $this->hasMany(borrowings::class, 'user_id');
-    }
 }
