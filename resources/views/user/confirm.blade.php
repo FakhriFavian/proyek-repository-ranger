@@ -47,14 +47,14 @@
                         <div class="flex flex-col sm:flex-row gap-6 items-start">
                             {{-- Gambar Barang --}}
                             <div class="w-full sm:w-72 h-44 bg-neutral-100 rounded-2xl overflow-hidden shrink-0">
-                                <img src="{{ $item['img'] ?? asset('images/vacuum.jpg') }}" alt="{{ $item['name'] ?? 'Barang' }}" class="w-full h-full object-cover">
+                                <img src="{{ $item['img'] }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover">
                             </div>
 
                             {{-- Info Barang --}}
                             <div class="space-y-2">
-                                <span class="text-sm font-semibold text-slate-400 block">{{ $item['category'] ?? 'Cleaning' }}</span>
+                                <span class="text-sm font-semibold text-slate-400 block">{{ $item['category'] }}</span>
                                 <h3 class="font-extrabold text-2xl sm:text-3xl text-neutral-900 leading-tight">
-                                    {{ $item['name'] ?? 'Cordless Vacuum Cleaner' }}
+                                    {{ $item['name'] }}
                                 </h3>
                                 
                                 <div class="flex items-center gap-3 pt-2">
@@ -65,8 +65,13 @@
                                         Tersedia
                                     </span>
                                     <span class="bg-[#FF9F0A] text-white text-sm font-bold px-4 py-1.5 rounded-full shadow-sm">
-                                        {{ $item['stock'] ?? '9/12' }}
+                                        {{ $item['stock'] }} tersedia
                                     </span>
+                                </div>
+
+                                <div class="pt-3 text-sm">
+                                    <div><span class="font-semibold text-slate-400">Peminjam</span><span class="font-bold text-neutral-800 block">{{ $user->name }}</span></div>
+                                    <div class="mt-2"><span class="font-semibold text-slate-400">Kelas</span><span class="font-bold text-neutral-800 block">{{ $user->kelas ?? '-' }}</span></div>
                                 </div>
                             </div>
                         </div>
@@ -117,11 +122,11 @@
                         <div class="space-y-3 text-xs sm:text-sm">
                             <div>
                                 <span class="text-slate-400 block font-medium">Barang</span>
-                                <span class="font-extrabold text-neutral-900">{{ $item['name'] ?? 'Cordless Vacuum Cleaner' }}</span>
+                                <span class="font-extrabold text-neutral-900">{{ $item['name'] }}</span>
                             </div>
                             <div>
                                 <span class="text-slate-400 block font-medium">Kategori</span>
-                                <span class="font-bold text-neutral-800">{{ $item['category'] ?? 'Cleaning' }}</span>
+                                <span class="font-bold text-neutral-800">{{ $item['category'] }}</span>
                             </div>
                             <div>
                                 <span class="text-slate-400 block font-medium">Tanggal</span>
@@ -133,12 +138,20 @@
                             </div>
                             <div>
                                 <span class="text-slate-400 block font-medium">Ketersediaan</span>
-                                <span class="text-[#34C759] font-extrabold flex items-center gap-1.5 mt-0.5">
+                                <span class="{{ $item['stock'] > 0 ? 'text-[#34C759]' : 'text-rose-500' }} font-extrabold flex items-center gap-1.5 mt-0.5">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                     </svg>
-                                    Tersedia
+                                    {{ $item['stock'] > 0 ? $item['stock'].' tersedia' : 'Tidak tersedia' }}
                                 </span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block font-medium">Jumlah yang ingin dipinjam</span>
+                                <div class="flex items-center gap-3 mt-1">
+                                    <button type="button" onclick="ubahJumlah(-1)" class="w-8 h-8 rounded-full bg-neutral-200 text-neutral-700 font-bold">-</button>
+                                    <input id="jumlah" name="jumlah" type="number" value="{{ $jumlah }}" min="1" max="{{ $item['stock'] }}" required class="w-14 text-center font-extrabold text-neutral-800 border border-neutral-200 rounded-lg py-1">
+                                    <button type="button" onclick="ubahJumlah(1)" class="w-8 h-8 rounded-full bg-neutral-200 text-neutral-700 font-bold">+</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -156,13 +169,21 @@
 
             {{-- Tombol Mulai Meminjam Full Width --}}
             <div class="mt-6">
-                <button type="submit" class="bg-orange-accent text-white font-extrabold w-full py-4 rounded-2xl text-center uppercase tracking-wider text-base hover:brightness-95 transition shadow-[0_4px_20px_rgba(255,153,0,0.35)]">
+                <button type="submit" {{ $item['stock'] < 1 ? 'disabled' : '' }} class="bg-orange-accent text-white font-extrabold w-full py-4 rounded-2xl text-center uppercase tracking-wider text-base hover:brightness-95 transition shadow-[0_4px_20px_rgba(255,153,0,0.35)] disabled:opacity-50 disabled:cursor-not-allowed">
                     MULAI MEMINJAM
                 </button>
             </div>
         </form>
 
     </div>
+
+    <script>
+        function ubahJumlah(perubahan) {
+            const input = document.getElementById('jumlah');
+            const nilai = Math.min(Math.max((parseInt(input.value, 10) || 1) + perubahan, 1), parseInt(input.max, 10));
+            input.value = nilai;
+        }
+    </script>
 
 </body>
 </html>

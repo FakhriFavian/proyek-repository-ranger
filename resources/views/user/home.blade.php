@@ -168,6 +168,7 @@
             <input type="hidden" name="item_img" id="modalItemImgInput">
             <input type="hidden" name="tanggal" id="selectedTanggal" value="{{ \Carbon\Carbon::today()->translatedFormat('d F Y') }}">
             <input type="hidden" name="jam" id="selectedJam" value="11.00 - 12.00">
+            <input type="hidden" name="jumlah" value="1">
 
             {{-- Header Pop-up --}}
             <div class="flex items-center justify-between mb-6">

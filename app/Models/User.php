@@ -6,6 +6,7 @@ use App\Helpers\Format;
 use App\Helpers\UsesUuid;
 use App\Modules\Role\Models\Role;
 use App\Modules\UserRole\Models\UserRole;
+use App\Modules\borrowings\Models\borrowings;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -51,5 +52,10 @@ class User extends Authenticatable
     public function roleuser()
     {
         return $this->hasManyThrough(Role::class, UserRole::class, 'id_user', 'id', 'id', 'id_role');
+    }
+
+    public function borrowings()
+    {
+        return $this->hasMany(borrowings::class, 'user_id');
     }
 }

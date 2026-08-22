@@ -44,7 +44,7 @@
                     </div>
                     <div>
                         <p class="text-xs text-slate-400 font-medium">Total peminjaman</p>
-                        <p class="text-sm font-bold text-slate-700">2 kali</p>
+                        <p class="text-sm font-bold text-slate-700">{{ $stats['total'] }} kali</p>
                     </div>
                 </div>
 
@@ -52,7 +52,7 @@
                 <div class="flex items-center justify-center gap-3 px-2 pt-3 sm:pt-0">
                     <div class="text-center">
                         <p class="text-xs text-slate-400 font-medium">Disetujui</p>
-                        <p class="text-base font-extrabold text-emerald-500">2</p>
+                        <p class="text-base font-extrabold text-emerald-500">{{ $stats['disetujui'] }}</p>
                     </div>
                 </div>
 
@@ -60,7 +60,7 @@
                 <div class="flex items-center justify-center gap-3 px-2 pt-3 sm:pt-0">
                     <div class="text-center">
                         <p class="text-xs text-slate-400 font-medium">Ditolak</p>
-                        <p class="text-base font-extrabold text-rose-500">0</p>
+                        <p class="text-base font-extrabold text-rose-500">{{ $stats['ditolak'] }}</p>
                     </div>
                 </div>
 
@@ -68,7 +68,7 @@
                 <div class="flex items-center justify-center gap-3 px-2 pt-3 sm:pt-0">
                     <div class="text-center">
                         <p class="text-xs text-slate-400 font-medium">Dikembalikan</p>
-                        <p class="text-base font-extrabold text-slate-700">2</p>
+                        <p class="text-base font-extrabold text-slate-700">{{ $stats['dikembalikan'] }}</p>
                     </div>
                 </div>
 
@@ -83,38 +83,13 @@
             <div class="col-span-3 text-right">Barang</div>
         </div>
 
-        {{-- Logika Penanganan Halaman (Page 1 vs Page 2) --}}
-        @php
-            $currentPage = request('page', 1);
-
-            $page1 = [
-                ['date' => '30 Agu 2026', 'time' => '9.00', 'status' => 'Booking', 'status_bg' => 'bg-cyan-100 text-cyan-600', 'icon_bg' => 'bg-cyan-100 text-cyan-500', 'icon' => 'clipboard', 'title' => 'Permintaan peminjaman dibuat', 'desc' => 'Permintaan peminjaman berhasil dibuat', 'item' => 'Cordless Vacuum Cleaner', 'category' => 'Cleaning', 'cat_bg' => 'bg-cyan-100 text-cyan-600'],
-                ['date' => '30 Agu 2026', 'time' => '9.00', 'status' => 'Ditinjau', 'status_bg' => 'bg-amber-100 text-amber-600', 'icon_bg' => 'bg-amber-100 text-amber-500', 'icon' => 'search', 'title' => 'Sedang ditinjau', 'desc' => 'Admin sedang memeriksa permintaan peminjaman anda', 'item' => 'Cordless Vacuum Cleaner', 'category' => 'Cleaning', 'cat_bg' => 'bg-cyan-100 text-cyan-600'],
-                ['date' => '30 Agu 2026', 'time' => '9.00', 'status' => 'Disetujui', 'status_bg' => 'bg-emerald-100 text-emerald-600', 'icon_bg' => 'bg-emerald-100 text-emerald-500', 'icon' => 'check', 'title' => 'Permintaan disetujui', 'desc' => 'Permintaan peminjaman telah disetujui oleh admin', 'item' => 'Cordless Vacuum Cleaner', 'category' => 'Cleaning', 'cat_bg' => 'bg-cyan-100 text-cyan-600'],
-                ['date' => '30 Agu 2026', 'time' => '9.00', 'status' => 'Dipinjam', 'status_bg' => 'bg-purple-100 text-purple-600', 'icon_bg' => 'bg-purple-100 text-purple-500', 'icon' => 'bag', 'title' => 'Barang dipinjam', 'desc' => 'Barang telah diambil oleh peminjam', 'item' => 'Cordless Vacuum Cleaner', 'category' => 'Cleaning', 'cat_bg' => 'bg-cyan-100 text-cyan-600'],
-                ['date' => '30 Agu 2026', 'time' => '9.00', 'status' => 'Dikembalikan', 'status_bg' => 'bg-slate-200 text-slate-600', 'icon_bg' => 'bg-slate-200 text-slate-500', 'icon' => 'download', 'title' => 'Barang dikembalikan', 'desc' => 'Barang telah dikembalikan dalam kondisi baik.', 'item' => 'Cordless Vacuum Cleaner', 'category' => 'Cleaning', 'cat_bg' => 'bg-cyan-100 text-cyan-600'],
-                ['date' => '30 Agu 2026', 'time' => '9.00', 'status' => 'Selesai', 'status_bg' => 'bg-lime-100 text-lime-700', 'icon_bg' => 'bg-lime-100 text-lime-600', 'icon' => 'check-double', 'title' => 'Peminjaman Selesai', 'desc' => 'Proses peminjaman telah selesai', 'item' => 'Cordless Vacuum Cleaner', 'category' => 'Cleaning', 'cat_bg' => 'bg-cyan-100 text-cyan-600'],
-            ];
-
-            $page2 = [
-                ['date' => '3 Sep 2026', 'time' => '13.00', 'status' => 'Booking', 'status_bg' => 'bg-cyan-100 text-cyan-600', 'icon_bg' => 'bg-cyan-100 text-cyan-500', 'icon' => 'clipboard', 'title' => 'Permintaan peminjaman dibuat', 'desc' => 'Permintaan peminjaman berhasil dibuat', 'item' => 'JBL speaker blends', 'category' => 'Elektronik', 'cat_bg' => 'bg-pink-100 text-pink-600'],
-                ['date' => '3 Sep 2026', 'time' => '13.00', 'status' => 'Ditinjau', 'status_bg' => 'bg-amber-100 text-amber-600', 'icon_bg' => 'bg-amber-100 text-amber-500', 'icon' => 'search', 'title' => 'Sedang ditinjau', 'desc' => 'Admin sedang memeriksa permintaan peminjaman anda', 'item' => 'JBL speaker blends', 'category' => 'Elektronik', 'cat_bg' => 'bg-pink-100 text-pink-600'],
-                ['date' => '3 Sep 2026', 'time' => '13.00', 'status' => 'Disetujui', 'status_bg' => 'bg-emerald-100 text-emerald-600', 'icon_bg' => 'bg-emerald-100 text-emerald-500', 'icon' => 'check', 'title' => 'Permintaan disetujui', 'desc' => 'Permintaan peminjaman telah disetujui oleh admin', 'item' => 'JBL speaker blends', 'category' => 'Elektronik', 'cat_bg' => 'bg-pink-100 text-pink-600'],
-                ['date' => '30 Agu 2026', 'time' => '13.00', 'status' => 'Dipinjam', 'status_bg' => 'bg-purple-100 text-purple-600', 'icon_bg' => 'bg-purple-100 text-purple-500', 'icon' => 'bag', 'title' => 'Barang dipinjam', 'desc' => 'Barang telah diambil oleh peminjam', 'item' => 'JBL speaker blends', 'category' => 'Elektronik', 'cat_bg' => 'bg-pink-100 text-pink-600'],
-                ['date' => '3 Sep 2026', 'time' => '13.00', 'status' => 'Dikembalikan', 'status_bg' => 'bg-slate-200 text-slate-600', 'icon_bg' => 'bg-slate-200 text-slate-500', 'icon' => 'download', 'title' => 'Barang dikembalikan', 'desc' => 'Barang telah dikembalikan dalam kondisi baik.', 'item' => 'JBL speaker blends', 'category' => 'Elektronik', 'cat_bg' => 'bg-pink-100 text-pink-600'],
-                ['date' => '3 Sep 2026', 'time' => '13.00', 'status' => 'Selesai', 'status_bg' => 'bg-lime-100 text-lime-700', 'icon_bg' => 'bg-lime-100 text-lime-600', 'icon' => 'check-double', 'title' => 'Peminjaman Selesai', 'desc' => 'Proses peminjaman telah selesai', 'item' => 'JBL speaker blends', 'category' => 'Elektronik', 'cat_bg' => 'bg-pink-100 text-pink-600'],
-            ];
-
-            $timeline = ($currentPage == 2) ? $page2 : $page1;
-        @endphp
-
         {{-- ================= TIMELINE CONTAINER ================= --}}
         <div class="relative space-y-4">
 
             {{-- Garis Putus-putus Vertical Timeline --}}
             <div class="hidden md:block absolute left-[21.5%] top-6 bottom-6 w-0 border-l-2 border-dashed border-slate-200 z-0"></div>
 
-            @foreach ($timeline as $step)
+            @forelse ($timeline as $step)
                 <div class="relative z-10 bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm hover:shadow-md transition">
                     <div class="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
 
@@ -154,6 +129,7 @@
                         {{-- Barang & Kategori --}}
                         <div class="md:col-span-3 md:text-right border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 md:pl-4">
                             <p class="font-bold text-slate-800 text-xs sm:text-sm">{{ $step['item'] }}</p>
+                            <p class="text-xs text-slate-400 mt-1">Jumlah: {{ $step['jumlah'] }}</p>
                             <span class="inline-block mt-1 px-3 py-0.5 rounded-full {{ $step['cat_bg'] }} text-[10px] font-semibold">
                                 {{ $step['category'] }}
                             </span>
@@ -161,7 +137,9 @@
 
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 text-center text-sm text-slate-400">Belum ada riwayat peminjaman.</div>
+            @endforelse
 
         </div>
 
@@ -169,9 +147,9 @@
         <div class="flex justify-end gap-2 mt-6">
             {{-- Panah Kiri (Halaman Sebelumnya) --}}
             <a
-                href="{{ url('/riwayat?page=1') }}"
+                href="{{ $borrowings->previousPageUrl() ?? '#' }}"
                 class="w-10 h-10 rounded-xl flex items-center justify-center transition shadow-sm
-                {{ $currentPage == 1 ? 'bg-slate-200 text-slate-400 cursor-not-allowed pointer-events-none' : 'bg-slate-200 hover:bg-slate-300 text-slate-700' }}"
+                {{ $borrowings->onFirstPage() ? 'bg-slate-200 text-slate-400 cursor-not-allowed pointer-events-none' : 'bg-slate-200 hover:bg-slate-300 text-slate-700' }}"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -180,9 +158,9 @@
 
             {{-- Panah Kanan (Halaman Selanjutnya) --}}
             <a
-                href="{{ url('/riwayat?page=2') }}"
+                href="{{ $borrowings->nextPageUrl() ?? '#' }}"
                 class="w-10 h-10 rounded-xl flex items-center justify-center transition shadow-sm
-                {{ $currentPage == 2 ? 'bg-slate-200 text-slate-400 cursor-not-allowed pointer-events-none' : 'bg-slate-200 hover:bg-slate-300 text-slate-700' }}"
+                {{ !$borrowings->hasMorePages() ? 'bg-slate-200 text-slate-400 cursor-not-allowed pointer-events-none' : 'bg-slate-200 hover:bg-slate-300 text-slate-700' }}"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />

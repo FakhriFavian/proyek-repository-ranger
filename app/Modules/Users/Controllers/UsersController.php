@@ -33,6 +33,7 @@ class UsersController extends Controller
 			'email' => ['label' => 'Email', 'type' => 'text', 'value' => old('email'), 'required' => true],
 			'password' => ['label' => 'Password', 'type' => 'password', 'required' => true],
 			'identitas' => ['label' => 'Kode Identitas', 'type' => 'text', 'value' => old('identitas'), 'placeholder' => 'NIM,NIP,NRP,NIK,dll', 'required' => true],
+			'kelas' => ['label' => 'Kelas', 'type' => 'text', 'value' => old('kelas'), 'required' => false],
 			'roles' => ['label' => 'Role', 'type' => 'select', 'value' => null, 'options' => $roles->all(), 'multiple' => true, 'class' => 'multi-select2', 'required' => true],
 		);
 		return view('Users::form_create', array_merge($data, ['title' => $this->title]));
@@ -55,6 +56,7 @@ class UsersController extends Controller
 		$users->email = $request->input("email");
 		$users->password = bcrypt($request->input("password"));
 		$users->identitas = $request->input("identitas");
+		$users->kelas = $request->input("kelas");
 		$users->created_by = Auth::id();
 		$users->save();
 
@@ -80,6 +82,7 @@ class UsersController extends Controller
 			'email' => ['label' => 'Email', 'type' => 'text', 'value' => $user->email, 'required' => true],
 			'password' => ['label' => 'Password', 'type' => 'password', 'placeholder' => 'Kosongkan jika tidak ingin mengubah'],
 			'identitas' => ['label' => 'Kode Identitas', 'type' => 'text', 'value' => $user->identitas],
+			'kelas' => ['label' => 'Kelas', 'type' => 'text', 'value' => $user->kelas],
 			'roles' => ['label' => 'Role', 'type' => 'select', 'value' => $selected_roles->all(), 'options' => $roles->all(), 'multiple' => true, 'class' => 'multi-select2', 'required' => true],
 		);
 
@@ -94,6 +97,7 @@ class UsersController extends Controller
 			'password' => 'nullable',
 			'username' => 'required',
 			'identitas' => 'nullable',
+			'kelas' => 'nullable|string|max:255',
 			'roles' => 'required|array',
 		);
 		$this->validate($request, $validation);
@@ -104,6 +108,7 @@ class UsersController extends Controller
 		$users->password = empty($request->input("password")) ? $users->password : bcrypt($request->input("password"));
 		$users->username = $request->input("username");
 		$users->identitas = $request->input("identitas");
+		$users->kelas = $request->input("kelas");
 		$users->updated_by = Auth::user()->id;
 		$users->save();
 
