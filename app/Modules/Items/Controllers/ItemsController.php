@@ -43,7 +43,7 @@ class ItemsController extends Controller
 			'nama_item' => ['label' => 'Nama Item', 'type' => 'text', 'value' => old('nama_item'), 'required' => true],
 			'category_id' => ['label' => 'Kategori', 'type' => 'select', 'value' => old('category_id'), 'options' => $ref_categories->all(), 'required' => true, 'class' => 'select2'],
 			'deskripsi' => ['label' => 'Deskripsi', 'type' => 'textarea', 'value' => old('deskripsi'), 'required' => false],
-			'foto' => ['label' => 'Foto', 'type' => 'file', 'required' => false, 'accept' => 'image/jpeg,image/png'],
+			'foto' => ['label' => 'Foto', 'type' => 'file', 'required' => false, 'accept' => 'image/jpeg,image/png,image/webp'],
 			'stok_total' => ['label' => 'Stok Total', 'type' => 'number', 'value' => old('stok_total'), 'required' => true, 'min' => 0],
 			'stok_tersedia' => ['label' => 'Stok Tersedia', 'type' => 'number', 'value' => old('stok_tersedia'), 'required' => false, 'min' => 0],
 			'is_active' => ['label' => 'Is Active', 'type' => 'select', 'value' => old('is_active', 1), 'options' => ['1' => 'Ya', '0' => 'Tidak'], 'required' => true],
@@ -58,12 +58,13 @@ class ItemsController extends Controller
 		if (!$request->filled('stok_tersedia')) {
 			$request->merge(['stok_tersedia' => $request->input('stok_total')]);
 		}
+		$this->rejectFailedUpload($request);
 
 		$this->validate($request, [
 			'nama_item' => 'required|string',
 			'category_id' => 'required|exists:categories,id',
 			'deskripsi' => 'nullable|string',
-			'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+			'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:51200',
 			'stok_total' => 'required|integer|min:0',
 			'stok_tersedia' => 'required|integer|min:0|lte:stok_total',
 			'is_active' => 'required|in:0,1',
@@ -105,7 +106,7 @@ class ItemsController extends Controller
 			'nama_item' => ['label' => 'Nama Item', 'type' => 'text', 'value' => $items->nama_item, 'required' => true, 'id' => 'nama_item'],
 			'category_id' => ['label' => 'Kategori', 'type' => 'select', 'value' => $items->category_id, 'options' => $ref_categories->all(), 'required' => true, 'class' => 'select2', 'id' => 'category_id'],
 			'deskripsi' => ['label' => 'Deskripsi', 'type' => 'textarea', 'value' => $items->deskripsi, 'required' => false, 'id' => 'deskripsi'],
-			'foto' => ['label' => 'Foto Baru', 'type' => 'file', 'required' => false, 'accept' => 'image/jpeg,image/png', 'id' => 'foto'],
+			'foto' => ['label' => 'Foto Baru', 'type' => 'file', 'required' => false, 'accept' => 'image/jpeg,image/png,image/webp', 'id' => 'foto'],
 			'stok_total' => ['label' => 'Stok Total', 'type' => 'number', 'value' => $items->stok_total, 'required' => true, 'min' => 0, 'id' => 'stok_total'],
 			'is_active' => ['label' => 'Is Active', 'type' => 'select', 'value' => $items->is_active, 'options' => ['1' => 'Ya', '0' => 'Tidak'], 'required' => true, 'id' => 'is_active'],
 		);
@@ -117,11 +118,12 @@ class ItemsController extends Controller
 
 	public function update(Request $request, $id)
 	{
+		$this->rejectFailedUpload($request);
 		$this->validate($request, [
 			'nama_item' => 'required|string',
 			'category_id' => 'required|exists:categories,id',
 			'deskripsi' => 'nullable|string',
-			'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+			'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:51200',
 			'stok_total' => 'required|integer|min:0',
 			'is_active' => 'required|in:0,1',
 		]);
@@ -150,6 +152,25 @@ class ItemsController extends Controller
 		$text = 'mengedit '.$this->title;//.' '.$items->what;
 		$this->log($request, $text, ['items.id' => $items->id]);
 		return redirect()->route('items.index')->with('message_success', 'Items berhasil diubah!');
+	}
+
+	private function rejectFailedUpload(Request $request): void
+	{
+		$file = $request->file('foto');
+		if (!$file || $file->isValid()) {
+			return;
+		}
+
+		$message = match ($file->getError()) {
+			UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'Ukuran foto melebihi batas upload server.',
+			UPLOAD_ERR_PARTIAL => 'Upload foto terputus. Silakan pilih foto dan coba lagi.',
+			UPLOAD_ERR_NO_TMP_DIR => 'Folder temporary upload PHP tidak tersedia.',
+			UPLOAD_ERR_CANT_WRITE => 'PHP tidak dapat menulis file upload ke disk.',
+			UPLOAD_ERR_EXTENSION => 'Upload foto dihentikan oleh ekstensi PHP.',
+			default => 'Foto gagal di-upload. Pastikan file benar-benar dipilih dan berformat JPG, PNG, atau WEBP.',
+		};
+
+		throw \Illuminate\Validation\ValidationException::withMessages(['foto' => $message]);
 	}
 
 	public function destroy(Request $request, $id)
