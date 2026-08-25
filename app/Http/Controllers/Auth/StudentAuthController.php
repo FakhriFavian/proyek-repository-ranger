@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\StudentLoginRequest;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -13,8 +14,17 @@ use Illuminate\View\View;
 
 class StudentAuthController extends Controller
 {
-    public function create(): View
+    public function create(Request $request): View
     {
+        $parameters = $request->only(['item_id', 'tanggal', 'jam', 'jumlah']);
+
+        if (count($parameters) === 4) {
+            $request->session()->put(
+                'url.intended',
+                route('peminjaman.confirm', $parameters)
+            );
+        }
+
         return view('user.login');
     }
 
