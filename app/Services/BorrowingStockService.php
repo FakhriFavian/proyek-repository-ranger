@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Modules\Items\Models\Items;
 use App\Modules\borrowings\Models\borrowings;
 use App\Modules\borrowing_details\Models\borrowing_details;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -35,8 +36,18 @@ class BorrowingStockService
             if ($oldStatus !== $newStatus) {
                 if ($oldStatus === 'menunggu' && $newStatus === 'dipinjam') {
                     $this->adjustBorrowingStock($lockedBorrowing, -1);
+
+                    // Rekam momen barang benar-benar berstatus dipinjam.
+                    // Kolom ini sudah ada di schema namun sebelumnya tidak pernah diisi.
+                    $lockedBorrowing->tanggal_approval = now();
+                    if (!empty($attributes['updated_by'])) {
+                        $lockedBorrowing->approved_by = $attributes['updated_by'];
+                        $lockedBorrowing->diproses_oleh = $attributes['updated_by'];
+                    }
                 } elseif ($oldStatus === 'dipinjam' && $newStatus === 'dikembalikan') {
                     $this->adjustBorrowingStock($lockedBorrowing, 1);
+                    $lockedBorrowing->tanggal_kembali = now();
+                    $this->applyFinalFine($lockedBorrowing);
                 }
             }
 
@@ -47,6 +58,52 @@ class BorrowingStockService
 
             return $lockedBorrowing;
         });
+    }
+
+    /**
+     * Hitung denda keterlambatan:
+     * deadline = start + 60 menit; denda = floor(menitTerlambat / 30) * 1000.
+     */
+    public function calculateFine(Carbon $start, Carbon $returnedAt): int
+    {
+        $deadline = $start->copy()->addMinutes(60);
+
+        // Aritmetika timestamp eksplisit (hindari ketergantungan arah/sign diffIn* versi Carbon).
+        $overdueSeconds = $returnedAt->timestamp - $deadline->timestamp;
+
+        if ($overdueSeconds <= 0) {
+            return 0;
+        }
+
+        $overdueMinutes = (int) floor($overdueSeconds / 60);
+        return (int) floor($overdueMinutes / 30) * 1000;
+    }
+
+    /**
+     * Simpan denda final saat peminjaman dikembalikan.
+     * Hanya otomatis disimpan bila borrowing memiliki SATU detail (tanpa asumsi pembagian).
+     * Multi-detail => biarkan nilai manual/admin tetap; denda sementara tetap tampil di UI.
+     */
+    private function applyFinalFine(borrowings $borrowing): void
+    {
+        $details = $borrowing->details()->get();
+
+        if ($details->count() !== 1) {
+            return;
+        }
+
+        $start = $borrowing->tanggal_approval ?? $borrowing->updated_at;
+        $returnedAt = $borrowing->tanggal_kembali ?? now();
+
+        if (!$start || !$returnedAt) {
+            return;
+        }
+
+        $fine = $this->calculateFine(Carbon::parse($start), Carbon::parse($returnedAt));
+
+        $detail = $details->first();
+        $detail->denda = $fine;
+        $detail->save();
     }
 
     public function updateDetail(borrowing_details $detail, array $attributes): borrowing_details

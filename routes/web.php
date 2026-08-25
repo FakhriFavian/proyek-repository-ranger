@@ -108,7 +108,9 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
             ],
         ];
 
-        $timeline = $borrowings->getCollection()->map(function ($borrowing) use ($statuses) {
+        $serverNow = Carbon::now();
+
+        $timeline = $borrowings->getCollection()->map(function ($borrowing) use ($statuses, $serverNow) {
             $status = $statuses[$borrowing->status] ?? [
                 'status' => ucfirst($borrowing->status),
                 'title' => 'Status peminjaman',
@@ -119,13 +121,64 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
             ];
             $detail = $borrowing->details->first();
 
+            // ====== Logika Timer ======
+            // Start timer = tanggal_approval (saat status berubah menjadi dipinjam).
+            // Fallback ke updated_at untuk data lama yang tanggal_approval-nya NULL.
+            // JANGAN pakai jam_mulai/jam_selesai sebagai dasar timer.
+            $start = $borrowing->tanggal_approval ?? $borrowing->updated_at;
+
+            $can_timer = $borrowing->status === 'dipinjam' && !empty($start);
+
+            if ($can_timer) {
+                $start_carbon = Carbon::parse($start);
+                $deadline = $start_carbon->copy()->addMinutes(60);
+
+                $elapsedSeconds = $serverNow->timestamp - $start_carbon->timestamp;
+                $overtimeSeconds = $serverNow->timestamp - $deadline->timestamp;
+                $is_late = $overtimeSeconds > 0;
+
+                if ($is_late) {
+                    $elapsed_normal   = 0;
+                    $overtime_seconds = $overtimeSeconds;
+                    // Denda sementara (hanya tampilan, tidak disimpan).
+                    $overdueMinutes   = (int) floor($overtimeSeconds / 60);
+                    $temporary_fine   = (int) floor($overdueMinutes / 30) * 1000;
+                } else {
+                    $elapsed_normal   = $elapsedSeconds;
+                    $overtime_seconds = 0;
+                    $temporary_fine   = 0;
+                }
+
+                $start_unix     = $start_carbon->timestamp;
+                $deadline_unix  = $deadline->timestamp;
+                $server_now_unix = $serverNow->timestamp;
+            } else {
+                $is_late         = false;
+                $elapsed_normal  = 0;
+                $overtime_seconds = 0;
+                $temporary_fine  = 0;
+                $start_unix      = 0;
+                $deadline_unix   = 0;
+                $server_now_unix = $serverNow->timestamp;
+            }
+
             return array_merge($status, [
+                'raw_status' => $borrowing->status,
                 'date' => Carbon::parse($borrowing->jam_mulai)->translatedFormat('d M Y'),
                 'time' => Carbon::parse($borrowing->jam_mulai)->format('H.i').' - '.Carbon::parse($borrowing->jam_selesai)->format('H.i'),
                 'item' => $detail?->item?->nama_item ?? 'Barang tidak tersedia',
                 'category' => $detail?->item?->category?->nama_kategori ?? 'Tanpa kategori',
                 'jumlah' => $detail?->jumlah ?? 0,
                 'cat_bg' => 'bg-cyan-100 text-cyan-600',
+                // Metadata timer & denda sementara (sumber kebenaran: server)
+                'can_timer' => $can_timer,
+                'is_late' => $is_late,
+                'elapsed_normal' => $elapsed_normal,
+                'overtime_seconds' => $overtime_seconds,
+                'temporary_fine' => $temporary_fine,
+                'start_unix' => $start_unix,
+                'deadline_unix' => $deadline_unix,
+                'server_now_unix' => $server_now_unix,
             ]);
         });
 
