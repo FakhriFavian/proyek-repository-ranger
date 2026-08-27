@@ -28,6 +28,13 @@ class LogSuccessfullLogin
      */
     public function handle(Login $event)
     {
+        // Hanya proses login dari guard 'web' (admin).
+        // Login dari guard lain (mis. 'student') tidak boleh menimpa
+        // session menus, roles, privileges, atau active_role milik dashboard.
+        if ($event->guard !== 'web') {
+            return;
+        }
+
         $user = $event->user;
         try {
             // get user's role

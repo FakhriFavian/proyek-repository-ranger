@@ -17,7 +17,7 @@ class borrowings extends Model
 	use SoftDeletes;
 	use UsesUuid;
 
-	protected $casts      = ['deleted_at' => 'datetime', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+	protected $casts      = ['deleted_at' => 'datetime', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'jam_mulai' => 'datetime', 'jam_selesai' => 'datetime', 'tanggal_approval' => 'datetime', 'tanggal_kembali' => 'datetime'];
 	protected $table      = 'borrowings';
 	protected $fillable   = ['*'];
 

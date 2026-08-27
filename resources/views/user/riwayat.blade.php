@@ -124,6 +124,26 @@
                         <div class="md:col-span-4">
                             <h4 class="font-bold text-slate-800 text-sm">{{ $step['title'] }}</h4>
                             <p class="text-[11px] text-slate-400 font-medium leading-relaxed mt-0.5">{{ $step['desc'] }}</p>
+
+                            {{-- ====== TIMER ====== --}}
+                            @if (!empty($step['can_timer']))
+                                {{-- Status Dipinjam: elapsed timer (naik) / TERLAMBAT (berbasis server) --}}
+                                <div
+                                    class="mt-2 flex items-center gap-2"
+                                    data-timer
+                                    data-start="{{ $step['start_unix'] }}"
+                                    data-deadline="{{ $step['deadline_unix'] }}"
+                                    data-now="{{ $step['server_now_unix'] }}"
+                                >
+                                    <span class="timer-late-chip hidden px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold">TERLAMBAT</span>
+                                    <span class="timer-text {{ $step['is_late'] ? 'text-rose-600' : 'text-purple-600' }} font-bold text-sm tabular-nums">--:--:--</span>
+                                    <span class="timer-fine text-[11px] text-rose-500 font-semibold">@if (!empty($step['is_late']))Denda sementara: Rp{{ number_format($step['temporary_fine'], 0, ',', '.') }}@endif</span>
+                                </div>
+                            @elseif (($step['raw_status'] ?? '') === 'menunggu')
+                                {{-- Status Booking: timer belum aktif --}}
+                                <p class="text-[11px] text-slate-400 font-medium mt-1.5">Timer akan muncul saat status berubah menjadi Dipinjam.</p>
+                            @endif
+
                         </div>
 
                         {{-- Barang & Kategori --}}
@@ -169,6 +189,66 @@
         </div>
 
     </main>
+
+    {{-- ===== TIMER JAVASCRIPT (berbasis server / tidak reset) ===== --}}
+    <script>
+        (function () {
+            function pad(n) { return String(n).padStart(2, '0'); }
+
+            function formatHMS(totalSeconds) {
+                var s = Math.max(0, Math.floor(totalSeconds));
+                var h = Math.floor(s / 3600);
+                var m = Math.floor((s % 3600) / 60);
+                var sec = s % 60;
+                return pad(h) + ':' + pad(m) + ':' + pad(sec);
+            }
+
+            function initTimer(el) {
+                // Sumber kebenaran: server (start/deadline & now saat halaman dirender).
+                var start = parseInt(el.getAttribute('data-start'), 10);
+                var deadline = parseInt(el.getAttribute('data-deadline'), 10);
+                var serverNow = parseInt(el.getAttribute('data-now'), 10);
+
+                // Koreksi selisih jam browser vs jam server (dihitung sekali).
+                var offset = serverNow - (Date.now() / 1000);
+
+                var textEl = el.querySelector('.timer-text');
+                var lateChip = el.querySelector('.timer-late-chip');
+                var fineEl = el.querySelector('.timer-fine');
+
+                function tick() {
+                    var nowAdjusted = (Date.now() / 1000) + offset;
+
+                    if (nowAdjusted <= deadline) {
+                        // Belum terlambat: elapsed timer NAIK sejak start (00:00:00 -> 00:59:59).
+                        lateChip.classList.add('hidden');
+                        textEl.classList.remove('text-rose-600');
+                        textEl.classList.add('text-purple-600');
+                        textEl.textContent = formatHMS(nowAdjusted - start);
+                        if (fineEl) fineEl.textContent = '';
+                    } else {
+                        // Terlambat: timer keterlambatan NAIK sejak deadline (00:00:00 -> ...).
+                        lateChip.classList.remove('hidden');
+                        textEl.classList.remove('text-purple-600');
+                        textEl.classList.add('text-rose-600');
+                        textEl.textContent = formatHMS(nowAdjusted - deadline);
+
+                        // Denda sementara (hanya tampilan): floor(menitTerlambat/30)*1000.
+                        if (fineEl) {
+                            var overdueMinutes = Math.floor((nowAdjusted - deadline) / 60);
+                            var fine = Math.floor(overdueMinutes / 30) * 1000;
+                            fineEl.textContent = 'Denda sementara: Rp' + fine.toLocaleString('id-ID');
+                        }
+                    }
+                }
+
+                tick();
+                setInterval(tick, 1000);
+            }
+
+            document.querySelectorAll('[data-timer]').forEach(initTimer);
+        })();
+    </script>
 
 </body>
 </html>
