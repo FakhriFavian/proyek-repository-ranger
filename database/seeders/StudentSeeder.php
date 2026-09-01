@@ -24,17 +24,26 @@ class StudentSeeder extends Seeder
             }
 
             $user = User::withTrashed()
-                ->where('identitas', '123456789')
+                ->where('identitas', '24761')
                 ->first();
 
             if (!$user) {
                 $user = User::create([
-                    'name' => 'Siswa Percobaan',
-                    'username' => 'siswa123456789',
-                    'email' => 'siswa123456789@example.com',
-                    'identitas' => '123456789',
+                    'name' => 'Fakhri Favian Ramadhan',
+                    'username' => 'fakhri24761',
+                    'email' => 'fakhri.favian@example.com',
+                    'identitas' => '24761',
                     'kelas' => 'XII PPLG 1',
-                    'password' => Hash::make('12345678'),
+                    'password' => Hash::make('Fakhri123'),
+                ]);
+            } else {
+                $user->update([
+                    'name' => 'Fakhri Favian Ramadhan',
+                    'username' => 'fakhri24761',
+                    'email' => 'fakhri.favian@example.com',
+                    'identitas' => '24761',
+                    'kelas' => 'XII PPLG 1',
+                    'password' => Hash::make('Fakhri123'),
                 ]);
             }
 
@@ -53,6 +62,6 @@ class StudentSeeder extends Seeder
             }
         });
 
-        $this->command?->info('Akun siswa siap digunakan.');
+        $this->command?->info('Akun siswa Fakhri Favian Ramadhan siap digunakan.');
     }
 }
