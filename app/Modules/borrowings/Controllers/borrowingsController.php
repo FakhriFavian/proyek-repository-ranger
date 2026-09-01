@@ -54,6 +54,20 @@ class borrowingsController extends Controller
 		return view('borrowings::borrowings_create', array_merge($data, ['title' => $this->title]));
 	}
 
+	/**
+	 * Simpan borrowing baru yang dibuat melalui admin panel.
+	 *
+	 * CATATAN STOK:
+	 * - Stok TIDAK dikurangi di sini karena borrowing baru masih dalam status 'menunggu' atau 'disetujui'.
+	 * - Stok akan otomatis dikurangi saat status BERUBAH ke 'dipinjam' melalui update() + BorrowingStockService.
+	 * - Sebelum mengubah ke 'dipinjam', borrowing HARUS memiliki minimal satu item (borrowing_details).
+	 *
+	 * Flow yang aman:
+	 * 1. Admin membuat borrowing (status: menunggu/disetujui) → STOK TIDAK BERKURANG
+	 * 2. Admin tambahkan items via borrowing_details → STOK MASIH TIDAK BERKURANG
+	 * 3. Admin ubah status ke 'dipinjam' → STOK BERKURANG (via BorrowingStockService::adjustBorrowingStock)
+	 * 4. Saat dikembalikan (status 'dikembalikan') → STOK KEMBALI BERTAMBAH
+	 */
 	function store(Request $request)
 	{
 		$this->validate($request, [
@@ -106,6 +120,17 @@ class borrowingsController extends Controller
 		return view('borrowings::borrowings_update', array_merge($data, ['title' => $this->title]));
 	}
 
+	/**
+	 * Update borrowing dan handle perubahan stok berdasarkan transisi status.
+	 *
+	 * MANAJEMEN STOK OTOMATIS:
+	 * - Transisi 'menunggu/disetujui' → 'dipinjam': STOK BERKURANG (decrement sesuai jumlah di borrowing_details)
+	 * - Transisi 'dipinjam' → 'dikembalikan': STOK BERTAMBAH (increment sesuai jumlah di borrowing_details)
+	 * - Status lainnya: STOK TIDAK BERUBAH
+	 *
+	 * Semua operasi dilakukan dalam DB::transaction() untuk keamanan (mencegah race condition).
+	 * Validasi otomatis: borrowing harus punya minimal 1 item sebelum bisa status 'dipinjam'.
+	 */
 	public function update(Request $request, $id)
 	{
 		$this->validate($request, [
@@ -132,6 +157,14 @@ class borrowingsController extends Controller
 		return redirect()->route('borrowings.index')->with('message_success', 'Borrowings berhasil diubah!');
 	}
 
+	/**
+	 * Hapus borrowing dengan validasi keamanan stok.
+	 *
+	 * ATURAN PENGHAPUSAN:
+	 * - HANYA borrowing yang BUKAN status 'dipinjam' yang bisa dihapus.
+	 * - Borrowing dengan status 'dipinjam' TIDAK boleh dihapus (karena stok sudah dikurangi).
+	 * - Stok otomatis dikembalikan jika diperlukan melalui BorrowingStockService.
+	 */
 	public function destroy(Request $request, $id)
 	{
 		$borrowings = borrowings::findOrFail($id);
