@@ -22,12 +22,7 @@
 
             {{-- Logo --}}
             <div class="relative z-10 p-6">
-                <div class="w-11 h-11 flex items-center justify-center">
-                    <svg viewBox="0 0 40 40" class="w-9 h-9" fill="#a83442">
-                        <path d="M8 4 L20 4 L32 12 L32 28 L20 36 L8 28 Z" opacity="0.15"/>
-                        <text x="20" y="26" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="16" fill="#a83442">NG</text>
-                    </svg>
-                </div>
+                <img src="{{ asset('images/logo-ng-white.png') }}" alt="NG Logo" class="w-11 h-11 object-contain">
             </div>
 
             {{-- Badge "Take and go" --}}
@@ -43,10 +38,7 @@
 
             {{-- Logo kecil --}}
             <div class="mb-6">
-                <svg viewBox="0 0 40 40" class="w-8 h-8" fill="#a83442">
-                    <path d="M8 4 L20 4 L32 12 L32 28 L20 36 L8 28 Z" opacity="0.15"/>
-                    <text x="20" y="26" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="16" fill="#a83442">NG</text>
-                </svg>
+                <img src="{{ asset('images/logo-ng.png') }}" alt="NG Logo" class="w-9 h-9 object-contain">
             </div>
 
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Welcome Back!</h1>
@@ -71,7 +63,7 @@
                         id="nis"
                         name="nis"
                         value="{{ old('nis') }}"
-                        placeholder="123456899"
+                        placeholder="Masukkan NIS anda"
                         class="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
                         required
                         autofocus
@@ -89,7 +81,7 @@
                             type="password"
                             id="password"
                             name="password"
-                            placeholder="••••••••"
+                            placeholder="Masukkan password anda"
                             class="w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-10 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
                             required
                         >
