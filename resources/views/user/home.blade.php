@@ -45,10 +45,32 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        .menu-chip {
+            background: rgba(140, 31, 47, 0.05);
+            border: 1px solid rgba(140, 31, 47, 0.08);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+        }
+
+        .menu-popup {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.10);
+            backdrop-filter: blur(8px);
+        }
+
+        .avatar-badge {
+            background: linear-gradient(135deg, #8C1F2F 0%, #A53A4A 100%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+        }
     </style>
 </head>
 
 <body class="bg-white text-neutral-800">
+
+    @php
+        $isStudentLoggedIn = Auth::guard('student')->check();
+    @endphp
 
     {{-- =========================================================
         HEADER / NAVBAR
@@ -109,24 +131,95 @@
 
                 </form>
 
-                {{-- RIWAYAT --}}
-                <a
-                    href="{{ route('riwayat') }}"
-                    aria-label="Riwayat pencarian"
-                    class="shrink-0 p-2.5 text-neutral-500 hover:text-neutral-800 bg-neutral-100 hover:bg-neutral-200 rounded-full transition inline-flex items-center justify-center"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="w-5 h-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="2"
+                @if ($isStudentLoggedIn)
+                    {{-- MENU USER --}}
+                    <div class="relative">
+                        <button
+                            id="userMenuButton"
+                            type="button"
+                            aria-label="Menu pengguna"
+                            aria-expanded="false"
+                            class="menu-chip shrink-0 p-2.5 text-neutral-500 hover:text-neutral-800 rounded-full transition inline-flex items-center justify-center"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="w-5 h-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <circle cx="5" cy="12" r="1.5"></circle>
+                                <circle cx="12" cy="12" r="1.5"></circle>
+                                <circle cx="19" cy="12" r="1.5"></circle>
+                            </svg>
+                        </button>
+
+                        <div
+                            id="userMenuPopup"
+                            class="menu-popup hidden absolute right-0 top-full z-40 mt-3 w-60 rounded-2xl p-2"
+                        >
+                            <button
+                                type="button"
+                                disabled
+                                aria-disabled="true"
+                                class="flex w-full cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-neutral-600 opacity-80"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21a8 8 0 0 0-16 0"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                Profil
+                            </button>
+
+                            <a
+                                href="{{ route('riwayat') }}"
+                                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100 transition"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <polyline points="12 7 12 15 14"></polyline>
+                                </svg>
+                                Riwayat
+                            </a>
+
+                            <a
+                                href="{{ route('home') }}"
+                                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100 transition"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 9.5L12 3l9 6.5"></path>
+                                    <path d="M9 21V12h6v9"></path>
+                                </svg>
+                                Beranda
+                            </a>
+
+                            <div class="my-1 h-px bg-neutral-200"></div>
+
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button
+                                    type="submit"
+                                    class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-600 hover:bg-red-50 transition"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                        <path d="M16 17l5-5-5-5"></path>
+                                        <path d="M21 12H9"></path>
+                                    </svg>
+                                    Log out
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @else
+                    <a
+                        href="{{ route('user.login') }}"
+                        class="shrink-0 inline-flex items-center justify-center rounded-full bg-[#8C1F2F] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-200/90 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-red-200"
                     >
-                        <circle cx="12" cy="12" r="9"></circle>
-                        <polyline points="12 7 12 15 14"></polyline>
-                    </svg>
-                </a>
+                        Login
+                    </a>
+                @endif
 
             </div>
 
@@ -1298,6 +1391,41 @@
 
         });
 
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuButton = document.getElementById('userMenuButton');
+            const menuPopup = document.getElementById('userMenuPopup');
+
+            if (!menuButton || !menuPopup) {
+                return;
+            }
+
+            const closeMenu = () => {
+                menuPopup.classList.add('hidden');
+                menuButton.setAttribute('aria-expanded', 'false');
+            };
+
+            menuButton.addEventListener('click', function (event) {
+                event.stopPropagation();
+                const isOpen = !menuPopup.classList.contains('hidden');
+                menuPopup.classList.toggle('hidden', isOpen);
+                menuButton.setAttribute('aria-expanded', String(!isOpen));
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!menuButton.contains(event.target) && !menuPopup.contains(event.target)) {
+                    closeMenu();
+                }
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    closeMenu();
+                }
+            });
+        });
     </script>
 
 </body>
