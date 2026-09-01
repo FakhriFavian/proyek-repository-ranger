@@ -271,6 +271,10 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
             $detail->catatan = 0;
             $detail->created_by = Auth::guard('student')->id();
             $detail->save();
+
+            // DECREMENT STOCK: Kurangi stok_tersedia setelah peminjaman berhasil dibuat
+            // Menggunakan lockForUpdate() untuk mencegah race condition
+            $item->decrement('stok_tersedia', $jumlah);
         });
 
         return redirect()->route('riwayat');
