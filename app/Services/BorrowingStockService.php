@@ -13,6 +13,7 @@ class BorrowingStockService
 {
     public const STATUSES = [
         'menunggu' => 'Menunggu',
+        'disetujui' => 'Disetujui',
         'dipinjam' => 'Dipinjam',
         'dikembalikan' => 'Dikembalikan',
         'ditolak' => 'Ditolak',
@@ -34,7 +35,7 @@ class BorrowingStockService
             }
 
             if ($oldStatus !== $newStatus) {
-                if ($oldStatus === 'menunggu' && $newStatus === 'dipinjam') {
+                if (($oldStatus === 'menunggu' || $oldStatus === 'disetujui') && $newStatus === 'dipinjam') {
                     $this->adjustBorrowingStock($lockedBorrowing, -1);
 
                     // Rekam momen barang benar-benar berstatus dipinjam.
@@ -184,7 +185,8 @@ class BorrowingStockService
         }
 
         $allowed = [
-            'menunggu' => ['menunggu', 'dipinjam', 'ditolak'],
+            'menunggu' => ['menunggu', 'disetujui', 'dipinjam', 'ditolak'],
+            'disetujui' => ['disetujui', 'dipinjam', 'ditolak'],
             'dipinjam' => ['dipinjam', 'dikembalikan'],
             'dikembalikan' => ['dikembalikan'],
             'ditolak' => ['ditolak'],

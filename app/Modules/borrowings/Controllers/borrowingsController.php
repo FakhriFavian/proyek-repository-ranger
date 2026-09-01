@@ -46,7 +46,7 @@ class borrowingsController extends Controller
 			'user_id' => ['label' => 'Peminjam', 'type' => 'select', 'value' => old('user_id'), 'options' => $ref_users->all(), 'required' => true, 'class' => 'select2'],
 			'jam_mulai' => ['label' => 'Jam Mulai', 'type' => 'datetime-local', 'value' => old('jam_mulai'), 'required' => true],
 			'jam_selesai' => ['label' => 'Jam Selesai', 'type' => 'datetime-local', 'value' => old('jam_selesai'), 'required' => true],
-			'status' => ['label' => 'Status', 'type' => 'select', 'value' => 'menunggu', 'options' => ['menunggu' => 'Menunggu'], 'required' => true],
+			'status' => ['label' => 'Status', 'type' => 'select', 'value' => 'menunggu', 'options' => ['menunggu' => 'Menunggu', 'disetujui' => 'Disetujui'], 'required' => true],
 			'catatan_admin' => ['label' => 'Catatan', 'type' => 'textarea', 'value' => old('catatan_admin'), 'required' => false],
 		);
 
@@ -60,7 +60,7 @@ class borrowingsController extends Controller
 			'user_id' => 'required|exists:users,id',
 			'jam_mulai' => 'required|date_format:Y-m-d\\TH:i',
 			'jam_selesai' => 'required|date_format:Y-m-d\\TH:i|after:jam_mulai',
-			'status' => 'required|in:menunggu',
+			'status' => 'required|in:menunggu,disetujui',
 			'catatan_admin' => 'nullable|string',
 		]);
 
@@ -112,7 +112,7 @@ class borrowingsController extends Controller
 			'user_id' => 'required|exists:users,id',
 			'jam_mulai' => 'required|date_format:Y-m-d\\TH:i',
 			'jam_selesai' => 'required|date_format:Y-m-d\\TH:i|after:jam_mulai',
-			'status' => 'required|in:menunggu,dipinjam,dikembalikan,ditolak',
+			'status' => 'required|in:menunggu,disetujui,dipinjam,dikembalikan,ditolak',
 			'catatan_admin' => 'nullable|string',
 		]);
 
