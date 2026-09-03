@@ -11,7 +11,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Take and Go</title>
-    <link rel="icon" href="{{ asset('images/logo-ng.png') }}" type="image/png">
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -157,6 +156,7 @@
 
                          
                     {{-- pop up menu --}}
+
                     <div
                             id="userMenuPopup"
                             class="menu-popup hidden absolute right-0 top-full z-40 mt-3 w-60 rounded-2xl p-2"
@@ -202,7 +202,7 @@
                             <div class="my-1 h-px bg-neutral-200"></div>
 
                             @if ($isStudentLoggedIn)
-                                <form method="POST" action="{{ route('logout') }}">
+                                <form method="POST" action="{{ route('user.logout') }}">
                                     @csrf
                                     <button
                                         type="submit"
