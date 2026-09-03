@@ -11,7 +11,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Take and Go</title>
-    <link rel="icon" href="{{ asset('images/logo-ng.png') }}" type="image/png">
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -155,6 +154,9 @@
                             </svg>
                         </button>
 
+                         
+                    {{-- pop up menu --}}
+
                     <div
                             id="userMenuPopup"
                             class="menu-popup hidden absolute right-0 top-full z-40 mt-3 w-60 rounded-2xl p-2"
@@ -183,9 +185,13 @@
                                 Riwayat
                             </a>
 
-                            <a
+                                <a
                                 href="{{ route('home') }}"
-                                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100 transition"
+                                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition
+                                    {{ request()->routeIs('home')
+                                        ? 'text-white bg-[#F4A825]'
+                                        : 'text-neutral-700 hover:bg-neutral-100'
+                                    }}"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path d="M3 9.5L12 3l9 6.5"></path>
@@ -193,11 +199,10 @@
                                 </svg>
                                 Beranda
                             </a>
-
                             <div class="my-1 h-px bg-neutral-200"></div>
 
                             @if ($isStudentLoggedIn)
-                                <form method="POST" action="{{ route('logout') }}">
+                                <form method="POST" action="{{ route('user.logout') }}">
                                     @csrf
                                     <button
                                         type="submit"
