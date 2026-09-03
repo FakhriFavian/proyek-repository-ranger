@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TAKE AND GO - Detail Peminjaman</title>
+    <link rel="icon" href="{{ asset('images/logo-ng.png') }}" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,7 +17,7 @@
 <body class="bg-[#F8F9FA] min-h-screen py-6 px-4 sm:px-8">
 
     <div class="max-w-6xl mx-auto space-y-6">
-        
+
         {{-- Header Navigation --}}
         <div class="flex items-center gap-4">
             <a href="{{ route('home') }}" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-neutral-800 shadow-sm border border-neutral-200/60 hover:bg-neutral-50 transition">
@@ -29,14 +30,14 @@
 
         <form action="{{ route('peminjaman.store') }}" method="POST">
             @csrf
-            
+
             <input type="hidden" name="item_id" value="{{ $item['id'] ?? '' }}">
             <input type="hidden" name="tanggal" value="{{ $tanggal }}">
             <input type="hidden" name="jam" value="{{ $jam }}">
 
             {{-- Card Grid Wrapper --}}
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-                
+
                 {{-- Kiri: Detail & Jadwal Peminjaman (8 cols) --}}
                 <div class="lg:col-span-8 bg-white rounded-3xl p-6 sm:p-8 shadow-[0_4px_25px_rgba(0,0,0,0.05)] flex flex-col justify-between space-y-6">
                     <div>
@@ -56,7 +57,7 @@
                                 <h3 class="font-extrabold text-2xl sm:text-3xl text-neutral-900 leading-tight">
                                     {{ $item['name'] }}
                                 </h3>
-                                
+
                                 <div class="flex items-center gap-3 pt-2">
                                     <span class="bg-[#34C759] text-white text-sm font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">

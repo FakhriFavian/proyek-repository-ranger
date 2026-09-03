@@ -13,7 +13,7 @@
 
         <link rel="stylesheet" href="{{ asset('assets/css/main/app.css') }}">
         <link rel="stylesheet" href="{{ asset('assets/css/main/kinetic-theme.css') }}">
-        <link rel="shortcut icon" href="{{ asset('assets/images/logo/favicon.svg') }}" type="image/x-icon">
+        <link rel="icon" href="{{ asset('images/logo-ng.png') }}" type="image/png">
     </head>
     <body class="kt-auth-body d-flex align-items-center justify-content-center min-vh-100 py-4">
         <div class="kt-auth-card card overflow-hidden">
