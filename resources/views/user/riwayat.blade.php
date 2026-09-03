@@ -22,13 +22,34 @@
 <header class="bg-white border-b border-neutral-200 py-4 px-6 mb-8">
     <div class="max-w-5xl mx-auto flex items-center justify-between">
 
-        {{-- LOGO --}}
-        <a
-            href="{{ route('home') }}"
-            class="font-extrabold text-xl tracking-wider text-neutral-800 uppercase"
-        >
-            TAKE AND GO
-        </a>
+        <div class="flex items-center gap-3">
+            {{-- KEMBALI --}}
+            <a
+                href="{{ route('home') }}"
+                aria-label="Kembali ke halaman utama"
+                title="Kembali"
+                class="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-700 hover:bg-neutral-100 transition"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </a>
+
+            {{-- LOGO --}}
+            <a
+                href="{{ route('home') }}"
+                class="font-extrabold text-xl tracking-wider text-neutral-800 uppercase"
+            >
+                TAKE AND GO
+            </a>
+        </div>
 
         {{-- MENU TITIK TIGA --}}
         <div class="relative">
