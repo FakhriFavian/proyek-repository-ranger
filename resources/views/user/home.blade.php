@@ -1265,10 +1265,10 @@
 
         /* ========================================================
            SEARCH BAR
-           
+
            Search dilakukan terhadap barang yang sudah dikirim
            dari Laravel melalui $items.
-           
+
            Yang dicari:
            - nama barang
            - kategori
