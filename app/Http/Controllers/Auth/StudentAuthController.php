@@ -46,6 +46,6 @@ class StudentAuthController extends Controller
         Auth::guard('student')->login($user);
         $request->session()->regenerate();
 
-        return redirect()->intended(route('peminjaman.confirm'));
+        return redirect()->intended(route('home'));
     }
 }
