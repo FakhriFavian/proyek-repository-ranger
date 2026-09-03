@@ -21,6 +21,16 @@ Route::view('/', 'welcome')->name('frontend.index');
 Route::get('/user/login', [StudentAuthController::class, 'create'])->name('user.login');
 Route::post('/user/login', [StudentAuthController::class, 'store'])->name('user.login.store');
 
+// Logout Siswa
+Route::post('/user/logout', function (Request $request) {
+    Auth::guard('student')->logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('user.login');
+})->name('user.logout');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
