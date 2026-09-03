@@ -12,14 +12,15 @@
 
     <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
 
-        {{-- KIRI: panel blur merah + logo + badge "Take and go" --}}
+           {{-- KIRI: panel gradient merah + logo + badge "Take and go" --}}
         <div class="relative hidden md:block rounded-[2rem] overflow-hidden h-[560px] shadow-2xl"
-             style="background: radial-gradient(circle at 20% 15%, #c94f4f 0%, transparent 40%),
-                    radial-gradient(circle at 70% 30%, #b23b3b 0%, transparent 45%),
-                    radial-gradient(circle at 40% 70%, #e8a37a 0%, transparent 40%),
-                    radial-gradient(circle at 80% 80%, #f4d9c6 0%, transparent 45%),
-                    #ffffff;">
-            <div class="absolute inset-0" style="filter: blur(40px); background: inherit;"></div>
+               style="background: linear-gradient(135deg, #4B1619 0%, #B1343C 100%);">
+
+            <img
+                src="{{ asset('images/flea market-amico.png') }}"
+                alt="Flea market illustration"
+                class="absolute inset-0 z-0 h-full w-full object-contain p-10"
+            >
 
             {{-- Logo --}}
             <div class="relative z-10 p-6">
