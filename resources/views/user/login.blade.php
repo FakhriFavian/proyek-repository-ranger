@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - School Borrowing System</title>
+    <link rel="icon" href="{{ asset('images/logo-ng.png') }}" type="image/png">
     {{-- Kalau Tailwind udah di-setup lewat Vite/Mix, hapus baris CDN ini --}}
     <script src="https://cdn.tailwindcss.com"></script>
 </head>

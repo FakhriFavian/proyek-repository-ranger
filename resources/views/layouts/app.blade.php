@@ -12,8 +12,7 @@
 
     <link rel="stylesheet" href="{{ asset('assets/css/main/app.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/main/kinetic-theme.css') }}">
-    <link rel="shortcut icon" href="{{ asset('assets/images/logo/favicon.svg') }}" type="image/x-icon">
-    <link rel="shortcut icon" href="{{ asset('assets/images/logo/favicon.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('images/logo-ng.png') }}" type="image/png">
     <link rel="stylesheet" href="{{ asset('assets/css/pages/fontawesome.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/tempus-dominus.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.5/css/selectize.bootstrap5.min.css"/>
