@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\StudentAuthController;
 use App\Http\Middleware\AuthenticateStudent;
+use App\Http\Middleware\AuthenticateAnyUser;
 use App\Modules\Items\Models\Items;
 use App\Modules\borrowings\Models\borrowings;
 use App\Modules\borrowing_details\Models\borrowing_details;
@@ -26,10 +27,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/role/set/{id_role}', [DashboardController::class, 'changeRole'])->name('dashboard.change.role');
     Route::get('/forcelogout', [DashboardController::class, 'forceLogout'])->name('dashboard.force.logout');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
+Route::middleware(AuthenticateAnyUser::class)->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
 });
 
 // Route User (Ubah name jadi 'home')

@@ -161,18 +161,16 @@
                             id="userMenuPopup"
                             class="menu-popup hidden absolute right-0 top-full z-40 mt-3 w-60 rounded-2xl p-2"
                         >
-                            <button
-                                type="button"
-                                @if (!$isStudentLoggedIn) disabled @endif
-                                @if (!$isStudentLoggedIn) aria-disabled="true" @endif
-                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-neutral-600 {{ !$isStudentLoggedIn ? 'cursor-not-allowed opacity-80' : 'hover:bg-neutral-100 transition' }}"
+                            <a
+                                @if ($isStudentLoggedIn) href="{{ route('profile') }}" @else aria-disabled="true" tabindex="-1" @endif
+                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-neutral-600 {{ $isStudentLoggedIn ? 'hover:bg-neutral-100 transition' : 'cursor-not-allowed opacity-80' }}"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path d="M20 21a8 8 0 0 0-16 0"></path>
                                     <circle cx="12" cy="7" r="4"></circle>
                                 </svg>
                                 Profil
-                            </button>
+                            </a>
 
                             <a
                                 @if ($isStudentLoggedIn) href="{{ route('riwayat') }}" @else aria-disabled="true" tabindex="-1" @endif
