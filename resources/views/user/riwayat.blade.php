@@ -63,7 +63,7 @@
 
                 {{-- PROFIL --}}
                 <a
-                    href="{{ route('profile.edit') }}"
+                    href="{{ route('profile') }}"
                     class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100 transition"
                 >
                     <svg

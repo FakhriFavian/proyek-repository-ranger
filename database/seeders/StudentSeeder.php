@@ -28,24 +28,15 @@ class StudentSeeder extends Seeder
                 ->first();
 
             if (!$user) {
-                $user = User::create([
-                    'name' => 'Fakhri Favian Ramadhan',
-                    'username' => 'fakhri24761',
-                    'email' => 'fakhri.favian@example.com',
-                    'identitas' => '24761',
-                    'kelas' => 'XII PPLG 1',
-                    'password' => Hash::make('Fakhri123'),
-                ]);
-            } else {
-                $user->update([
-                    'name' => 'Fakhri Favian Ramadhan',
-                    'username' => 'fakhri24761',
-                    'email' => 'fakhri.favian@example.com',
-                    'identitas' => '24761',
-                    'kelas' => 'XII PPLG 1',
-                    'password' => Hash::make('Fakhri123'),
-                ]);
+                throw new RuntimeException('Akun siswa dengan identitas 24761 tidak ditemukan.');
             }
+
+            $user->update([
+                'email' => 'fakhrifavianrr@gmail.com',
+                'kelas' => 'XII PPLG 2',
+                'jenis_kelamin' => 'Laki-laki',
+                'nomor_telepon' => '08567271277',
+            ]);
 
             $userRole = UserRole::withTrashed()
                 ->where('id_user', $user->id)
