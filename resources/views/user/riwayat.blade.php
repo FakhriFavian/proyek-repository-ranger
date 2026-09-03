@@ -19,17 +19,144 @@
 <body class="bg-slate-50 text-neutral-800 min-h-screen pb-12">
 
     {{-- ================= HEADER ================= --}}
-    <header class="bg-white border-b border-neutral-200 py-4 px-6 mb-8">
-        <div class="max-w-5xl mx-auto flex items-center gap-4">
-           <a href="{{ route('home') }}" class="w-8 h-8 rounded-full border border-neutral-300 flex items-center justify-center text-neutral-600 hover:bg-neutral-100 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-            </a>
-            <h1 class="font-extrabold text-xl tracking-wider text-neutral-800 uppercase">TAKE AND GO</h1>
-        </div>
-    </header>
+<header class="bg-white border-b border-neutral-200 py-4 px-6 mb-8">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
 
+        {{-- LOGO --}}
+        <a
+            href="{{ route('home') }}"
+            class="font-extrabold text-xl tracking-wider text-neutral-800 uppercase"
+        >
+            TAKE AND GO
+        </a>
+
+        {{-- MENU TITIK TIGA --}}
+        <div class="relative">
+
+            <button
+                id="riwayatMenuButton"
+                type="button"
+                aria-label="Menu pengguna"
+                aria-expanded="false"
+                class="p-2.5 text-neutral-500 hover:text-neutral-800 rounded-full hover:bg-neutral-100 transition inline-flex items-center justify-center"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <circle cx="5" cy="12" r="1.5"></circle>
+                    <circle cx="12" cy="12" r="1.5"></circle>
+                    <circle cx="19" cy="12" r="1.5"></circle>
+                </svg>
+            </button>
+
+
+            {{-- POP UP MENU --}}
+            <div
+                id="riwayatMenuPopup"
+                class="hidden absolute right-0 top-full z-40 mt-3 w-60 rounded-2xl p-2 bg-white border border-neutral-200 shadow-xl"
+            >
+
+                {{-- PROFIL --}}
+                <a
+                    href="{{ route('profile.edit') }}"
+                    class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100 transition"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path d="M20 21a8 8 0 0 0-16 0"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Profil
+                </a>
+
+
+                {{-- RIWAYAT --}}
+                <a
+                    href="{{ route('riwayat') }}"
+                    class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white bg-[#F4A825] transition"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <polyline points="12 7 12 15 14"></polyline>
+                    </svg>
+                    Riwayat
+                </a>
+
+
+                {{-- BERANDA --}}
+                <a
+                    href="{{ route('home') }}"
+                    class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100 transition"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path d="M3 9.5L12 3l9 6.5"></path>
+                        <path d="M9 21V12h6v9"></path>
+                    </svg>
+                    Beranda
+                </a>
+
+
+                <div class="my-1 h-px bg-neutral-200"></div>
+
+
+                {{-- LOGOUT --}}
+                <form
+                    method="POST"
+                    action="{{ route('user.logout') }}"
+                >
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-600 hover:bg-red-50 transition"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="w-4 h-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <path d="M16 17l5-5-5-5"></path>
+                            <path d="M21 12H9"></path>
+                        </svg>
+
+                        Log out
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</header>
     <main class="max-w-4xl mx-auto px-4 sm:px-6">
 
         {{-- ================= RINGKASAN STATISTIK ================= --}}
@@ -250,6 +377,54 @@
             document.querySelectorAll('[data-timer]').forEach(initTimer);
         })();
     </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
 
+        const menuButton = document.getElementById('riwayatMenuButton');
+        const menuPopup = document.getElementById('riwayatMenuPopup');
+
+        if (!menuButton || !menuPopup) {
+            return;
+        }
+
+        function closeMenu() {
+            menuPopup.classList.add('hidden');
+            menuButton.setAttribute('aria-expanded', 'false');
+        }
+
+        menuButton.addEventListener('click', function (event) {
+            event.stopPropagation();
+
+            const isOpen = !menuPopup.classList.contains('hidden');
+
+            menuPopup.classList.toggle('hidden', isOpen);
+
+            menuButton.setAttribute(
+                'aria-expanded',
+                String(!isOpen)
+            );
+        });
+
+        document.addEventListener('click', function (event) {
+
+            if (
+                !menuButton.contains(event.target) &&
+                !menuPopup.contains(event.target)
+            ) {
+                closeMenu();
+            }
+
+        });
+
+        document.addEventListener('keydown', function (event) {
+
+            if (event.key === 'Escape') {
+                closeMenu();
+            }
+
+        });
+
+    });
+</script>
 </body>
 </html>
