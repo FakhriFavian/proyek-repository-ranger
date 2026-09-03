@@ -131,9 +131,8 @@
 
                 </form>
 
-                @if ($isStudentLoggedIn)
-                    {{-- MENU USER --}}
-                    <div class="relative">
+                {{-- MENU USER --}}
+                <div class="relative">
                         <button
                             id="userMenuButton"
                             type="button"
@@ -155,15 +154,15 @@
                             </svg>
                         </button>
 
-                        <div
+                    <div
                             id="userMenuPopup"
                             class="menu-popup hidden absolute right-0 top-full z-40 mt-3 w-60 rounded-2xl p-2"
                         >
                             <button
                                 type="button"
-                                disabled
-                                aria-disabled="true"
-                                class="flex w-full cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-neutral-600 opacity-80"
+                                @if (!$isStudentLoggedIn) disabled @endif
+                                @if (!$isStudentLoggedIn) aria-disabled="true" @endif
+                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-neutral-600 {{ !$isStudentLoggedIn ? 'cursor-not-allowed opacity-80' : 'hover:bg-neutral-100 transition' }}"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path d="M20 21a8 8 0 0 0-16 0"></path>
@@ -173,8 +172,8 @@
                             </button>
 
                             <a
-                                href="{{ route('riwayat') }}"
-                                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100 transition"
+                                @if ($isStudentLoggedIn) href="{{ route('riwayat') }}" @else aria-disabled="true" tabindex="-1" @endif
+                                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 {{ $isStudentLoggedIn ? 'hover:bg-neutral-100 transition' : 'cursor-not-allowed opacity-80' }}"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="9"></circle>
@@ -196,30 +195,36 @@
 
                             <div class="my-1 h-px bg-neutral-200"></div>
 
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button
-                                    type="submit"
-                                    class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-600 hover:bg-red-50 transition"
+                            @if ($isStudentLoggedIn)
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button
+                                        type="submit"
+                                        class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-600 hover:bg-red-50 transition"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                            <path d="M16 17l5-5-5-5"></path>
+                                            <path d="M21 12H9"></path>
+                                        </svg>
+                                        Log out
+                                    </button>
+                                </form>
+                            @else
+                                <a
+                                    href="{{ route('user.login') }}"
+                                    class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100 transition"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                        <path d="M16 17l5-5-5-5"></path>
-                                        <path d="M21 12H9"></path>
+                                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                        <polyline points="10 17 15 12 10 7"></polyline>
+                                        <line x1="15" y1="12" x2="3" y2="12"></line>
                                     </svg>
-                                    Log out
-                                </button>
-                            </form>
+                                    Login
+                                </a>
+                            @endif
                         </div>
                     </div>
-                @else
-                    <a
-                        href="{{ route('user.login') }}"
-                        class="shrink-0 inline-flex items-center justify-center rounded-full bg-[#8C1F2F] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-200/90 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-red-200"
-                    >
-                        Login
-                    </a>
-                @endif
 
             </div>
 
