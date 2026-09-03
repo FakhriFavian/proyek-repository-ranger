@@ -59,7 +59,7 @@
 
                 {{-- NIS --}}
                 <div>
-                    <label for="nis" class="block text-sm font-semibold text-gray-900 mb-2">Your Nis</label>
+                    <label for="nis" class="block text-sm font-semibold text-gray-900 mb-2">Your NIS</label>
                     <input
                         type="text"
                         id="nis"
