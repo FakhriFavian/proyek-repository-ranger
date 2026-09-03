@@ -36,12 +36,24 @@
 
     {{-- Header maroon --}}
     <div class="maroon px-8 py-4 flex items-center justify-between">
-        {{-- Logo --}}
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-cube text-white text-2xl"></i>
-            <span class="text-white font-extrabold text-lg tracking-wide">
-                TAKE AND GO
-            </span>
+        <div class="flex items-center gap-4">
+            <button type="button"
+                    onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href = '{{ route('home') }}'; }"
+                    class="text-white text-3xl font-semibold leading-none hover:text-white/80 transition"
+                    title="Kembali ke halaman sebelumnya"
+                    aria-label="Kembali ke halaman sebelumnya">
+                &lt;
+            </button>
+
+            {{-- Logo --}}
+            <div class="flex items-center gap-2">
+                <img src="{{ asset('images/logo-ng-white.png') }}"
+                     alt="NG Logo"
+                     class="h-10 w-10 object-contain">
+                <span class="text-white font-extrabold text-lg tracking-wide">
+                    TAKE AND GO
+                </span>
+            </div>
         </div>
 
         {{-- Foto + nama user di pojok kanan --}}
