@@ -31,7 +31,7 @@ class StudentAuthController extends Controller
     public function store(StudentLoginRequest $request): RedirectResponse
     {
         $user = User::query()
-            ->where('identitas', $request->input('nis'))
+            ->where('identitas', $request->input('identitas'))
             ->whereHas('roleuser', function ($query) {
                 $query->whereRaw('LOWER(role.role) = ?', ['siswa']);
             })
@@ -39,7 +39,7 @@ class StudentAuthController extends Controller
 
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             throw ValidationException::withMessages([
-                'nis' => 'NIS atau password siswa tidak valid.',
+                'identitas' => 'Identitas atau password siswa tidak valid.',
             ]);
         }
 
