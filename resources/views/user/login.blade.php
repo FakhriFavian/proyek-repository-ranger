@@ -57,20 +57,20 @@
             <form method="POST" action="{{ route('user.login.store') }}" class="space-y-5">
                 @csrf
 
-                {{-- NIS --}}
+                {{-- Identitas --}}
                 <div>
-                    <label for="nis" class="block text-sm font-semibold text-gray-900 mb-2">Your NIS</label>
+                    <label for="identitas" class="block text-sm font-semibold text-gray-900 mb-2">Identitas</label>
                     <input
                         type="text"
-                        id="nis"
-                        name="nis"
-                        value="{{ old('nis') }}"
-                        placeholder="Masukkan NIS anda"
+                        id="identitas"
+                        name="identitas"
+                        value="{{ old('identitas') }}"
+                        placeholder="Masukkan identitas anda"
                         class="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
                         required
                         autofocus
                     >
-                    @error('nis')
+                    @error('identitas')
                         <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                     @enderror
                 </div>

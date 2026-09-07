@@ -29,10 +29,9 @@ class UsersController extends Controller
 		$roles = Role::all()->pluck('role', 'id');
 		$data['forms'] = array(
 			'name' => ['label' => 'Name', 'type' => 'text', 'value' => old('name'), 'required' => true],
-			'username' => ['label' => 'Username', 'type' => 'text', 'value' => old('username'), 'required' => true],
+			'identitas' => ['label' => 'Identitas', 'type' => 'text', 'value' => old('identitas'), 'required' => true],
 			'email' => ['label' => 'Email', 'type' => 'text', 'value' => old('email'), 'required' => true],
 			'password' => ['label' => 'Password', 'type' => 'password', 'required' => true],
-			'identitas' => ['label' => 'Kode Identitas', 'type' => 'text', 'value' => old('identitas'), 'placeholder' => 'NIM,NIP,NRP,NIK,dll', 'required' => true],
 			'roles' => ['label' => 'Role', 'type' => 'select', 'value' => null, 'options' => $roles->all(), 'multiple' => true, 'class' => 'multi-select2', 'required' => true],
 		);
 		return view('Users::form_create', array_merge($data, ['title' => $this->title]));
@@ -42,7 +41,7 @@ class UsersController extends Controller
 	{
 		$this->validate($request, [
 			'name' => 'required',
-			'username' => 'required|unique:users,username',
+			'identitas' => 'required|string|max:30|unique:users,identitas',
 			'email' => 'required|email',
 			'password' => 'required',
 			'identitas' => 'required|unique:users,identitas',
@@ -51,7 +50,7 @@ class UsersController extends Controller
 
 		$users = new Users();
 		$users->name = $request->input("name");
-		$users->username = $request->input("username");
+		$users->identitas = $request->input("identitas");
 		$users->email = $request->input("email");
 		$users->password = bcrypt($request->input("password"));
 		$users->identitas = $request->input("identitas");
@@ -76,10 +75,9 @@ class UsersController extends Controller
 		$data['user'] = $user;
 		$data['forms'] = array(
 			'name' => ['label' => 'Name', 'type' => 'text', 'value' => $user->name, 'required' => true],
-			'username' => ['label' => 'Username', 'type' => 'text', 'value' => $user->username, 'required' => true],
+			'identitas' => ['label' => 'Identitas', 'type' => 'text', 'value' => $user->identitas, 'required' => true],
 			'email' => ['label' => 'Email', 'type' => 'text', 'value' => $user->email, 'required' => true],
 			'password' => ['label' => 'Password', 'type' => 'password', 'placeholder' => 'Kosongkan jika tidak ingin mengubah'],
-			'identitas' => ['label' => 'Kode Identitas', 'type' => 'text', 'value' => $user->identitas],
 			'roles' => ['label' => 'Role', 'type' => 'select', 'value' => $selected_roles->all(), 'options' => $roles->all(), 'multiple' => true, 'class' => 'multi-select2', 'required' => true],
 		);
 
@@ -92,8 +90,7 @@ class UsersController extends Controller
 			'name' => 'required',
 			'email' => 'required|email',
 			'password' => 'nullable',
-			'username' => 'required',
-			'identitas' => 'nullable',
+			'identitas' => 'required|string|max:30|unique:users,identitas,'.$id,
 			'roles' => 'required|array',
 		);
 		$this->validate($request, $validation);
@@ -102,7 +99,6 @@ class UsersController extends Controller
 		$users->name = $request->input("name");
 		$users->email = $request->input("email");
 		$users->password = empty($request->input("password")) ? $users->password : bcrypt($request->input("password"));
-		$users->username = $request->input("username");
 		$users->identitas = $request->input("identitas");
 		$users->updated_by = Auth::user()->id;
 		$users->save();
