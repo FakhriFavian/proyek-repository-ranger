@@ -31,13 +31,7 @@ class StudentSeeder extends Seeder
                 throw new RuntimeException('Akun siswa dengan identitas 24761 tidak ditemukan.');
             }
 
-            $user->update([
-                'email' => 'fakhrifavianrr@gmail.com',
-                'kelas' => 'XII PPLG 2',
-                'jenis_kelamin' => 'Laki-laki',
-                'nomor_telepon' => '08567271277',
-            ]);
-
+            // Pemanggilan $user-> yang menggantung sudah dihapus dari sini
             $userRole = UserRole::withTrashed()
                 ->where('id_user', $user->id)
                 ->where('id_role', $role->id)
