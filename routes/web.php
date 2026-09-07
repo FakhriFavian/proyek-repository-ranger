@@ -163,6 +163,7 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
             }
 
             return array_merge($status, [
+                'borrowing_id' => $borrowing->id,
                 'raw_status' => $borrowing->status,
                 'date' => Carbon::parse($borrowing->jam_mulai)->translatedFormat('d M Y'),
                 'time' => Carbon::parse($borrowing->jam_mulai)->format('H.i').' - '.Carbon::parse($borrowing->jam_selesai)->format('H.i'),
@@ -191,6 +192,50 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
 
         return view('user.riwayat', compact('timeline', 'borrowings', 'stats'));
     })->name('riwayat');
+
+    Route::get('/pengembalian/{borrowing}/konfirmasi', function (borrowings $borrowing) {
+        abort_unless(
+            $borrowing->user_id === Auth::guard('student')->id() && in_array($borrowing->status, ['dipinjam', 'dikembalikan'], true),
+            404
+        );
+
+        $borrowing->load(['details.item.category', 'user']);
+        $detail = $borrowing->details->firstOrFail();
+        $itemModel = $detail->item;
+        $start = $borrowing->tanggal_approval ?? $borrowing->updated_at;
+        $deadline = $start ? Carbon::parse($start)->addMinutes(60) : null;
+        $now = Carbon::now();
+        $isReturned = $borrowing->status === 'dikembalikan';
+        $isLate = !$isReturned && $deadline && $now->greaterThan($deadline);
+        $fine = $isLate ? app(\App\Services\BorrowingStockService::class)->calculateFine(Carbon::parse($start), $now) : 0;
+
+        $item = [
+            'name' => $itemModel?->nama_item ?? 'Barang tidak tersedia',
+            'category' => $itemModel?->category?->nama_kategori ?? 'Tanpa kategori',
+            'img' => $itemModel?->foto ? asset('storage/'.$itemModel->foto) : asset('images/vacuum.jpg'),
+        ];
+
+        return view('user.return-confirm', compact('borrowing', 'detail', 'item', 'deadline', 'isReturned', 'isLate', 'fine'));
+    })->name('pengembalian.confirm');
+
+    Route::post('/pengembalian/{borrowing}', function (Request $request, borrowings $borrowing) {
+        abort_unless(
+            $borrowing->user_id === Auth::guard('student')->id() && $borrowing->status === 'dipinjam',
+            404
+        );
+
+        $request->validate(['confirmation' => 'required|in:yes,no']);
+        if ($request->input('confirmation') === 'no') {
+            return redirect()->route('riwayat');
+        }
+
+        app(\App\Services\BorrowingStockService::class)->updateBorrowing($borrowing, [
+            'status' => 'dikembalikan',
+            'updated_by' => Auth::guard('student')->id(),
+        ]);
+
+        return redirect()->route('riwayat')->with('success', 'Pengembalian barang berhasil dikonfirmasi.');
+    })->name('pengembalian.store');
 
     Route::get('/peminjaman/konfirmasi', function (Request $request) {
         $request->validate([
