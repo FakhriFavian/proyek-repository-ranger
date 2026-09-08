@@ -334,7 +334,7 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
 
         return redirect()->route('riwayat');
     })->name('peminjaman.store');
- 
+
 });
 
 require __DIR__ . '/auth.php';
