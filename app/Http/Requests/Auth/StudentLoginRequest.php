@@ -14,7 +14,7 @@ class StudentLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nis' => ['required', 'string'],
+            'identitas' => ['required', 'string', 'max:30'],
             'password' => ['required', 'string'],
         ];
     }

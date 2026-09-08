@@ -20,8 +20,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; }
-        .maroon { background-color: #9c3b3b; }
-        .maroon-text { color: #9c3b3b; }
+        .maroon { background-color: #8C1F2F; }
+        .maroon-text { color: #8C1F2F   ; }
         .cream { background-color: #fbe9e2; }
         .photo-save-panel { display: none; }
         .photo-save-panel.is-visible { display: flex; }

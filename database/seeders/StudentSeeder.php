@@ -30,7 +30,7 @@ class StudentSeeder extends Seeder
             if (!$user) {
                 $user = User::create([
                     'name' => 'Grycelda Nabeeha Zahra',
-                    'username' => 'grycelda24763',
+                    'identitas' => '24763',
                     'email' => 'grycelda.nabeeha@example.com',
                     'identitas' => '24763',
                     'kelas' => 'XII PPLG 2',
@@ -39,7 +39,7 @@ class StudentSeeder extends Seeder
             } else {
                 $user->update([
                     'name' => 'Grycelda Nabeeha Zahra',
-                    'username' => 'grycelda24763',
+                    'identitas' => '24763',
                     'email' => 'grycelda.nabeeha@example.com',
                     'identitas' => '24763',
                     'kelas' => 'XII PPLG 2',
@@ -72,7 +72,7 @@ class StudentSeeder extends Seeder
                 ],
                 [
                     'name' => 'Adinda Pertiwi',
-                    'username' => 'adinda24750',
+                    'identitas' => '24750',
                     'email' => 'adinda.pertiwi@example.com',
                     'identitas' => '24750',
                     'kelas' => 'XII PPLG 2',
@@ -80,7 +80,7 @@ class StudentSeeder extends Seeder
                 ],
                 [
                     'name' => 'Khansa',
-                    'username' => 'khansa24768',
+                    'identitas' => '24768',
                     'email' => 'khansa@example.com',
                     'identitas' => '24768',
                     'kelas' => 'XII PPLG 2',
@@ -88,7 +88,7 @@ class StudentSeeder extends Seeder
                 ],
                 [
                     'name' => 'Najla Abida',
-                    'username' => 'najla24773',
+                    'identitas' => '24773',
                     'email' => 'najla.abida@example.com',
                     'identitas' => '24773',
                     'kelas' => 'XII PPLG 2',
@@ -96,7 +96,7 @@ class StudentSeeder extends Seeder
                 ],
                 [
                     'name' => 'Aura Naylus Sava',
-                    'username' => 'aura24756',
+                    'identitas' => '24756',
                     'email' => 'aura.naylus@example.com',
                     'identitas' => '24756',
                     'kelas' => 'XII PPLG 2',
@@ -111,7 +111,7 @@ class StudentSeeder extends Seeder
 
                 $userData = [
                     'name' => $student['name'],
-                    'username' => $student['username'],
+                    'identitas' => $student['identitas'],
                     'email' => $student['email'],
                     'identitas' => $student['identitas'],
                     'kelas' => $student['kelas'],

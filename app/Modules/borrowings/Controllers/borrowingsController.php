@@ -25,18 +25,45 @@ class borrowingsController extends Controller
 		$this->stockService = $stockService;
 	}
 
-	public function index(Request $request)
-	{
-		$query = borrowings::with('user');
-		if($request->has('search')){
-			$search = $request->get('search');
-			// $query->where('name', 'like', "%$search%");
-		}
-		$data['data'] = $query->paginate(10)->withQueryString();
+	public function index(Request $request) 
+{ 
+    $query = borrowings::with('user');
 
-		$this->log($request, 'melihat halaman manajemen data '.$this->title);
-		return view('borrowings::borrowings', array_merge($data, ['title' => $this->title]));
-	}
+    if ($request->has('search')) { 
+        $search = $request->get('search');
+
+        if ($search !== '') {
+            $query->whereHas('user', function ($userQuery) use ($search) {
+                $userQuery->where('name', 'like', "%{$search}%");
+            });
+        }
+    }
+
+    // Urutan status:
+    // 1. Menunggu
+    // 2. Disetujui
+    // 3. Dipinjam
+    // 4. Ditolak
+    // 5. Dikembalikan
+    $query->orderByRaw("
+        CASE status
+            WHEN 'menunggu' THEN 1
+            WHEN 'disetujui' THEN 2
+            WHEN 'dipinjam' THEN 3
+            WHEN 'ditolak' THEN 4
+            WHEN 'dikembalikan' THEN 5
+            ELSE 6
+        END
+    ");
+
+    // Yang terbaru dalam status yang sama ditampilkan paling atas
+    $query->orderByDesc('created_at');
+
+    $data['data'] = $query->paginate(10)->withQueryString(); 
+
+    $this->log($request, 'melihat halaman manajemen data '.$this->title); 
+    return view('borrowings::borrowings', array_merge($data, ['title' => $this->title])); 
+}
 
 	public function create(Request $request)
 	{
