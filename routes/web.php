@@ -329,14 +329,12 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
             $detail->created_by = Auth::guard('student')->id();
             $detail->save();
 
-            // DECREMENT STOCK: Kurangi stok_tersedia setelah peminjaman berhasil dibuat
-            // Menggunakan lockForUpdate() untuk mencegah race condition
-            $item->decrement('stok_tersedia', $jumlah);
+            // Stok baru dikurangi oleh BorrowingStockService saat status menjadi 'dipinjam'.
         });
 
         return redirect()->route('riwayat');
     })->name('peminjaman.store');
- 
+
 });
 
 require __DIR__ . '/auth.php';
