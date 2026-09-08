@@ -12,6 +12,8 @@
 
     <title>Take and Go</title>
 
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-ng.png') }}">
+
     <script src="https://cdn.tailwindcss.com"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -269,9 +271,11 @@
 
             <div id="heroCarousel" class="relative aspect-[1920/650] overflow-hidden rounded-3xl">
 
+                <div id="heroTrack" class="flex h-full w-[500%]">
+
                 <div
                     id="heroSlide1"
-                    class="hero-slide maroon absolute inset-0 overflow-hidden px-8 lg:px-16 py-14 lg:py-20 flex items-center justify-center translate-x-0 transition-transform duration-700 ease-in-out"
+                    class="hero-slide maroon relative h-full w-1/5 flex-none overflow-hidden px-8 lg:px-16 py-14 lg:py-20 flex items-center justify-center"
                 >
 
                     {{-- Lingkaran kiri --}}
@@ -314,13 +318,26 @@
 
                 <div
                     id="heroSlide2"
-                    class="hero-slide absolute inset-0 overflow-hidden translate-x-full transition-transform duration-700 ease-in-out"
+                    class="hero-slide relative h-full w-1/5 flex-none overflow-hidden"
                 >
                     <img
                         src="{{ asset('images/banner2.jpg') }}"
                         alt="Banner Take and Go"
                         class="w-full h-full object-contain"
                     >
+                </div>
+
+                <div
+                    id="heroSlide3"
+                    class="hero-slide relative h-full w-1/5 flex-none overflow-hidden"
+                >
+                    <img
+                        src="{{ asset('images/banner3.jpg') }}"
+                        alt="Banner Take and Go"
+                        class="w-full h-full object-contain"
+                    >
+                </div>
+
                 </div>
 
             </div>
@@ -342,6 +359,13 @@
                     class="hero-indicator w-2.5 h-2.5 rounded-full bg-neutral-300 transition"
                     data-slide="1"
                     aria-label="Tampilkan banner kedua"
+                    aria-current="false"
+                ></button>
+                <button
+                    type="button"
+                    class="hero-indicator w-2.5 h-2.5 rounded-full bg-neutral-300 transition"
+                    data-slide="2"
+                    aria-label="Tampilkan banner ketiga"
                     aria-current="false"
                 ></button>
             </div>
@@ -1441,25 +1465,40 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const slide1 = document.getElementById('heroSlide1');
-            const slide2 = document.getElementById('heroSlide2');
+            const track = document.getElementById('heroTrack');
             const indicators = document.querySelectorAll('.hero-indicator');
+            const originalSlides = [
+                document.getElementById('heroSlide1'),
+                document.getElementById('heroSlide2'),
+                document.getElementById('heroSlide3')
+            ];
 
-            if (!slide1 || !slide2 || indicators.length !== 2) {
+            if (!track || originalSlides.some(function (slide) { return !slide; }) || indicators.length !== originalSlides.length) {
                 return;
             }
 
+            const previousClone = originalSlides[2].cloneNode(true);
+            const nextClone = originalSlides[0].cloneNode(true);
+
+            previousClone.removeAttribute('id');
+            nextClone.removeAttribute('id');
+            track.insertBefore(previousClone, originalSlides[0]);
+            track.appendChild(nextClone);
+
+            const slides = Array.from(track.children);
+            let currentIndex = 1;
             let activeSlide = 0;
+            let autoplayTimer;
+            let pendingResetIndex = null;
 
-            function showSlide(slideIndex) {
-                activeSlide = slideIndex;
+            function setTrackPosition(animate) {
+                track.style.transition = animate
+                    ? 'transform 600ms cubic-bezier(0.22, 1, 0.36, 1)'
+                    : 'none';
+                track.style.transform = 'translateX(-' + (currentIndex * 20) + '%)';
+            }
 
-                slide1.classList.toggle('translate-x-0', activeSlide === 0);
-                slide1.classList.toggle('-translate-x-full', activeSlide === 1);
-
-                slide2.classList.toggle('translate-x-0', activeSlide === 1);
-                slide2.classList.toggle('translate-x-full', activeSlide === 0);
-
+            function updateIndicators() {
                 indicators.forEach(function (indicator, index) {
                     indicator.classList.toggle('bg-[#8C1F2F]', index === activeSlide);
                     indicator.classList.toggle('bg-neutral-300', index !== activeSlide);
@@ -1467,15 +1506,62 @@
                 });
             }
 
+            function showSlide(slideIndex, direction) {
+                activeSlide = slideIndex;
+                pendingResetIndex = null;
+
+                if (direction === 'backward' && activeSlide === 2 && currentIndex === 1) {
+                    currentIndex = 0;
+                    pendingResetIndex = 3;
+                } else if (direction === 'forward' && activeSlide === 0 && currentIndex === 3) {
+                    currentIndex = 4;
+                    pendingResetIndex = 1;
+                } else {
+                    currentIndex = activeSlide + 1;
+                }
+
+                setTrackPosition(true);
+                updateIndicators();
+            }
+
+            function resetAutoplay() {
+                window.clearTimeout(autoplayTimer);
+                autoplayTimer = window.setTimeout(function () {
+                    const nextSlide = (activeSlide + 1) % originalSlides.length;
+                    showSlide(nextSlide, 'forward');
+                    resetAutoplay();
+                }, 5000);
+            }
+
+            track.addEventListener('transitionend', function (event) {
+                if (event.propertyName !== 'transform' || pendingResetIndex === null) {
+                    return;
+                }
+
+                currentIndex = pendingResetIndex;
+                pendingResetIndex = null;
+                setTrackPosition(false);
+            });
+
             indicators.forEach(function (indicator) {
                 indicator.addEventListener('click', function () {
-                    showSlide(Number(indicator.dataset.slide));
+                    const targetSlide = Number(indicator.dataset.slide);
+                    let direction = targetSlide < activeSlide ? 'backward' : 'forward';
+
+                    if (activeSlide === 0 && targetSlide === 2) {
+                        direction = 'backward';
+                    } else if (activeSlide === 2 && targetSlide === 0) {
+                        direction = 'forward';
+                    }
+
+                    showSlide(targetSlide, direction);
+                    resetAutoplay();
                 });
             });
 
-            setInterval(function () {
-                showSlide(activeSlide === 0 ? 1 : 0);
-            }, 5000);
+            setTrackPosition(false);
+            updateIndicators();
+            resetAutoplay();
         });
     </script>
 
