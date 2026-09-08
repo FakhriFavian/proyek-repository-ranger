@@ -24,29 +24,6 @@ class StudentSeeder extends Seeder
             }
 
             $user = User::withTrashed()
-                ->where('identitas', '24761')
-                ->first();
-
-            if (!$user) {
-                throw new RuntimeException('Akun siswa dengan identitas 24761 tidak ditemukan.');
-            }
-
-            // Pemanggilan $user-> yang menggantung sudah dihapus dari sini
-            $userRole = UserRole::withTrashed()
-                ->where('id_user', $user->id)
-                ->where('id_role', $role->id)
-                ->first();
-
-            if (!$userRole) {
-                UserRole::create([
-                    'id_user' => $user->id,
-                    'id_role' => $role->id,
-                ]);
-            } elseif ($userRole->trashed()) {
-                $userRole->restore();
-            }
-
-            $user = User::withTrashed()
                 ->where('identitas', '24763')
                 ->first();
 
@@ -85,6 +62,14 @@ class StudentSeeder extends Seeder
             }
 
             $students = [
+                [
+                    'name' => 'Fakhri Favian Ramadhan',
+                    'username' => 'fakhri24761',
+                    'email' => 'fakhri.favian@example.com',
+                    'identitas' => '24761',
+                    'kelas' => 'XII PPLG 2',
+                    'password' => 'Fakhri123',
+                ],
                 [
                     'name' => 'Adinda Pertiwi',
                     'username' => 'adinda24750',
@@ -136,6 +121,10 @@ class StudentSeeder extends Seeder
                 if (!$user) {
                     $user = User::create($userData);
                 } else {
+                    if ($user->trashed()) {
+                        $user->restore();
+                    }
+
                     $user->update($userData);
                 }
 
