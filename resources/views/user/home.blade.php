@@ -154,7 +154,7 @@
                             </svg>
                         </button>
 
-                         
+
                     {{-- pop up menu --}}
 
                     <div
@@ -267,46 +267,83 @@
         ====================================================== --}}
         <section class="mt-6">
 
-            <div
-                class="maroon relative rounded-3xl overflow-hidden px-8 lg:px-16 py-14 lg:py-20 min-h-[240px] lg:min-h-[320px] flex items-center justify-center"
-            >
+            <div id="heroCarousel" class="relative aspect-[1920/650] overflow-hidden rounded-3xl">
 
-                {{-- Lingkaran kiri --}}
                 <div
-                    class="accent absolute -left-10 lg:left-0 -bottom-16 w-48 h-48 lg:w-64 lg:h-64 rounded-full z-0 pointer-events-none"
-                ></div>
-
-                {{-- Lingkaran kanan --}}
-                <div
-                    class="accent absolute -right-10 lg:right-4 -top-16 w-52 h-52 lg:w-72 lg:h-72 rounded-full z-0 pointer-events-none"
-                ></div>
-
-                {{-- Speaker --}}
-                <img
-                    src="{{ asset('images/speaker.png') }}"
-                    alt="speaker"
-                    class="absolute left-0 lg:left-8 bottom-0 w-40 lg:w-64 h-40 lg:h-64 object-contain drop-shadow-2xl select-none pointer-events-none hidden sm:block"
+                    id="heroSlide1"
+                    class="hero-slide maroon absolute inset-0 overflow-hidden px-8 lg:px-16 py-14 lg:py-20 flex items-center justify-center translate-x-0 transition-transform duration-700 ease-in-out"
                 >
 
-                {{-- Kamera --}}
-                <img
-                    src="{{ asset('images/kamera.png') }}"
-                    alt="Kamera"
-                    class="absolute right-0 lg:right-8 top-0 w-44 lg:w-72 h-44 lg:h-72 object-contain drop-shadow-2xl select-none pointer-events-none hidden sm:block"
-                >
+                    {{-- Lingkaran kiri --}}
+                    <div
+                        class="accent absolute -left-10 lg:left-0 -bottom-16 w-48 h-48 lg:w-64 lg:h-64 rounded-full z-0 pointer-events-none"
+                    ></div>
 
-                {{-- Tulisan --}}
-                <div class="relative z-10 text-center px-4">
+                    {{-- Lingkaran kanan --}}
+                    <div
+                        class="accent absolute -right-10 lg:right-4 -top-16 w-52 h-52 lg:w-72 lg:h-72 rounded-full z-0 pointer-events-none"
+                    ></div>
 
-                    <h2
-                        class="text-white font-extrabold text-3xl lg:text-5xl leading-tight tracking-wide"
+                    {{-- Speaker --}}
+                    <img
+                        src="{{ asset('images/speaker.png') }}"
+                        alt="speaker"
+                        class="absolute left-0 lg:left-8 bottom-0 w-40 lg:w-64 h-40 lg:h-64 object-contain drop-shadow-2xl select-none pointer-events-none hidden sm:block"
                     >
-                        TAKE IT. USE IT.<br>
-                        RETURN IT.
-                    </h2>
+
+                    {{-- Kamera --}}
+                    <img
+                        src="{{ asset('images/kamera.png') }}"
+                        alt="Kamera"
+                        class="absolute right-0 lg:right-8 top-0 w-44 lg:w-72 h-44 lg:h-72 object-contain drop-shadow-2xl select-none pointer-events-none hidden sm:block"
+                    >
+
+                    {{-- Tulisan --}}
+                    <div class="relative z-10 text-center px-4">
+
+                        <h2
+                            class="text-white font-extrabold text-3xl lg:text-5xl leading-tight tracking-wide"
+                        >
+                            TAKE IT. USE IT.<br>
+                            RETURN IT.
+                        </h2>
+
+                    </div>
 
                 </div>
 
+                <div
+                    id="heroSlide2"
+                    class="hero-slide absolute inset-0 overflow-hidden translate-x-full transition-transform duration-700 ease-in-out"
+                >
+                    <img
+                        src="{{ asset('images/banner2.jpg') }}"
+                        alt="Banner Take and Go"
+                        class="w-full h-full object-contain"
+                    >
+                </div>
+
+            </div>
+
+            <div
+                id="heroIndicators"
+                class="flex justify-center items-center gap-2 mt-3"
+                aria-label="Indikator banner"
+            >
+                <button
+                    type="button"
+                    class="hero-indicator w-2.5 h-2.5 rounded-full bg-[#8C1F2F] transition"
+                    data-slide="0"
+                    aria-label="Tampilkan banner pertama"
+                    aria-current="true"
+                ></button>
+                <button
+                    type="button"
+                    class="hero-indicator w-2.5 h-2.5 rounded-full bg-neutral-300 transition"
+                    data-slide="1"
+                    aria-label="Tampilkan banner kedua"
+                    aria-current="false"
+                ></button>
             </div>
 
         </section>
@@ -1400,6 +1437,46 @@
 
         });
 
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const slide1 = document.getElementById('heroSlide1');
+            const slide2 = document.getElementById('heroSlide2');
+            const indicators = document.querySelectorAll('.hero-indicator');
+
+            if (!slide1 || !slide2 || indicators.length !== 2) {
+                return;
+            }
+
+            let activeSlide = 0;
+
+            function showSlide(slideIndex) {
+                activeSlide = slideIndex;
+
+                slide1.classList.toggle('translate-x-0', activeSlide === 0);
+                slide1.classList.toggle('-translate-x-full', activeSlide === 1);
+
+                slide2.classList.toggle('translate-x-0', activeSlide === 1);
+                slide2.classList.toggle('translate-x-full', activeSlide === 0);
+
+                indicators.forEach(function (indicator, index) {
+                    indicator.classList.toggle('bg-[#8C1F2F]', index === activeSlide);
+                    indicator.classList.toggle('bg-neutral-300', index !== activeSlide);
+                    indicator.setAttribute('aria-current', String(index === activeSlide));
+                });
+            }
+
+            indicators.forEach(function (indicator) {
+                indicator.addEventListener('click', function () {
+                    showSlide(Number(indicator.dataset.slide));
+                });
+            });
+
+            setInterval(function () {
+                showSlide(activeSlide === 0 ? 1 : 0);
+            }, 5000);
+        });
     </script>
 
     <script>
