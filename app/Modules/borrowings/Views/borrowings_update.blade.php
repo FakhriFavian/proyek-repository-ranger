@@ -55,11 +55,11 @@
                                     <div class="d-flex align-items-center gap-3 mb-3">
                                         @if ($detail->item?->foto)
                                             <img
-                                                src="{{ asset('storage/' . $detail->item->foto) }}"
-                                                alt="{{ $detail->item->nama_item }}"
-                                                class="rounded object-fit-cover border"
-                                                style="width: 96px; height: 96px;"
-                                            >
+    src="{{ asset('storage/' . $detail->item->foto) }}"
+    alt="{{ $detail->item->nama_item }}"
+    class="rounded border"
+    style="width: 96px; height: 96px; object-fit: cover; object-position: center; background-color: #f8f9fa;"
+>
                                         @else
                                             <div
                                                 class="d-flex align-items-center justify-content-center rounded border bg-light text-muted text-center small"
