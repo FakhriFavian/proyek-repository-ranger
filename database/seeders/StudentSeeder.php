@@ -64,7 +64,6 @@ class StudentSeeder extends Seeder
             $students = [
                 [
                     'name' => 'Fakhri Favian Ramadhan',
-                    'username' => 'fakhri24761',
                     'email' => 'fakhri.favian@example.com',
                     'identitas' => '24761',
                     'kelas' => 'XII PPLG 2',
