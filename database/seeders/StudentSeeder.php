@@ -102,6 +102,13 @@ class StudentSeeder extends Seeder
                     'kelas' => 'XII PPLG 2',
                     'password' => 'Aura111',
                 ],
+                [
+                    'name' => 'Anindia Rosa Viona Bachtiar',
+                    'identitas' => '24755',
+                    'email' => 'anindia.rosa@example.com',
+                    'kelas' => 'XII PPLG 2',
+                    'password' => 'vio089',
+                ],
             ];
 
             foreach ($students as $student) {
@@ -144,6 +151,6 @@ class StudentSeeder extends Seeder
             }
         });
 
-        $this->command?->info('Akun siswa Fakhri, Grycelda, Adinda, Khansa, Najla, dan Aura siap digunakan.');
+        $this->command?->info('Akun siswa Fakhri, Grycelda, Adinda, Khansa, Najla, Aura, dan Anindia siap digunakan.');
     }
 }
