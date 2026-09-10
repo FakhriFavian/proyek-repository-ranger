@@ -274,13 +274,6 @@
                             <h4 class="font-bold text-slate-800 text-sm">{{ $step['title'] }}</h4>
                             <p class="text-[11px] text-slate-400 font-medium leading-relaxed mt-0.5">{{ $step['desc'] }}</p>
 
-                            @if (in_array(($step['raw_status'] ?? ''), ['dipinjam', 'dikembalikan'], true))
-                                <a href="{{ route('pengembalian.confirm', $step['borrowing_id']) }}" class="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg bg-orange-500 text-white text-[10px] font-bold hover:bg-orange-600 transition">
-                                    {{ ($step['raw_status'] ?? '') === 'dipinjam' ? 'Barang dikembalikan' : 'Lihat pengembalian' }}
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" /></svg>
-                                </a>
-                            @endif
-
                             {{-- ====== TIMER ====== --}}
                             @if (!empty($step['can_timer']))
                                 {{-- Status Dipinjam: elapsed timer (naik) / TERLAMBAT (berbasis server) --}}

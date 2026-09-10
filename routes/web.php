@@ -16,7 +16,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
-Route::view('/', 'welcome')->name('frontend.index');
+Route::get('/', function () {
+    return redirect()->route('home');
+})->name('frontend.index');
 
 Route::get('/user/login', [StudentAuthController::class, 'create'])->name('user.login');
 Route::post('/user/login', [StudentAuthController::class, 'store'])->name('user.login.store');
