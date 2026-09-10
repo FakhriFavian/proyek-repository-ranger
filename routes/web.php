@@ -16,9 +16,23 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
-Route::get('/', function () {
-    return redirect()->route('home');
-})->name('frontend.index');
+$homePage = function () {
+    $activeCategory = request('category', 'All item');
+    $categories = categories::where('is_active', 1)->orderBy('nama_kategori')->get();
+    $items = Items::with('category')
+        ->where('is_active', 1)
+        ->when($activeCategory !== 'All item', function ($query) use ($activeCategory) {
+            $query->whereHas('category', function ($categoryQuery) use ($activeCategory) {
+                $categoryQuery->where('nama_kategori', $activeCategory);
+            });
+        })
+        ->orderBy('nama_item')
+        ->get();
+
+    return view('user.home', compact('categories', 'items', 'activeCategory'));
+};
+
+Route::get('/', $homePage)->name('frontend.index');
 
 Route::get('/user/login', [StudentAuthController::class, 'create'])->name('user.login');
 Route::post('/user/login', [StudentAuthController::class, 'store'])->name('user.login.store');
@@ -47,20 +61,7 @@ Route::middleware(AuthenticateAnyUser::class)->group(function () {
 });
 
 // Route User (Ubah name jadi 'home')
-Route::get('/home', function () {
-    $activeCategory = request('category', 'All item');
-    $categories = categories::where('is_active', 1)->orderBy('nama_kategori')->get();
-    $items = Items::with('category')
-        ->where('is_active', 1)
-        ->when($activeCategory !== 'All item', function ($query) use ($activeCategory) {
-            $query->whereHas('category', function ($categoryQuery) use ($activeCategory) {
-                $categoryQuery->where('nama_kategori', $activeCategory);
-            });
-        })
-        ->orderBy('nama_item')
-        ->get();
-    return view('user.home', compact('categories', 'items', 'activeCategory'));
-})->name('home');
+Route::get('/home', $homePage)->name('home');
 
 Route::middleware(AuthenticateStudent::class)->group(function () {
 
