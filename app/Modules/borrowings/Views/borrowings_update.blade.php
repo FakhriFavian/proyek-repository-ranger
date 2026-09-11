@@ -52,7 +52,27 @@
                             </div>
                             <div class="col-md-9 form-group">
                                 @forelse ($borrowings->details as $detail)
-                                    <div>{{ $detail->item?->nama_item ?? '-' }} — {{ $detail->jumlah }}</div>
+                                    <div class="d-flex align-items-center gap-3 mb-3">
+                                        @if ($detail->item?->foto)
+                                            <img
+    src="{{ asset('storage/' . $detail->item->foto) }}"
+    alt="{{ $detail->item->nama_item }}"
+    class="rounded border"
+    style="width: 96px; height: 96px; object-fit: cover; object-position: center; background-color: #f8f9fa;"
+>
+                                        @else
+                                            <div
+                                                class="d-flex align-items-center justify-content-center rounded border bg-light text-muted text-center small"
+                                                style="width: 96px; height: 96px;"
+                                            >
+                                                Tidak ada foto
+                                            </div>
+                                        @endif
+                                        <div>
+                                            <div class="fw-semibold">{{ $detail->item?->nama_item ?? '-' }}</div>
+                                            <div class="text-muted">Jumlah: {{ $detail->jumlah }}</div>
+                                        </div>
+                                    </div>
                                 @empty
                                     <div class="text-muted">Belum ada item.</div>
                                 @endforelse

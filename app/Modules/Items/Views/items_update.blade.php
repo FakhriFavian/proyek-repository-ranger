@@ -51,6 +51,9 @@
                                 </div>
                             </div>
                         @endforeach
+                        <div class="offset-md-3 ps-2 mb-3 text-muted">
+                            Saat ini {{ $jumlah_dipinjam }} unit sedang dipinjam. Stok total harus mencukupi unit tersebut dan stok tersedia.
+                        </div>
                         <div class="offset-md-3 ps-2 pt-2 d-flex gap-2">
                             <button class="btn btn-primary icon icon-left" type="submit"><i class="fa fa-arrow-right"></i> Simpan</button>
                             <a href="{{ route('items.index') }}" class="btn btn-outline-secondary">Batal</a>

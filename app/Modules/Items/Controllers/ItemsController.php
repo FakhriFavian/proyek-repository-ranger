@@ -10,7 +10,9 @@ use App\Modules\borrowing_details\Models\borrowing_details;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class ItemsController extends Controller
 {
@@ -100,6 +102,9 @@ class ItemsController extends Controller
 	public function edit(Request $request, Items $items)
 	{
 		$data['items'] = $items;
+		$data['jumlah_dipinjam'] = $items->borrowingDetails()
+			->whereHas('borrowing', fn ($query) => $query->where('status', 'dipinjam'))
+			->sum('jumlah');
 		$ref_categories = categories::where('is_active', 1)->orderBy('nama_kategori')->pluck('nama_kategori', 'id');
 
 		$data['forms'] = array(
@@ -108,6 +113,7 @@ class ItemsController extends Controller
 			'deskripsi' => ['label' => 'Deskripsi', 'type' => 'textarea', 'value' => $items->deskripsi, 'required' => false, 'id' => 'deskripsi'],
 			'foto' => ['label' => 'Foto Baru', 'type' => 'file', 'required' => false, 'accept' => 'image/jpeg,image/png,image/webp', 'id' => 'foto'],
 			'stok_total' => ['label' => 'Stok Total', 'type' => 'number', 'value' => $items->stok_total, 'required' => true, 'min' => 0, 'id' => 'stok_total'],
+			'stok_tersedia' => ['label' => 'Stok Tersedia', 'type' => 'number', 'value' => $items->stok_tersedia, 'required' => true, 'min' => 0, 'id' => 'stok_tersedia'],
 			'is_active' => ['label' => 'Is Active', 'type' => 'select', 'value' => $items->is_active, 'options' => ['1' => 'Ya', '0' => 'Tidak'], 'required' => true, 'id' => 'is_active'],
 		);
 
@@ -125,24 +131,38 @@ class ItemsController extends Controller
 			'deskripsi' => 'nullable|string',
 			'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:51200',
 			'stok_total' => 'required|integer|min:0',
+			'stok_tersedia' => 'required|integer|min:0|lte:stok_total',
 			'is_active' => 'required|in:0,1',
 		]);
 
-		$items = Items::find($id);
+		$items = Items::findOrFail($id);
+		$jumlahDipinjam = $items->borrowingDetails()
+			->whereHas('borrowing', fn ($query) => $query->where('status', 'dipinjam'))
+			->sum('jumlah');
+		if ((int) $request->input('stok_tersedia') + $jumlahDipinjam > (int) $request->input('stok_total')) {
+			throw ValidationException::withMessages([
+				'stok_total' => 'Stok total harus mencukupi stok tersedia dan item yang sedang dipinjam.',
+			]);
+		}
+
 		$fotoLama = $items->foto;
 		$fotoBaru = $request->hasFile('foto')
 			? $request->file('foto')->store('items', 'public')
 			: null;
-		$items->nama_item = $request->input('nama_item');
-		$items->category_id = $request->input('category_id');
-		$items->deskripsi = $request->input('deskripsi');
-		if ($fotoBaru) {
-			$items->foto = $fotoBaru;
-		}
-		$items->stok_total = $request->input('stok_total');
-		$items->is_active = $request->input('is_active');
-		$items->updated_by = Auth::id();
-		$items->save();
+		DB::transaction(function () use ($items, $request, $fotoBaru) {
+			$items = Items::whereKey($items->id)->lockForUpdate()->firstOrFail();
+			$items->nama_item = $request->input('nama_item');
+			$items->category_id = $request->input('category_id');
+			$items->deskripsi = $request->input('deskripsi');
+			if ($fotoBaru) {
+				$items->foto = $fotoBaru;
+			}
+			$items->stok_total = $request->input('stok_total');
+			$items->stok_tersedia = $request->input('stok_tersedia');
+			$items->is_active = $request->input('is_active');
+			$items->updated_by = Auth::id();
+			$items->save();
+		});
 
 		if ($fotoBaru && $fotoLama) {
 			Storage::disk('public')->delete($fotoLama);

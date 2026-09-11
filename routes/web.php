@@ -16,7 +16,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
-Route::view('/', 'welcome')->name('frontend.index');
+Route::get('/', function () {
+    return redirect()->route('home');
+})->name('frontend.index');
 
 Route::get('/user/login', [StudentAuthController::class, 'create'])->name('user.login');
 Route::post('/user/login', [StudentAuthController::class, 'store'])->name('user.login.store');
@@ -394,8 +396,10 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
                 $detail->created_by = Auth::guard('student')->id();
                 $detail->save();
 
+
                 $entry['item']->decrement('stok_tersedia', $entry['quantity']);
             }
+
         });
 
         session()->forget('borrow_cart');
@@ -403,6 +407,8 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
 
         return redirect()->route('riwayat')->with('success', 'Peminjaman berhasil dibuat.');
     })->name('peminjaman.store');
+
+
 });
 
 require __DIR__ . '/auth.php';
