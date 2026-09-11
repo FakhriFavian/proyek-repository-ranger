@@ -249,68 +249,132 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
         return redirect()->route('riwayat')->with('success', 'Pengembalian barang berhasil dikonfirmasi.');
     })->name('pengembalian.store');
 
-    Route::get('/peminjaman/konfirmasi', function (Request $request) {
+    Route::post('/peminjaman/cart/update', function (Request $request) {
+        $tanggal = $request->input('tanggal', session('borrow_meta.tanggal', Carbon::today()->translatedFormat('d F Y')));
+        $jam = $request->input('jam', session('borrow_meta.jam', '08.00 - 09.00'));
+
         $request->validate([
             'item_id' => 'required|exists:items,id',
-            'tanggal' => 'required|string',
-            'jam' => ['required', 'regex:/^\d{2}\.\d{2} - \d{2}\.\d{2}$/'],
-            'jumlah' => 'required|integer|min:1',
+            'action' => 'required|in:increment,decrement,remove',
         ]);
 
-        $itemModel = Items::with('category')->where('is_active', 1)->findOrFail($request->query('item_id'));
-        if ($itemModel->stok_tersedia < 1) {
-            abort(422, 'Barang tidak tersedia.');
+        $cart = session()->get('borrow_cart', []);
+        $itemId = (string) $request->input('item_id');
+
+        if ($request->input('action') === 'remove') {
+            unset($cart[$itemId]);
+            session()->put('borrow_cart', $cart);
+
+            if (empty($cart)) {
+                session()->forget('borrow_cart');
+                return redirect()->route('home', ['tanggal' => $tanggal, 'jam' => $jam]);
+            }
+
+            return redirect()->route('peminjaman.confirm', ['tanggal' => $tanggal, 'jam' => $jam]);
         }
+
+        if (!isset($cart[$itemId])) {
+            return back()->with('error', 'Barang tidak ditemukan di daftar pesanan.');
+        }
+
+        $currentQty = max(1, (int) ($cart[$itemId]['quantity'] ?? 1));
+        $stock = max(1, (int) ($cart[$itemId]['stock'] ?? 1));
+
+        if ($request->input('action') === 'increment') {
+            $newQty = min($stock, $currentQty + 1);
+        } else {
+            $newQty = max(1, $currentQty - 1);
+        }
+
+        $cart[$itemId]['quantity'] = $newQty;
+        session()->put('borrow_cart', $cart);
+
+        return redirect()->route('peminjaman.confirm', ['tanggal' => $tanggal, 'jam' => $jam]);
+    })->name('peminjaman.cart.update');
+
+    Route::get('/peminjaman/konfirmasi', function (Request $request) {
+        $tanggal = $request->query('tanggal', session('borrow_meta.tanggal', Carbon::today()->translatedFormat('d F Y')));
+        $jam = $request->query('jam', session('borrow_meta.jam', '08.00 - 09.00'));
+        session()->put('borrow_meta', [
+            'tanggal' => $tanggal,
+            'jam' => $jam,
+        ]);
+
+        $cart = session()->get('borrow_cart', []);
+
+        if ($request->query('item_id')) {
+            $itemModel = Items::with('category')->where('is_active', 1)->findOrFail($request->query('item_id'));
+
+            $requestedQty = max(1, (int) $request->query('jumlah', 1));
+            $maxQty = (int) $itemModel->stok_tersedia;
+            $quantity = min($requestedQty, $maxQty);
+
+            $itemId = (string) $itemModel->id;
+            $itemEntry = [
+                'id' => $itemModel->id,
+                'name' => $itemModel->nama_item,
+                'category' => $itemModel->category?->nama_kategori ?? 'Tanpa kategori',
+                'stock' => $maxQty,
+                'img' => $itemModel->foto ? asset('storage/'.$itemModel->foto) : asset('images/vacuum.jpg'),
+                'quantity' => isset($cart[$itemId]) ? min($maxQty, (int) $cart[$itemId]['quantity'] + $quantity) : $quantity,
+            ];
+
+            $cart[$itemId] = $itemEntry;
+            session()->put('borrow_cart', $cart);
+        }
+
+        if (empty($cart)) {
+            return redirect()->route('home', ['tanggal' => $tanggal, 'jam' => $jam])->with('error', 'Belum ada barang yang dipilih.');
+        }
+
         $user = Auth::guard('student')->user();
-        $item = [
-            'id' => $itemModel->id,
-            'name' => $itemModel->nama_item,
-            'category' => $itemModel->category?->nama_kategori ?? 'Tanpa kategori',
-            'stock' => $itemModel->stok_tersedia,
-            'img' => $itemModel->foto ? asset('storage/'.$itemModel->foto) : asset('images/vacuum.jpg'),
-        ];
+        $totalKinds = count($cart);
+        $totalItems = array_sum(array_map(static fn ($item) => (int) ($item['quantity'] ?? 1), $cart));
 
-        $tanggal = $request->query('tanggal');
-        $jam = $request->query('jam');
-        $jumlah = min((int) $request->query('jumlah'), $itemModel->stok_tersedia);
-
-        return view('user.confirm', compact('item', 'tanggal', 'jam', 'jumlah', 'user'));
+        return view('user.confirm', compact('cart', 'tanggal', 'jam', 'user', 'totalKinds', 'totalItems'));
     })->name('peminjaman.confirm');
 
     // 2. Route Simpan Peminjaman (Saat tombol MULAI MEMINJAM diklik)
     Route::post('/peminjaman/store', function (Request $request) {
-        $request->validate([
-            'item_id' => 'required|exists:items,id',
-            'tanggal' => 'required|string',
-            'jam' => ['required', 'regex:/^\d{2}\.\d{2} - \d{2}\.\d{2}$/'],
-            'jumlah' => 'required|integer|min:1',
-        ]);
+        $tanggal = $request->input('tanggal', session('borrow_meta.tanggal', Carbon::today()->translatedFormat('d F Y')));
+        $jam = $request->input('jam', session('borrow_meta.jam', '08.00 - 09.00'));
+        $cart = session()->get('borrow_cart', []);
+
+        if (empty($cart)) {
+            return redirect()->route('home', ['tanggal' => $tanggal, 'jam' => $jam])->with('error', 'Daftar pesanan kosong.');
+        }
+
+        $validatedCart = [];
+        foreach ($cart as $itemId => $item) {
+            $itemModel = Items::where('is_active', 1)->whereKey($itemId)->firstOrFail();
+            $quantity = max(1, (int) ($item['quantity'] ?? 1));
+
+            if ($quantity > (int) $itemModel->stok_tersedia) {
+                throw ValidationException::withMessages([
+                    'jumlah' => 'Jumlah peminjaman untuk '.($item['name'] ?? $itemModel->nama_item).' melebihi stok yang tersedia.',
+                ]);
+            }
+
+            $validatedCart[] = [
+                'item' => $itemModel,
+                'quantity' => $quantity,
+            ];
+        }
 
         try {
-            $date = Carbon::createFromLocaleFormat('d F Y', 'id', $request->input('tanggal'));
+            $date = Carbon::createFromLocaleFormat('d F Y', 'id', $tanggal);
         } catch (\Throwable) {
-            $date = Carbon::parse($request->input('tanggal'));
+            $date = Carbon::parse($tanggal);
         }
         $date = $date->startOfDay();
         [$start, $end] = array_map(
             static fn (string $time) => str_replace('.', ':', trim($time)),
-            explode('-', $request->input('jam'))
+            explode('-', $jam)
         );
         $startAt = $date->copy()->setTimeFromTimeString($start);
         $endAt = $date->copy()->setTimeFromTimeString($end);
 
-        DB::transaction(function () use ($startAt, $endAt, $request) {
-            $item = Items::where('is_active', 1)
-                ->whereKey($request->input('item_id'))
-                ->lockForUpdate()
-                ->firstOrFail();
-            $jumlah = (int) $request->input('jumlah');
-            if ($jumlah > $item->stok_tersedia) {
-                throw ValidationException::withMessages([
-                    'jumlah' => 'Jumlah peminjaman melebihi stok yang tersedia.',
-                ]);
-            }
-
+        DB::transaction(function () use ($startAt, $endAt, $validatedCart) {
             $borrowing = new borrowings();
             $borrowing->user_id = Auth::guard('student')->id();
             $borrowing->jam_mulai = $startAt->format('Y-m-d H:i:s');
@@ -319,24 +383,26 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
             $borrowing->created_by = Auth::guard('student')->id();
             $borrowing->save();
 
-            $detail = new borrowing_details();
-            $detail->borrowing_id = $borrowing->id;
-            $detail->item_id = $item->id;
-            $detail->kondisi_barang = 'Baik';
-            $detail->denda = 0;
-            $detail->jumlah = $jumlah;
-            $detail->catatan = 0;
-            $detail->created_by = Auth::guard('student')->id();
-            $detail->save();
+            foreach ($validatedCart as $entry) {
+                $detail = new borrowing_details();
+                $detail->borrowing_id = $borrowing->id;
+                $detail->item_id = $entry['item']->id;
+                $detail->kondisi_barang = 'Baik';
+                $detail->denda = 0;
+                $detail->jumlah = $entry['quantity'];
+                $detail->catatan = 0;
+                $detail->created_by = Auth::guard('student')->id();
+                $detail->save();
 
-            // DECREMENT STOCK: Kurangi stok_tersedia setelah peminjaman berhasil dibuat
-            // Menggunakan lockForUpdate() untuk mencegah race condition
-            $item->decrement('stok_tersedia', $jumlah);
+                $entry['item']->decrement('stok_tersedia', $entry['quantity']);
+            }
         });
 
-        return redirect()->route('riwayat');
+        session()->forget('borrow_cart');
+        session()->forget('borrow_meta');
+
+        return redirect()->route('riwayat')->with('success', 'Peminjaman berhasil dibuat.');
     })->name('peminjaman.store');
- 
 });
 
 require __DIR__ . '/auth.php';
