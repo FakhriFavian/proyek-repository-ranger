@@ -1600,6 +1600,43 @@
         });
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const params = new URLSearchParams(window.location.search);
+            const tanggal = params.get('tanggal');
+            const jam = params.get('jam');
+
+            if (tanggal) {
+                const tanggalInput = document.getElementById('selectedTanggal');
+                if (tanggalInput) {
+                    tanggalInput.value = tanggal;
+                }
+            }
+
+            if (jam) {
+                const jamInput = document.getElementById('selectedJam');
+                if (jamInput) {
+                    jamInput.value = jam;
+                }
+
+                const jamButton = document.querySelector('.jam-btn');
+                if (jamButton) {
+                    let matchingButton = null;
+                    document.querySelectorAll('.jam-btn').forEach((button) => {
+                        const buttonText = button.textContent.replace(/\s+/g, ' ').trim();
+                        if (buttonText.includes(jam)) {
+                            matchingButton = button;
+                        }
+                    });
+
+                    if (matchingButton) {
+                        selectJam(matchingButton, jam);
+                    }
+                }
+            }
+        });
+    </script>
+
 </body>
 
 </html>
