@@ -509,7 +509,8 @@
                                         @json($item->nama_item),
                                         @json($kategori),
                                         @json($item->stok_tersedia),
-                                        @json($image)
+                                        @json($image),
+                                        @json($item->deskripsi ?? 'Barang ini siap digunakan untuk kegiatan peminjaman.')
                                     )'
 
                                     @if ($item->stok_tersedia < 1)
@@ -584,448 +585,152 @@
 
 
     {{-- =========================================================
-        POP-UP MODAL JADWAL PEMINJAMAN
+        POP-UP MODAL PILIH BARANG
     ========================================================== --}}
     <div
         id="modalPinjam"
-        class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-6"
+        class="fixed inset-0 z-50 hidden"
     >
 
-        {{-- BACKDROP --}}
         <div
+            id="modalBackdrop"
             onclick="closeModalPinjam()"
-            class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+            class="absolute inset-0 bg-slate-900/65 backdrop-blur-sm opacity-0 transition-opacity duration-300"
         ></div>
 
-
-        {{-- =====================================================
-            FORM BOOKING
-        ====================================================== --}}
-        <form
-            id="formBooking"
-            action="{{ route('peminjaman.confirm') }}"
-            method="GET"
-            class="relative bg-[#FAF9F5] w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto scrollbar-none"
-        >
-
-            {{-- INPUT DATA BARANG --}}
-            <input
-                type="hidden"
-                name="item_id"
-                id="modalItemId"
+        <div class="relative z-10 flex min-h-full items-center justify-center p-4 sm:p-6">
+            <form
+                id="formBooking"
+                action="{{ route('peminjaman.confirm') }}"
+                method="GET"
+                class="relative w-full max-w-[940px] overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-[0_25px_80px_rgba(15,23,42,0.16)] transition-all duration-300 opacity-0 scale-95"
             >
+                <input type="hidden" name="item_id" id="modalItemId">
+                <input type="hidden" name="item_name" id="modalItemNameInput">
+                <input type="hidden" name="item_category" id="modalItemCategory">
+                <input type="hidden" name="item_stock" id="modalItemStock">
+                <input type="hidden" name="item_img" id="modalItemImgInput">
+                <input type="hidden" name="tanggal" id="selectedTanggal" value="{{ \Carbon\Carbon::today()->translatedFormat('d F Y') }}">
+                <input type="hidden" name="jam" id="selectedJam" value="08.00 - 09.00">
+                <input type="hidden" name="jumlah" id="modalFormQty" value="1">
 
-            <input
-                type="hidden"
-                name="item_name"
-                id="modalItemName"
-            >
-
-            <input
-                type="hidden"
-                name="item_category"
-                id="modalItemCategory"
-            >
-
-            <input
-                type="hidden"
-                name="item_stock"
-                id="modalItemStock"
-            >
-
-            <input
-                type="hidden"
-                name="item_img"
-                id="modalItemImgInput"
-            >
-
-
-            {{-- TANGGAL --}}
-            <input
-                type="hidden"
-                name="tanggal"
-                id="selectedTanggal"
-                value="{{ \Carbon\Carbon::today()->translatedFormat('d F Y') }}"
-            >
-
-
-            {{-- JAM
-                 DEFAULT SEKARANG 08.00 - 09.00
-            --}}
-            <input
-                type="hidden"
-                name="jam"
-                id="selectedJam"
-                value="08.00 - 09.00"
-            >
-
-
-            {{-- JUMLAH --}}
-            <input
-                type="hidden"
-                name="jumlah"
-                value="1"
-            >
-
-
-            {{-- =================================================
-                HEADER MODAL
-            ================================================== --}}
-            <div class="flex items-center justify-between mb-6">
-
-                <div class="w-9"></div>
-
-                <h2
-                    class="maroon-text font-extrabold text-lg sm:text-xl uppercase tracking-wide text-center"
-                >
-                    PILIH JADWAL PEMINJAMAN
-                </h2>
-
-
-                {{-- CLOSE --}}
-                <button
-                    onclick="closeModalPinjam()"
-                    type="button"
-                    class="w-9 h-9 flex items-center justify-center bg-neutral-200/60 hover:bg-neutral-300 text-neutral-600 rounded-full transition"
-                >
-
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="w-5 h-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="2.5"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M6 18L18 6M6 6l12 12"
-                        />
-                    </svg>
-
-                </button>
-
-            </div>
-
-
-            {{-- =================================================
-                SLIDER TANGGAL
-            ================================================== --}}
-            <div class="relative flex items-center gap-2 mb-6">
-
-                {{-- LEFT --}}
-                <button
-                    type="button"
-                    onclick="scrollDate('left')"
-                    class="shrink-0 p-2 bg-neutral-200/70 hover:bg-neutral-300 text-neutral-700 rounded-full transition shadow-sm z-10"
-                >
-
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="2.5"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M15 19l-7-7 7-7"
-                        />
-                    </svg>
-
-                </button>
-
-
-                {{-- TANGGAL --}}
-                <div
-                    id="dateContainer"
-                    class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-none pb-1 scroll-smooth w-full"
-                >
-
-                    @php
-
-                        use Carbon\Carbon;
-
-                        Carbon::setLocale('id');
-
-                        $today = Carbon::today();
-
-                    @endphp
-
-
-                    @for ($i = 0; $i < 30; $i++)
-
-                        @php
-
-                            $currentDate = $today->copy()->addDays($i);
-
-                            $formattedValue =
-                                $currentDate->translatedFormat('d F Y');
-
-                            $isFirst = $i === 0;
-
-                        @endphp
-
-
-                        <button
-                            type="button"
-
-                            onclick="selectTanggal(
-                                this,
-                                '{{ $formattedValue }}'
-                            )"
-
-                            class="date-btn
-                            {{ $isFirst
-                                ? 'bg-[#8C1F2F] text-white'
-                                : 'bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300'
-                            }}
-                            px-4 py-2.5 rounded-xl text-center shrink-0 transition shadow-sm"
-                        >
-
-                            <div
-                                class="text-[10px] uppercase font-medium
-                                {{ $isFirst
-                                    ? 'opacity-90'
-                                    : 'text-neutral-500'
-                                }}"
-                            >
-                                {{ $currentDate->translatedFormat('D') }}
-                            </div>
-
-                            <div class="text-xs font-bold whitespace-nowrap">
-                                {{ $currentDate->format('j') }}
-                                {{ strtoupper($currentDate->translatedFormat('M')) }}
-                            </div>
-
-                        </button>
-
-                    @endfor
-
-                </div>
-
-
-                {{-- RIGHT --}}
-                <button
-                    type="button"
-                    onclick="scrollDate('right')"
-                    class="shrink-0 p-2 bg-neutral-200/70 hover:bg-neutral-300 text-neutral-700 rounded-full transition shadow-sm z-10"
-                >
-
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="2.5"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M9 5l7 7-7 7"
-                        />
-                    </svg>
-
-                </button>
-
-            </div>
-
-
-            {{-- =================================================
-                BODY MODAL
-            ================================================== --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 items-center">
-
-                {{-- FOTO BARANG --}}
-                <div
-                    class="bg-white rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center w-full shadow-inner border border-neutral-200/60"
-                >
-
-                    <img
-                        id="modalGambarBarang"
-                        src=""
-                        alt="Produk"
-                        class="w-full h-full object-cover"
-                    >
-
-                </div>
-
-
-                {{-- JADWAL --}}
-                <div>
-
-                    <div
-                        class="bg-[#D97706] text-white font-bold text-center py-2.5 rounded-xl text-xs uppercase mb-4 tracking-wide shadow-sm"
-                    >
-                        JADWAL YANG TERSEDIA
+                <div class="flex items-center justify-between border-b border-neutral-100 px-5 py-4 sm:px-8">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#8C1F2F]/10 text-[#8C1F2F]">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m-6 4h6m-6 4h4M5 7.5A1.5 1.5 0 016.5 6h11A1.5 1.5 0 0119 7.5v9A1.5 1.5 0 0117.5 18h-11A1.5 1.5 0 015 16.5v-9z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-extrabold uppercase tracking-[0.12em] text-[#8C1F2F]">Pilih Barang</h2>
+                            <p class="text-xs text-neutral-500">Pilih barang yang ingin kamu pinjam.</p>
+                        </div>
                     </div>
 
-
-                    {{-- =================================================
-                        JAM
-                    ================================================== --}}
-                    <div
-                        class="grid grid-cols-2 gap-2.5 text-center"
+                    <button
+                        type="button"
+                        onclick="closeModalPinjam()"
+                        class="flex h-9 w-9 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200"
+                        aria-label="Tutup modal"
                     >
-
-                        {{-- 08 - 09 --}}
-                        <button
-                            type="button"
-                            onclick="selectJam(this, '08.00 - 09.00')"
-                            class="jam-btn selected bg-white border-2 border-amber-500 text-amber-600 rounded-xl p-2.5 transition group shadow-sm"
-                        >
-
-                            <span
-                                class="block text-[10px] text-neutral-400 font-medium mb-0.5"
-                            >
-                                60 Menit
-                            </span>
-
-                            <span
-                                class="jam-text block text-xs font-bold text-amber-600"
-                            >
-                                08.00 - 09.00
-                            </span>
-
-                        </button>
-
-
-                        {{-- 09 - 10 --}}
-                        <button
-                            type="button"
-                            onclick="selectJam(this, '09.00 - 10.00')"
-                            class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm"
-                        >
-
-                            <span
-                                class="block text-[10px] text-neutral-400 font-medium mb-0.5"
-                            >
-                                60 Menit
-                            </span>
-
-                            <span
-                                class="jam-text block text-xs font-bold text-neutral-800 group-hover:text-amber-600"
-                            >
-                                09.00 - 10.00
-                            </span>
-
-                        </button>
-
-
-                        {{-- 10 - 11 --}}
-                        <button
-                            type="button"
-                            onclick="selectJam(this, '10.00 - 11.00')"
-                            class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm"
-                        >
-
-                            <span
-                                class="block text-[10px] text-neutral-400 font-medium mb-0.5"
-                            >
-                                60 Menit
-                            </span>
-
-                            <span
-                                class="jam-text block text-xs font-bold text-neutral-800 group-hover:text-amber-600"
-                            >
-                                10.00 - 11.00
-                            </span>
-
-                        </button>
-
-
-                        {{-- 11 - 12 --}}
-                        <button
-                            type="button"
-                            onclick="selectJam(this, '11.00 - 12.00')"
-                            class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm"
-                        >
-
-                            <span
-                                class="block text-[10px] text-neutral-400 font-medium mb-0.5"
-                            >
-                                60 Menit
-                            </span>
-
-                            <span
-                                class="jam-text block text-xs font-bold text-neutral-800 group-hover:text-amber-600"
-                            >
-                                11.00 - 12.00
-                            </span>
-
-                        </button>
-
-
-                        {{-- 12 - 13 --}}
-                        <button
-                            type="button"
-                            onclick="selectJam(this, '12.00 - 13.00')"
-                            class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm"
-                        >
-
-                            <span
-                                class="block text-[10px] text-neutral-400 font-medium mb-0.5"
-                            >
-                                60 Menit
-                            </span>
-
-                            <span
-                                class="jam-text block text-xs font-bold text-neutral-800 group-hover:text-amber-600"
-                            >
-                                12.00 - 13.00
-                            </span>
-
-                        </button>
-
-
-                        {{-- 13 - 14 --}}
-                        <button
-                            type="button"
-                            onclick="selectJam(this, '13.00 - 14.00')"
-                            class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm"
-                        >
-
-                            <span
-                                class="block text-[10px] text-neutral-400 font-medium mb-0.5"
-                            >
-                                60 Menit
-                            </span>
-
-                            <span
-                                class="jam-text block text-xs font-bold text-neutral-800 group-hover:text-amber-600"
-                            >
-                                13.00 - 14.00
-                            </span>
-
-                        </button>
-
-                    </div>
-
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
 
-            </div>
+                <div class="grid grid-cols-1 xl:grid-cols-[1.55fr_0.9fr]">
+                    <div class="p-5 sm:p-8">
+                        <div class="rounded-[28px] bg-neutral-50 p-4 sm:p-5">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span id="modalItemCategoryBadge" class="inline-flex items-center rounded-full bg-[#8C1F2F]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#8C1F2F]">Kategori</span>
+                                <span id="modalStockBadge" class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-emerald-700">Stok tersedia</span>
+                            </div>
 
+                            <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-[180px_1fr] sm:items-center">
+                                <div class="overflow-hidden rounded-[22px] border border-neutral-200 bg-white shadow-sm">
+                                    <img
+                                        id="modalGambarBarang"
+                                        src=""
+                                        alt="Produk"
+                                        class="h-44 w-full object-cover sm:h-52"
+                                    >
+                                </div>
 
-            {{-- =================================================
-                BUTTON BOOKING
-            ================================================== --}}
-            <div class="mt-6">
+                                <div>
+                                    <h3 id="modalDisplayName" class="text-2xl font-extrabold text-neutral-900 leading-tight">Nama Barang</h3>
+                                    <p id="modalItemDescription" class="mt-3 text-sm leading-6 text-neutral-600">
+                                        Deskripsi barang akan muncul di sini.
+                                    </p>
 
-                <button
-                    type="submit"
-                    class="accent text-neutral-900 font-bold w-full py-3.5 rounded-xl text-center uppercase tracking-wider text-xs sm:text-sm hover:brightness-95 transition shadow-md"
-                >
-                    BOOKING SEKARANG
-                </button>
+                                    <div class="mt-5 flex items-center justify-between rounded-2xl border border-neutral-200 bg-white px-3 py-2.5">
+                                        <span class="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-500">Stok tersedia</span>
+                                        <span id="modalStockInfo" class="text-sm font-bold text-neutral-900">0 tersedia</span>
+                                    </div>
 
-            </div>
+                                    <div class="mt-5">
+                                        <label class="text-xs font-bold uppercase tracking-[0.12em] text-neutral-500">Jumlah yang ingin dipinjam</label>
+                                        <div class="mt-2 flex items-center justify-between gap-3 rounded-2xl border border-neutral-200 bg-white p-2">
+                                            <button id="modalQtyMinus" type="button" class="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-100 text-xl font-bold text-neutral-700 transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-45" aria-label="Kurangi jumlah">-</button>
+                                            <div class="flex-1 text-center">
+                                                <span id="modalQtyValue" class="block text-2xl font-extrabold text-neutral-900">1</span>
+                                            </div>
+                                            <button id="modalQtyPlus" type="button" class="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-100 text-xl font-bold text-neutral-700 transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-45" aria-label="Tambah jumlah">+</button>
+                                        </div>
 
-        </form>
+                                        <p id="modalQtyStatus" class="mt-2 text-xs font-medium text-neutral-600">1 dari 0 barang tersedia</p>
+                                        <p id="modalQtyWarning" class="mt-2 hidden text-xs font-medium text-red-600">Jumlah melebihi stok tersedia. Kurangi jumlah sebelum melanjutkan.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="mt-5 flex items-center justify-end">
+                            <button type="button" onclick="closeModalPinjam()" class="rounded-full border border-neutral-200 bg-white px-5 py-2.5 text-sm font-bold text-neutral-700 transition hover:border-neutral-300 hover:bg-neutral-50">Kembali</button>
+                        </div>
+                    </div>
+
+                    <aside class="border-t border-neutral-100 bg-neutral-50 p-5 sm:p-6 xl:border-l xl:border-t-0">
+                        <h3 class="text-base font-extrabold uppercase tracking-[0.12em] text-neutral-900">Ringkasan Pilihan</h3>
+
+                        <div class="mt-4 rounded-[24px] border border-neutral-200 bg-white p-3 shadow-sm">
+                            <div class="flex items-center gap-3">
+                                <img id="modalSummaryImage" src="" alt="Thumbnail barang" class="h-16 w-16 rounded-2xl object-cover">
+                                <div class="min-w-0">
+                                    <span id="modalSummaryCategory" class="block text-[10px] font-bold uppercase tracking-[0.12em] text-neutral-400">Kategori</span>
+                                    <p id="modalSummaryName" class="truncate text-sm font-extrabold text-neutral-900">Nama Barang</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 grid grid-cols-2 gap-2.5">
+                                <div class="rounded-2xl bg-neutral-50 p-3">
+                                    <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-neutral-400">Jumlah</p>
+                                    <p id="modalSummaryQty" class="mt-1 text-lg font-extrabold text-neutral-900">1</p>
+                                </div>
+                                <div class="rounded-2xl bg-neutral-50 p-3">
+                                    <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-neutral-400">Stok</p>
+                                    <p id="modalSummaryStock" class="mt-1 text-lg font-extrabold text-neutral-900">0</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 rounded-2xl border border-amber-100 bg-amber-50 p-3 text-[11px] leading-5 text-amber-700">
+                                Pastikan jumlah yang dipilih sesuai dengan stok yang tersedia sebelum melanjutkan.
+                            </div>
+                        </div>
+
+                        <button
+                            id="modalBookingButton"
+                            type="submit"
+                            class="mt-6 w-full rounded-2xl bg-[#F4A825] px-4 py-3.5 text-sm font-extrabold uppercase tracking-[0.12em] text-neutral-900 transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-45"
+                        >
+                            Booking Sekarang
+                        </button>
+
+                        <p class="mt-3 text-center text-[11px] text-neutral-500">Jumlah yang dipilih akan dipindahkan ke proses pemilihan jadwal.</p>
+                    </aside>
+                </div>
+            </form>
+        </div>
     </div>
 
 
@@ -1052,70 +757,137 @@
            MODAL PINJAM
         ======================================================== */
 
-        function openModalPinjam(id, nama, kategori, stok, gambar) {
+        function updateModalBookingState() {
+            const stock = Number(document.getElementById('modalItemStock').value || 0);
+            const qtyInput = document.getElementById('modalFormQty');
+            const qtyDisplay = document.getElementById('modalQtyValue');
+            const qtyStatus = document.getElementById('modalQtyStatus');
+            const qtyWarning = document.getElementById('modalQtyWarning');
+            const bookingButton = document.getElementById('modalBookingButton');
+            const minusButton = document.getElementById('modalQtyMinus');
+            const plusButton = document.getElementById('modalQtyPlus');
+            const summaryQty = document.getElementById('modalSummaryQty');
+            const summaryStock = document.getElementById('modalSummaryStock');
+            const stockInfo = document.getElementById('modalStockInfo');
+            const stockBadge = document.getElementById('modalStockBadge');
+            const stockCategoryBadge = document.getElementById('modalItemCategoryBadge');
 
-            const modal = document.getElementById('modalPinjam');
+            let quantity = Number(qtyInput.value || 1);
 
-            const imgElement =
-                document.getElementById('modalGambarBarang');
+            if (stock <= 0) {
+                quantity = 1;
+                qtyInput.value = '1';
+                qtyDisplay.textContent = '1';
+                qtyStatus.textContent = 'Stok habis';
+                qtyStatus.classList.remove('text-neutral-600');
+                qtyStatus.classList.add('text-red-600');
+                qtyWarning.classList.add('hidden');
+                bookingButton.disabled = true;
+                minusButton.disabled = true;
+                plusButton.disabled = true;
+                summaryQty.textContent = '0';
+                summaryStock.textContent = '0';
+                stockInfo.textContent = 'Stok habis';
+                stockBadge.textContent = 'Stok habis';
+                stockBadge.className = 'inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-red-700';
+                stockCategoryBadge.classList.remove('text-[#8C1F2F]');
+                return;
+            }
 
+            quantity = Math.min(Math.max(quantity, 1), stock);
+            qtyInput.value = String(quantity);
+            qtyDisplay.textContent = String(quantity);
+            summaryQty.textContent = String(quantity);
+            summaryStock.textContent = String(stock);
+            stockInfo.textContent = stock + ' tersedia';
+            stockBadge.textContent = stock + ' tersedia';
+            stockBadge.className = 'inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-emerald-700';
+            qtyStatus.textContent = quantity + ' dari ' + stock + ' barang tersedia';
+            qtyStatus.classList.remove('text-red-600');
+            qtyStatus.classList.add('text-neutral-600');
+            qtyWarning.classList.add('hidden');
 
-            /*
-             * Masukkan data barang ke input hidden.
-             */
-            document.getElementById('modalItemId').value = id;
+            minusButton.disabled = quantity <= 1;
+            plusButton.disabled = quantity >= stock;
+            bookingButton.disabled = false;
 
-            document.getElementById('modalItemName').value = nama;
-
-            document.getElementById('modalItemCategory').value =
-                kategori;
-
-            document.getElementById('modalItemStock').value =
-                stok;
-
-            document.getElementById('modalItemImgInput').value =
-                gambar;
-
-
-            /*
-             * Tampilkan foto barang.
-             */
-            imgElement.src = gambar;
-
-            imgElement.alt = nama;
-
-
-            /*
-             * Reset jam ke 08.00 - 09.00
-             * setiap kali modal dibuka.
-             */
-            document.getElementById('selectedJam').value =
-                '08.00 - 09.00';
-
-
-            /*
-             * Reset tampilan tombol jam.
-             */
-            resetJam();
-
-
-            /*
-             * Tampilkan modal.
-             */
-            modal.classList.remove('hidden');
-
-            document.body.classList.add('overflow-hidden');
+            if (quantity > stock) {
+                qtyWarning.classList.remove('hidden');
+                bookingButton.disabled = true;
+            }
         }
 
+        function changeModalQuantity(delta) {
+            const stock = Number(document.getElementById('modalItemStock').value || 0);
+            const qtyInput = document.getElementById('modalFormQty');
+            const current = Number(qtyInput.value || 1);
+
+            if (stock <= 0) {
+                return;
+            }
+
+            const next = Math.min(Math.max(current + delta, 1), stock);
+            qtyInput.value = String(next);
+            updateModalBookingState();
+        }
+
+        function openModalPinjam(id, nama, kategori, stok, gambar, deskripsi = '') {
+            const modal = document.getElementById('modalPinjam');
+            const backdrop = document.getElementById('modalBackdrop');
+            const dialog = document.getElementById('formBooking');
+            const imgElement = document.getElementById('modalGambarBarang');
+            const summaryImg = document.getElementById('modalSummaryImage');
+
+            document.getElementById('modalItemId').value = id;
+            document.getElementById('modalItemNameInput').value = nama;
+            document.getElementById('modalItemCategory').value = kategori;
+            document.getElementById('modalItemStock').value = stok;
+            document.getElementById('modalItemImgInput').value = gambar;
+            document.getElementById('modalFormQty').value = '1';
+
+            document.getElementById('modalItemCategoryBadge').textContent = kategori;
+            document.getElementById('modalSummaryCategory').textContent = kategori;
+            document.getElementById('modalDisplayName').textContent = nama;
+            document.getElementById('modalSummaryName').textContent = nama;
+            document.getElementById('modalSummaryQty').textContent = '1';
+            document.getElementById('modalSummaryStock').textContent = stok;
+            document.getElementById('modalItemDescription').textContent = deskripsi || 'Barang ini siap digunakan untuk kegiatan peminjaman.';
+
+            imgElement.src = gambar;
+            imgElement.alt = nama;
+            summaryImg.src = gambar;
+            summaryImg.alt = nama;
+
+            document.getElementById('selectedJam').value = '08.00 - 09.00';
+            resetJam();
+
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+
+            requestAnimationFrame(() => {
+                backdrop.classList.remove('opacity-0');
+                backdrop.classList.add('opacity-100');
+                dialog.classList.remove('opacity-0', 'scale-95');
+                dialog.classList.add('opacity-100', 'scale-100');
+            });
+
+            updateModalBookingState();
+        }
 
         function closeModalPinjam() {
+            const modal = document.getElementById('modalPinjam');
+            const backdrop = document.getElementById('modalBackdrop');
+            const dialog = document.getElementById('formBooking');
 
-            const modal =
-                document.getElementById('modalPinjam');
+            backdrop.classList.add('opacity-0');
+            backdrop.classList.remove('opacity-100');
+            dialog.classList.remove('opacity-100', 'scale-100');
+            dialog.classList.add('opacity-0', 'scale-95');
 
-            modal.classList.add('hidden');
-
-            document.body.classList.remove('overflow-hidden');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }, 180);
         }
 
 
@@ -1341,14 +1113,37 @@
 
         document.addEventListener('DOMContentLoaded', function () {
 
-            const searchInput =
-                document.getElementById('searchInput');
+            const qtyMinus = document.getElementById('modalQtyMinus');
+            const qtyPlus = document.getElementById('modalQtyPlus');
+            const bookingForm = document.getElementById('formBooking');
+            const searchInput = document.getElementById('searchInput');
+            const itemCards = document.querySelectorAll('.item-card');
+            const searchEmpty = document.getElementById('searchEmpty');
 
-            const itemCards =
-                document.querySelectorAll('.item-card');
+            if (qtyMinus) {
+                qtyMinus.addEventListener('click', function () {
+                    changeModalQuantity(-1);
+                });
+            }
 
-            const searchEmpty =
-                document.getElementById('searchEmpty');
+            if (qtyPlus) {
+                qtyPlus.addEventListener('click', function () {
+                    changeModalQuantity(1);
+                });
+            }
+
+            if (bookingForm) {
+                bookingForm.addEventListener('submit', function (event) {
+                    const stock = Number(document.getElementById('modalItemStock').value || 0);
+                    const quantity = Number(document.getElementById('modalFormQty').value || 1);
+
+                    if (stock <= 0 || quantity < 1 || quantity > stock) {
+                        event.preventDefault();
+                        updateModalBookingState();
+                        return false;
+                    }
+                });
+            }
 
 
             /*
