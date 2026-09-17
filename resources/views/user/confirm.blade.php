@@ -149,13 +149,44 @@
                             <span class="text-slate-400 block font-medium">Total Jumlah Barang</span>
                             <span class="font-bold text-neutral-800">{{ $totalItems }} item</span>
                         </div>
+
+                        <form action="{{ route('peminjaman.confirm') }}" method="GET" class="space-y-3 border-y border-neutral-100 py-3">
+                            <div>
+                                <label for="summaryTanggal" class="text-slate-400 block font-medium">Pilih Tanggal</label>
+                                <div class="mt-1 flex items-center gap-2">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-600" aria-hidden="true">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="4" width="18" height="17" rx="2" />
+                                            <path stroke-linecap="round" d="M16 2v4M8 2v4M3 10h18" />
+                                        </svg>
+                                    </span>
+                                    <input id="summaryTanggal" name="tanggal_date" type="date" value="{{ $tanggalInput }}" min="{{ \Carbon\Carbon::today()->format('Y-m-d') }}" onchange="this.form.submit()" class="min-w-0 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-xs font-bold text-neutral-800 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label for="summaryJamMulai" class="text-slate-400 block font-medium">Jam Mulai</label>
+                                    <select id="summaryJamMulai" name="jam_mulai" onchange="this.form.submit()" class="mt-1 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-xs font-bold text-neutral-800 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100">
+                                        @foreach (['07.00', '08.00', '09.00', '10.00', '11.00', '12.00', '13.00', '14.00', '15.00'] as $summaryJamMulai)
+                                            <option value="{{ $summaryJamMulai }}" @selected($summaryJamMulai === $jamMulai)>{{ $summaryJamMulai }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="summaryJamKembali" class="text-slate-400 block font-medium">Jam Pengembalian</label>
+                                    <select id="summaryJamKembali" name="jam_kembali" onchange="this.form.submit()" class="mt-1 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-xs font-bold text-neutral-800 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100">
+                                        @foreach (['07.00', '08.00', '09.00', '10.00', '11.00', '12.00', '13.00', '14.00', '15.00'] as $summaryJamKembali)
+                                            <option value="{{ $summaryJamKembali }}" @selected($summaryJamKembali === $jamKembali)>{{ $summaryJamKembali }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+
                         <div>
-                            <span class="text-slate-400 block font-medium">Tanggal</span>
-                            <span class="font-bold text-neutral-800">{{ $tanggal }}</span>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 block font-medium">Waktu</span>
-                            <span class="font-bold text-neutral-800">{{ $jam }} (1 Jam)</span>
+                            <span class="text-slate-400 block font-medium">Total Durasi</span>
+                            <span class="font-bold text-neutral-800">{{ $duration }}</span>
                         </div>
                         <div>
                             <span class="text-slate-400 block font-medium">Ketersediaan</span>
@@ -182,8 +213,9 @@
 
         <form action="{{ route('peminjaman.store') }}" method="POST" class="mt-6">
             @csrf
-            <input type="hidden" name="tanggal" value="{{ $tanggal }}">
-            <input type="hidden" name="jam" value="{{ $jam }}">
+            <input type="hidden" name="tanggal_date" value="{{ $tanggalInput }}">
+            <input type="hidden" name="jam_mulai" value="{{ $jamMulai }}">
+            <input type="hidden" name="jam_kembali" value="{{ $jamKembali }}">
             <button type="submit" class="bg-orange-accent text-white font-extrabold w-full py-4 rounded-2xl text-center uppercase tracking-wider text-base hover:brightness-95 transition shadow-[0_4px_20px_rgba(255,153,0,0.35)]">
                 MULAI MEMINJAM
             </button>

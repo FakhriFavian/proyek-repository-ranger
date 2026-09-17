@@ -650,13 +650,13 @@
 
 
             {{-- JAM
-                 DEFAULT SEKARANG 08.00 - 09.00
+                 DEFAULT SEKARANG 07.00 - 08.00
             --}}
             <input
                 type="hidden"
                 name="jam"
                 id="selectedJam"
-                value="08.00 - 09.00"
+                value="07.00 - 08.00"
             >
 
 
@@ -872,10 +872,10 @@
                         class="grid grid-cols-2 gap-2.5 text-center"
                     >
 
-                        {{-- 08 - 09 --}}
+                        {{-- 07 - 08 --}}
                         <button
                             type="button"
-                            onclick="selectJam(this, '08.00 - 09.00')"
+                            onclick="selectJam(this, '07.00 - 08.00')"
                             class="jam-btn selected bg-white border-2 border-amber-500 text-amber-600 rounded-xl p-2.5 transition group shadow-sm"
                         >
 
@@ -887,6 +887,28 @@
 
                             <span
                                 class="jam-text block text-xs font-bold text-amber-600"
+                            >
+                                07.00 - 08.00
+                            </span>
+
+                        </button>
+
+
+                        {{-- 08 - 09 --}}
+                        <button
+                            type="button"
+                            onclick="selectJam(this, '08.00 - 09.00')"
+                            class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm"
+                        >
+
+                            <span
+                                class="block text-[10px] text-neutral-400 font-medium mb-0.5"
+                            >
+                                60 Menit
+                            </span>
+
+                            <span
+                                class="jam-text block text-xs font-bold text-neutral-800 group-hover:text-amber-600"
                             >
                                 08.00 - 09.00
                             </span>
@@ -981,26 +1003,22 @@
 
                         </button>
 
-
-                        {{-- 13 - 14 --}}
                         <button
                             type="button"
                             onclick="selectJam(this, '13.00 - 14.00')"
                             class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm"
                         >
+                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="jam-text block text-xs font-bold text-neutral-800 group-hover:text-amber-600">13.00 - 14.00</span>
+                        </button>
 
-                            <span
-                                class="block text-[10px] text-neutral-400 font-medium mb-0.5"
-                            >
-                                60 Menit
-                            </span>
-
-                            <span
-                                class="jam-text block text-xs font-bold text-neutral-800 group-hover:text-amber-600"
-                            >
-                                13.00 - 14.00
-                            </span>
-
+                        <button
+                            type="button"
+                            onclick="selectJam(this, '14.00 - 15.00')"
+                            class="jam-btn bg-white border border-neutral-200 hover:border-amber-500 rounded-xl p-2.5 transition group shadow-sm"
+                        >
+                            <span class="block text-[10px] text-neutral-400 font-medium mb-0.5">60 Menit</span>
+                            <span class="jam-text block text-xs font-bold text-neutral-800 group-hover:text-amber-600">14.00 - 15.00</span>
                         </button>
 
                     </div>
@@ -1086,11 +1104,11 @@
 
 
             /*
-             * Reset jam ke 08.00 - 09.00
+             * Reset jam ke 07.00 - 08.00
              * setiap kali modal dibuka.
              */
             document.getElementById('selectedJam').value =
-                '08.00 - 09.00';
+                '07.00 - 08.00';
 
 
             /*
@@ -1207,7 +1225,7 @@
 
             /*
              * DEFAULT:
-             * 08.00 - 09.00 menjadi kuning.
+             * 07.00 - 08.00 menjadi kuning.
              */
             const firstButton =
                 document.querySelector('.jam-btn');

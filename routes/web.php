@@ -16,6 +16,58 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
+$resolveBorrowingSchedule = static function (string $tanggal, string $jamMulai, ?string $jamKembali = null): array {
+    try {
+        $date = Carbon::createFromLocaleFormat('d F Y', 'id', $tanggal);
+    } catch (\Throwable) {
+        $date = Carbon::parse($tanggal);
+    }
+
+    $parts = $jamKembali === null
+        ? explode('-', $jamMulai, 2)
+        : [$jamMulai, $jamKembali];
+    $parts = array_map(static fn (string $time) => str_replace('.', ':', trim($time)), $parts);
+
+    if (count($parts) !== 2 || !preg_match('/^\d{2}:\d{2}$/', $parts[0]) || !preg_match('/^\d{2}:\d{2}$/', $parts[1])) {
+        throw ValidationException::withMessages(['jam' => 'Format jam peminjaman tidak valid.']);
+    }
+
+    try {
+        $startAt = $date->copy()->startOfDay()->setTimeFromTimeString($parts[0]);
+        $endAt = $date->copy()->startOfDay()->setTimeFromTimeString($parts[1]);
+    } catch (\Throwable) {
+        throw ValidationException::withMessages(['jam' => 'Format jam peminjaman tidak valid.']);
+    }
+
+    if ($startAt->hour < 7 || $startAt->hour > 15 || $endAt->hour < 7 || $endAt->hour > 15) {
+        throw ValidationException::withMessages(['jam' => 'Jam peminjaman dan pengembalian hanya tersedia dari 07.00 sampai 15.00.']);
+    }
+
+    if ($endAt->equalTo($startAt)) {
+        throw ValidationException::withMessages(['jam' => 'Jam kembali harus lebih besar dari jam mulai.']);
+    }
+
+    if ($endAt->lessThan($startAt)) {
+        $endAt->addDay();
+    }
+
+    $durationMinutes = $startAt->diffInMinutes($endAt);
+    $hours = intdiv($durationMinutes, 60);
+    $minutes = $durationMinutes % 60;
+    $duration = $hours > 0 ? $hours.' jam' : $minutes.' menit';
+
+    if ($minutes > 0 && $hours > 0) {
+        $duration .= ' '.$minutes.' menit';
+    }
+
+    return [
+        'startAt' => $startAt,
+        'endAt' => $endAt,
+        'duration' => $duration,
+        'jam' => $startAt->format('H.i').' - '.$endAt->format('H.i'),
+    ];
+};
+
 Route::get('/', function () {
     return redirect()->route('home');
 })->name('frontend.index');
@@ -62,7 +114,7 @@ Route::get('/home', function () {
     return view('user.home', compact('categories', 'items', 'activeCategory'));
 })->name('home');
 
-Route::middleware(AuthenticateStudent::class)->group(function () {
+Route::middleware(AuthenticateStudent::class)->group(function () use ($resolveBorrowingSchedule) {
 
     Route::get('/riwayat', function () {
         $borrowings = borrowings::with(['details.item.category'])
@@ -253,7 +305,7 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
 
     Route::post('/peminjaman/cart/update', function (Request $request) {
         $tanggal = $request->input('tanggal', session('borrow_meta.tanggal', Carbon::today()->translatedFormat('d F Y')));
-        $jam = $request->input('jam', session('borrow_meta.jam', '08.00 - 09.00'));
+        $jam = $request->input('jam', session('borrow_meta.jam', '07.00 - 08.00'));
 
         $request->validate([
             'item_id' => 'required|exists:items,id',
@@ -294,9 +346,21 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
         return redirect()->route('peminjaman.confirm', ['tanggal' => $tanggal, 'jam' => $jam]);
     })->name('peminjaman.cart.update');
 
-    Route::get('/peminjaman/konfirmasi', function (Request $request) {
-        $tanggal = $request->query('tanggal', session('borrow_meta.tanggal', Carbon::today()->translatedFormat('d F Y')));
-        $jam = $request->query('jam', session('borrow_meta.jam', '08.00 - 09.00'));
+    Route::get('/peminjaman/konfirmasi', function (Request $request) use ($resolveBorrowingSchedule) {
+        $tanggal = $request->query('tanggal_date', $request->query('tanggal', session('borrow_meta.tanggal', Carbon::today()->translatedFormat('d F Y'))));
+        $jam = $request->query('jam', session('borrow_meta.jam', '07.00 - 08.00'));
+        $jamMulai = $request->query('jam_mulai');
+        $jamKembali = $request->query('jam_kembali');
+
+        try {
+            $schedule = $resolveBorrowingSchedule($tanggal, $jamMulai ?? $jam, $jamKembali);
+        } catch (ValidationException $exception) {
+            return redirect()->route('home', ['tanggal' => $tanggal, 'jam' => $jam])->withErrors($exception->errors());
+        }
+        $tanggal = $schedule['startAt']->locale('id')->translatedFormat('d F Y');
+        $tanggalInput = $schedule['startAt']->format('Y-m-d');
+        $jam = $schedule['jam'];
+
         session()->put('borrow_meta', [
             'tanggal' => $tanggal,
             'jam' => $jam,
@@ -333,14 +397,27 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
         $totalKinds = count($cart);
         $totalItems = array_sum(array_map(static fn ($item) => (int) ($item['quantity'] ?? 1), $cart));
 
-        return view('user.confirm', compact('cart', 'tanggal', 'jam', 'user', 'totalKinds', 'totalItems'));
+        $duration = $schedule['duration'];
+        $jamMulai = $schedule['startAt']->format('H.i');
+        $jamKembali = $schedule['endAt']->format('H.i');
+
+        return view('user.confirm', compact('cart', 'tanggal', 'tanggalInput', 'jam', 'jamMulai', 'jamKembali', 'user', 'totalKinds', 'totalItems', 'duration'));
     })->name('peminjaman.confirm');
 
     // 2. Route Simpan Peminjaman (Saat tombol MULAI MEMINJAM diklik)
-    Route::post('/peminjaman/store', function (Request $request) {
-        $tanggal = $request->input('tanggal', session('borrow_meta.tanggal', Carbon::today()->translatedFormat('d F Y')));
-        $jam = $request->input('jam', session('borrow_meta.jam', '08.00 - 09.00'));
+    Route::post('/peminjaman/store', function (Request $request) use ($resolveBorrowingSchedule) {
+        $tanggal = $request->input('tanggal_date', $request->input('tanggal', session('borrow_meta.tanggal', Carbon::today()->translatedFormat('d F Y'))));
+        $jam = $request->input('jam', session('borrow_meta.jam', '07.00 - 08.00'));
+        $jamMulai = $request->input('jam_mulai');
+        $jamKembali = $request->input('jam_kembali');
         $cart = session()->get('borrow_cart', []);
+
+        try {
+            $schedule = $resolveBorrowingSchedule($tanggal, $jamMulai ?? $jam, $jamKembali);
+        } catch (ValidationException $exception) {
+            return redirect()->route('home', ['tanggal' => $tanggal, 'jam' => $jam])->withErrors($exception->errors());
+        }
+        $tanggal = $schedule['startAt']->locale('id')->translatedFormat('d F Y');
 
         if (empty($cart)) {
             return redirect()->route('home', ['tanggal' => $tanggal, 'jam' => $jam])->with('error', 'Daftar pesanan kosong.');
@@ -363,18 +440,8 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
             ];
         }
 
-        try {
-            $date = Carbon::createFromLocaleFormat('d F Y', 'id', $tanggal);
-        } catch (\Throwable) {
-            $date = Carbon::parse($tanggal);
-        }
-        $date = $date->startOfDay();
-        [$start, $end] = array_map(
-            static fn (string $time) => str_replace('.', ':', trim($time)),
-            explode('-', $jam)
-        );
-        $startAt = $date->copy()->setTimeFromTimeString($start);
-        $endAt = $date->copy()->setTimeFromTimeString($end);
+        $startAt = $schedule['startAt'];
+        $endAt = $schedule['endAt'];
 
         DB::transaction(function () use ($startAt, $endAt, $validatedCart) {
             $borrowing = new borrowings();
