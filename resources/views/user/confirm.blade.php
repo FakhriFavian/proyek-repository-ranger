@@ -143,19 +143,36 @@
                         </div>
                         <div>
                             <span class="text-slate-400 block font-medium">Jumlah Jenis Barang</span>
-                            <span class="font-bold text-neutral-800">{{ $totalKinds }} item</span>
+                            <span class="font-bold text-neutral-800">{{ $totalKinds }} jenis</span>
                         </div>
                         <div>
                             <span class="text-slate-400 block font-medium">Total Jumlah Barang</span>
                             <span class="font-bold text-neutral-800">{{ $totalItems }} item</span>
                         </div>
-                        <div>
-                            <span class="text-slate-400 block font-medium">Tanggal</span>
-                            <span class="font-bold text-neutral-800">{{ $tanggal }}</span>
+                        <div class="rounded-xl border border-orange-100 bg-orange-50/40 p-3">
+                            <span class="text-[#8B2635] block font-bold">Pilih Tanggal</span>
+                            <input id="tanggal" name="tanggal" form="borrowing-form" type="date" value="{{ $tanggalInput }}" min="{{ now()->format('Y-m-d') }}" required class="mt-1 w-full rounded-lg border border-orange-200 bg-white px-3 py-2 font-bold text-neutral-800 shadow-sm outline-none focus:border-[#8B2635] focus:ring-2 focus:ring-[#8B2635]/15">
+                        </div>
+                        <div class="rounded-xl border border-orange-100 bg-orange-50/40 p-3">
+                            <span class="text-[#8B2635] block font-bold">Jam Mulai</span>
+                            <select id="jam_mulai" name="jam_mulai" form="borrowing-form" required class="mt-1 w-full rounded-lg border border-orange-200 bg-white px-3 py-2 font-bold text-neutral-800 shadow-sm outline-none focus:border-[#8B2635] focus:ring-2 focus:ring-[#8B2635]/15">
+                                @foreach ($availableTimes as $availableTime)
+                                    <option value="{{ $availableTime }}" @selected($jamStart === $availableTime)>{{ $availableTime }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="rounded-xl border border-orange-100 bg-orange-50/40 p-3">
+                            <span class="text-[#8B2635] block font-bold">Jam Kembali</span>
+                            <select id="jam_kembali" name="jam_kembali" form="borrowing-form" required class="mt-1 w-full rounded-lg border border-orange-200 bg-white px-3 py-2 font-bold text-neutral-800 shadow-sm outline-none focus:border-[#8B2635] focus:ring-2 focus:ring-[#8B2635]/15">
+                                @foreach ($availableTimes as $availableTime)
+                                    <option value="{{ $availableTime }}" @selected($jamEnd === $availableTime)>{{ $availableTime }}</option>
+                                @endforeach
+                            </select>
+                            <p id="time-error" class="hidden text-rose-600 font-semibold mt-2">Jam kembali harus lebih besar dari jam mulai.</p>
                         </div>
                         <div>
-                            <span class="text-slate-400 block font-medium">Waktu</span>
-                            <span class="font-bold text-neutral-800">{{ $jam }} (1 Jam)</span>
+                            <span class="text-slate-400 block font-medium">Total Durasi</span>
+                            <span id="total-duration" class="font-bold text-neutral-800">-</span>
                         </div>
                         <div>
                             <span class="text-slate-400 block font-medium">Ketersediaan</span>
@@ -180,16 +197,48 @@
 
         </div>
 
-        <form action="{{ route('peminjaman.store') }}" method="POST" class="mt-6">
+        <form id="borrowing-form" action="{{ route('peminjaman.store') }}" method="POST" class="mt-6">
             @csrf
-            <input type="hidden" name="tanggal" value="{{ $tanggal }}">
-            <input type="hidden" name="jam" value="{{ $jam }}">
             <button type="submit" class="bg-orange-accent text-white font-extrabold w-full py-4 rounded-2xl text-center uppercase tracking-wider text-base hover:brightness-95 transition shadow-[0_4px_20px_rgba(255,153,0,0.35)]">
                 MULAI MEMINJAM
             </button>
         </form>
 
     </div>
+
+    <script>
+        const startTime = document.getElementById('jam_mulai');
+        const endTime = document.getElementById('jam_kembali');
+        const duration = document.getElementById('total-duration');
+        const timeError = document.getElementById('time-error');
+        const borrowingForm = document.getElementById('borrowing-form');
+        const dateInput = document.getElementById('tanggal');
+
+        function updateDuration() {
+            const difference = Number(endTime.value.split(':')[0]) - Number(startTime.value.split(':')[0]);
+            const isValid = difference > 0;
+
+            duration.textContent = isValid ? `${difference} jam` : '-';
+            timeError.classList.toggle('hidden', isValid);
+            endTime.setCustomValidity(isValid ? '' : 'Jam kembali harus lebih besar dari jam mulai.');
+        }
+
+        startTime.addEventListener('change', updateDuration);
+        endTime.addEventListener('change', updateDuration);
+        document.querySelectorAll('form[action*="/peminjaman/cart/update"]').forEach(function (cartForm) {
+            cartForm.addEventListener('submit', function () {
+                cartForm.querySelector('input[name="tanggal"]').value = dateInput.value;
+                cartForm.querySelector('input[name="jam"]').value = `${startTime.value.replace(':', '.')} - ${endTime.value.replace(':', '.')}`;
+            });
+        });
+        borrowingForm.addEventListener('submit', function (event) {
+            updateDuration();
+            if (!borrowingForm.checkValidity()) {
+                event.preventDefault();
+            }
+        });
+        updateDuration();
+    </script>
 
 </body>
 </html>

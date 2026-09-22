@@ -298,6 +298,12 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
     Route::get('/peminjaman/konfirmasi', function (Request $request) {
         $tanggal = $request->query('tanggal', session('borrow_meta.tanggal', Carbon::today()->translatedFormat('d F Y')));
         $jam = $request->query('jam', session('borrow_meta.jam', '08.00 - 09.00'));
+        $tanggalInput = Carbon::parse($tanggal)->format('Y-m-d');
+        [$jamStart, $jamEnd] = array_pad(array_map(
+            static fn (string $time) => str_replace('.', ':', trim($time)),
+            explode('-', $jam)
+        ), 2, null);
+        $availableTimes = collect(range(7, 15))->map(static fn (int $hour) => sprintf('%02d:00', $hour))->all();
         session()->put('borrow_meta', [
             'tanggal' => $tanggal,
             'jam' => $jam,
@@ -334,13 +340,18 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
         $totalKinds = count($cart);
         $totalItems = array_sum(array_map(static fn ($item) => (int) ($item['quantity'] ?? 1), $cart));
 
-        return view('user.confirm', compact('cart', 'tanggal', 'jam', 'user', 'totalKinds', 'totalItems'));
+        return view('user.confirm', compact('cart', 'tanggal', 'jam', 'tanggalInput', 'jamStart', 'jamEnd', 'availableTimes', 'user', 'totalKinds', 'totalItems'));
     })->name('peminjaman.confirm');
 
     // 2. Route Simpan Peminjaman (Saat tombol MULAI MEMINJAM diklik)
     Route::post('/peminjaman/store', function (Request $request) {
-        $tanggal = $request->input('tanggal', session('borrow_meta.tanggal', Carbon::today()->translatedFormat('d F Y')));
-        $jam = $request->input('jam', session('borrow_meta.jam', '08.00 - 09.00'));
+        $validated = $request->validate([
+            'tanggal' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
+            'jam_mulai' => ['required', 'date_format:H:i', 'in:07:00,08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00'],
+            'jam_kembali' => ['required', 'date_format:H:i', 'in:07:00,08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00', 'after:jam_mulai'],
+        ]);
+        $tanggal = Carbon::createFromFormat('Y-m-d', $validated['tanggal'])->translatedFormat('d F Y');
+        $jam = str_replace(':', '.', $validated['jam_mulai']).' - '.str_replace(':', '.', $validated['jam_kembali']);
         $cart = session()->get('borrow_cart', []);
 
         if (empty($cart)) {
@@ -364,18 +375,9 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
             ];
         }
 
-        try {
-            $date = Carbon::createFromLocaleFormat('d F Y', 'id', $tanggal);
-        } catch (\Throwable) {
-            $date = Carbon::parse($tanggal);
-        }
-        $date = $date->startOfDay();
-        [$start, $end] = array_map(
-            static fn (string $time) => str_replace('.', ':', trim($time)),
-            explode('-', $jam)
-        );
-        $startAt = $date->copy()->setTimeFromTimeString($start);
-        $endAt = $date->copy()->setTimeFromTimeString($end);
+        $date = Carbon::createFromFormat('Y-m-d', $validated['tanggal'])->startOfDay();
+        $startAt = $date->copy()->setTimeFromTimeString($validated['jam_mulai']);
+        $endAt = $date->copy()->setTimeFromTimeString($validated['jam_kembali']);
 
         DB::transaction(function () use ($startAt, $endAt, $validatedCart) {
             $borrowing = new borrowings();
