@@ -65,6 +65,10 @@ Route::get('/home', $homePage)->name('home');
 
 Route::middleware(AuthenticateStudent::class)->group(function () {
 
+    Route::get('/peminjaman/sukses', function () {
+        return view('user.borrowing-success');
+    })->name('peminjaman.success');
+
     Route::get('/riwayat', function () {
         $borrowings = borrowings::with(['details.item.category'])
             ->where('user_id', Auth::guard('student')->id())
@@ -408,7 +412,7 @@ Route::middleware(AuthenticateStudent::class)->group(function () {
         session()->forget('borrow_cart');
         session()->forget('borrow_meta');
 
-        return redirect()->route('riwayat')->with('success', 'Peminjaman berhasil dibuat.');
+        return redirect()->route('peminjaman.success')->with('success', 'Peminjaman berhasil dibuat.');
     })->name('peminjaman.store');
 
 
